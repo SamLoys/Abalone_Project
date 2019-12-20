@@ -1,5 +1,5 @@
 package Abalone;
 
-public class CumputerPlayer extends Player {
-
+public class ComputerPlayer extends Player {
+//extra
 }

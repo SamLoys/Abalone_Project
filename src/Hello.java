@@ -14,6 +14,6 @@ public class Hello {
  }
  
  public void hallo() {
-	 //sam
+	 //sams
  }
 }

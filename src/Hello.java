@@ -4,4 +4,11 @@ public class Hello {
 	 // hi Sam
 	System.out.println("Hello Ayla");
 }
+ 
+ 
+ 
+ 
+ public void test() {
+	 
+ }
 }

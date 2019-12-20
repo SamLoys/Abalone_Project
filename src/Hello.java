@@ -11,4 +11,8 @@ public class Hello {
  public void test() {
 	 //ss
  }
+ 
+ public void hallo() {
+	 //sam
+ }
 }

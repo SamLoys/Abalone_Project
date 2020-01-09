@@ -1,13 +1,18 @@
 package Abalone;
 
 
-public class Marble {
-	public enum states {
-		Empty, White, Black, Red, Blue, Death;
+
+	
+	public enum Marble {
+		Empty, White, Black, Red, Green, Death;
+		
+		
+
+		
 	}
 
-	private states currentState;
-	private int amountPlayers; 
+	
+ 
 	
 	/**
 	 * Is the constructor of the marble class
@@ -17,20 +22,8 @@ public class Marble {
 	 * @param i
 	 * 
 	 */
-	public Marble(states s, int i) {
-		this.currentState = s; 
-		this.amountPlayers = i; 
-	}
 	
-	public states getState() {
-		return this.currentState; 
-	}
-	
-	public void setState(states s) {
-		this.currentState = s; 
-	}
 	
 	
 
 	
-}

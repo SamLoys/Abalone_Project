@@ -149,7 +149,7 @@ public class Board {
 	 * @requires to give a value from 0 up and uncluding 60
 	 * @return returns the converted index
 	 */
-	public int indexConverter(int index) {
+	public int protocolToIndex(int index) {
 		if (index < 61 && index >= 0) {
 			int indexConverter[] = new int[] { 16, 17, 18, 19, 20, 26, 27, 28, 29, 30, 31, 36, 37, 38, 39, 40, 41, 42,
 					46, 47, 48, 49, 50, 51, 52, 53, 56, 57, 58, 59, 60, 61, 62, 63, 64, 67, 68, 69, 70, 71, 72, 73, 74,
@@ -276,31 +276,31 @@ public class Board {
 		String s = "";
 		for (int row = 0; row < 11; row++) {
 			if (row == 1) {
-				s = s + "            ";
+				s = s + "                    ";
 			}
 			if (row == 2) {
-				s = s + "        ";
+				s = s + "              ";
 			}
 			if (row == 3) {
-				s = s + "     ";
+				s = s + "         ";
 			}
 			if (row == 4) {
-				s = s + "  ";
+				s = s + "    ";
 			}
 			if (row == 5) {
 				s = s + "";
 			}
 			if (row == 6) {
-				s = s + "  ";
+				s = s + "    ";
 			}
 			if (row == 7) {
-				s = s + "       ";
+				s = s + "           ";
 			}
 			if (row == 8) {
-				s = s + "          ";
+				s = s + "                ";
 			}
 			if (row == 9) {
-				s = s + "             ";
+				s = s + "                     ";
 			}
 			for (int col = 0; col < 11; col++) {
 
@@ -309,11 +309,13 @@ public class Board {
 				} else if (getMarble(row, col).toString().equals("Empty")) {
 					s = s + "  -" + "(" +indexToProtocol(Getindex(row, col)) +")" + "-  ";
 
+				} else if (getMarble(row, col).toString().equals("Red")) {
+					s = s + "  " + getMarble(row, col).toString() + "(" + indexToProtocol(Getindex(row, col)) +")" + "  ";
 				} else {
 					s = s + " " + getMarble(row, col).toString()+ "(" +indexToProtocol(Getindex(row, col)) +")" + " ";
 				}
 			}
-			s = s + "\n" +"\n";
+			s = s + "\n\n" +"\n\n";
 		}
 
 		return s;

@@ -5,14 +5,9 @@ package Abalone;
 	
 	public enum Marble {
 		Empty, White, Black, Red, Green, Death;
-		
-		
 
 		
 	}
-
-	
- 
 	
 	/**
 	 * Is the constructor of the marble class

@@ -283,7 +283,8 @@ public class Board {
 	}
 
 	public int getWest(int index) {
-		return index - 1;
+		index = index - 1;
+		return index;
 	}
 
 	public int getNorthEast(int index) {
@@ -345,23 +346,18 @@ public class Board {
 			setMarble(index, Marble.Empty);
 			setMarble(getNorthEast(index), placeholder);
 			break;
-
 		case Directions.northWest:
 			setMarble(index, Marble.Empty);
 			setMarble(getNorthWest(index), placeholder);
 			break;
-
 		case Directions.southEast:
 			setMarble(index, Marble.Empty);
 			setMarble(getSouthEast(index), placeholder);
 			break;
-
 		case Directions.southWest:
 			setMarble(index, Marble.Empty);
 			setMarble(getSouthWest(index), placeholder);
-
 			break;
-
 		case Directions.west:
 			setMarble(index, Marble.Empty);
 			setMarble(getWest(index), placeholder);
@@ -542,29 +538,26 @@ public class Board {
 				move(index, index2, direction);
 			}
 			break;
-
 		case Directions.west:
 			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
 			}
 			else {
-				move(getEast(indexes[0]),direction);
+				move(getWest(indexes[0]), direction);
 				move(index, index2, direction); 
 			}
 			break;
-
 		case Directions.northEast:
 			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
 			}
 			else {
-				move(getNorthEast(indexes[0]),direction);
+				move(getNorthEast(indexes[0]), direction);
 				move(index, index2, direction); 
 			}
 			break;
-
 		case Directions.northWest:
 			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
@@ -575,7 +568,6 @@ public class Board {
 				move(index, index2, direction);  
 			}
 			break;
-
 		case Directions.southEast:
 			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
@@ -601,6 +593,85 @@ public class Board {
 
 	}
 	
+	public void attackMove(int index, int index2, int index3, String direction) {
+		Marble placeholderAttacker = getMarble(index);
+
+		int [] indexes =new int[3];
+		indexes[0] = index;
+		indexes[1] = index2;
+		indexes[2] = index3;
+		Arrays.sort(indexes); 
+		
+		switch (direction) {
+		case Directions.east:
+			
+			if (getMarble(getEast(getEast(indexes[2]))) == Marble.Death ||
+					getMarble(getEast(getEast(getEast(indexes[2])))) == Marble.Death){
+				move(index, index2, direction);
+				addScore(placeholderAttacker); 
+			} 
+			else {
+				move(getEast(indexes[2]),direction);
+				move(index, index2, direction);
+			}
+			break;
+		case Directions.west:
+			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
+				move(index, index2, direction);
+				addScore(placeholderAttacker);
+			}
+			else {
+				move(getWest(indexes[0]), direction);
+				move(index, index2, direction); 
+			}
+			break;
+		case Directions.northEast:
+			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
+				move(index, index2, direction);
+				addScore(placeholderAttacker);
+			}
+			else {
+				move(getNorthEast(indexes[0]), direction);
+				move(index, index2, direction); 
+			}
+			break;
+		case Directions.northWest:
+			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
+				move(index, index2, direction);
+				addScore(placeholderAttacker);
+			}
+			else {
+				move(getNorthWest(indexes[0]),direction);
+				move(index, index2, direction);  
+			}
+			break;
+		case Directions.southEast:
+			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
+				move(index, index2, direction);
+				addScore(placeholderAttacker);
+			}
+			else { 
+				move(getSouthEast(indexes[1]),direction);
+				move(index, index2, direction);  
+			}
+			break;
+		case Directions.southWest:
+			if (getMarble(getSouthWest(getSouthWest(indexes[1]))) == Marble.Death) {
+				move(index, index2, direction);
+				addScore(placeholderAttacker);
+			} 
+			else { 
+				move(getSouthWest(indexes[1]),direction);
+				move(index, index2, direction);  
+			}
+			break;
+
+		}
+
+	}
+	
+	
+	
 	public void addScore(Marble marble) {
 		if (marble == Marble.Black) {
 			scoreBlack++; 
@@ -614,6 +685,22 @@ public class Board {
 		if (marble == Marble.Green) {
 			scoreGreen++; 
 		} 
+	}
+	
+	public int getScore(Marble marble) {
+		if (marble == Marble.Black) {
+			return scoreBlack; 
+		}
+		if (marble == Marble.White) {
+			return scoreWhite; 
+		}
+		if (marble == Marble.Red) {
+			return scoreRed; 
+		}
+		if (marble == Marble.Green) {
+			return scoreGreen; 
+		} 
+		return 9999;
 	}
 
 	/**

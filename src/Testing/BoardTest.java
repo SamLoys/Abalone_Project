@@ -54,6 +54,18 @@ import Abalone.*;
 			assertEquals(0, board.getCol(0));
 		}
 		
+		@Test
+		public void attackMoveTest() {
+			board.attackMove(39, 40, Directions.west);
+			assertEquals(Marble.White, board.getMarble(37));
+			board.attackMove(17, 28, Directions.southEast);
+			assertEquals(Marble.White, board.getMarble(39));
+			board.attackMove(29, 30, Directions.east);
+			System.out.println(board.toString());
+			assertEquals(1, board.getScore(Marble.White));
+			
+		}
+		
 
 	}
 

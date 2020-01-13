@@ -29,6 +29,8 @@ public class Game {
 	
 	public void play() {
 		update();
+		board.move(81, 82, Directions.east);
+		update();
 	}
 	
 	public void update(){

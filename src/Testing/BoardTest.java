@@ -56,11 +56,11 @@ import Abalone.*;
 		
 		@Test
 		public void attackMoveTest() {
-			board.attackMoveTwotoOne(39, 40, Directions.west);
+			board.attackMove(39, 40, Directions.west);
 			assertEquals(Marble.White, board.getMarble(37));
-			board.attackMoveTwotoOne(17, 28, Directions.southEast);
+			board.attackMove(17, 28, Directions.southEast);
 			assertEquals(Marble.White, board.getMarble(39));
-			board.attackMoveTwotoOne(29, 30, Directions.east);
+			board.attackMove(29, 30, Directions.east);
 			System.out.println(board.toString());
 			assertEquals(1, board.getScore(Marble.White));
 			

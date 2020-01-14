@@ -15,7 +15,7 @@ public class AbaloneServerTUI {
 
 	public int getInt(String question) {
 		showMessage(question);
-		showMessage("Please use an integer to reply");
+		showMessage("use an integer to reply");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String answer = "";
 		try {
@@ -72,6 +72,6 @@ public class AbaloneServerTUI {
 	}
 	
 	public void showMessage(String message) {
-		console.println(message + "/n");
+		console.println(message );
 	}
 }

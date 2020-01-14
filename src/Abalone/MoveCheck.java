@@ -292,7 +292,6 @@ public class MoveCheck {
 	public int getSouthWest(int index) {
 		return index + 10;
 	}
-			
 	
 	public boolean isOpponent(Marble marble) {
 		Marble ownMarble = player.getMarble();

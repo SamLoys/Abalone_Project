@@ -52,6 +52,10 @@ public class Board {
 		}
 
 	}
+	
+	public int getPlayerCount() {
+		return playerCount;
+	}
 
 	/**
 	 * Initializes the board for a two player game, white on top and black on bottom

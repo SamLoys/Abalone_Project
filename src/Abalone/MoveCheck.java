@@ -4,60 +4,75 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class MoveCheck {
 	Board board;
 	ArrayList<Integer> index = new ArrayList<Integer>();
 	String typeMove;
 	Player player;
 
+	public static void main(String[] args) {
+		Board board = new Board(2);
+		Player black = new Player(Marble.Black);
+		Player white = new Player(Marble.White);
+		MoveCheck movecheck = new MoveCheck(black, board, 80, 91, Directions.northWest);
+	}
+
 	public MoveCheck(Player player, Board board, int i1, String direction) {
 		this.board = board;
 		this.player = player;
-		index.add(i1);
-		Collections.sort(index);
+		this.index.add(i1);
 	}
 
 	public MoveCheck(Player player, Board board, int i1, int i2, String direction) {
 		this.board = board;
 		this.player = player;
-		index.add(i1);
-		index.add(i2);
-		Collections.sort(index);
+		this.index.add(i1);
+		this.index.add(i2);
+		doTest(index, direction);
 	}
 
 	public MoveCheck(Player player, Board board, int i1, int i2, int i3, String direction) {
 		this.board = board;
 		this.player = player;
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		Collections.sort(index);
-		String s = moveChecker(index, direction);
-		System.out.println(s);
+		this.index.add(i1);
+		this.index.add(i2);
+		this.index.add(i3);
+		doTest(index, direction);
 	}
 
 	public MoveCheck(Player player, Board board, int i1, int i2, int i3, int i4, String direction) {
 		this.board = board;
 		this.player = player;
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		index.add(i4);
-		Collections.sort(index);
+		this.index.add(i1);
+		this.index.add(i2);
+		this.index.add(i3);
+		this.index.add(i4);
+		doTest(index, direction);
 	}
 
 	public MoveCheck(Player player, Board board, int i1, int i2, int i3, int i4, int i5, String direction) {
 		this.board = board;
 		this.player = player;
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		index.add(i4);
-		index.add(i5);
+		this.index.add(i1);
+		this.index.add(i2);
+		this.index.add(i3);
+		this.index.add(i4);
+		this.index.add(i5);
+		doTest(index, direction);
+	}
+	
+	
+	public void doTest(ArrayList<Integer> index, String direction) {
 		Collections.sort(index);
+		ArrayList<Integer> newList = completeList(index, direction);
+		String s = moveChecker(index, direction);
+		System.out.println(s);
 	}
 
-	public String moveChecker(ArrayList<Integer> index, String direction) {
+	public String moveChecker(ArrayList<Integer> index, String direction) {		
 		String s = "";
 		int ownMarble = 0;
 		int teamMarble = 0;
@@ -65,8 +80,17 @@ public class MoveCheck {
 		int emptyMarble = 0;
 		int deathMarble = 0;
 
+		if (index.size() == 2) {
+			if (isOwnMarble(index.get(0))) {
+				s = s + "Y";
+				if (board.getMarble(index.get(1)) == Marble.Empty) {
+					s = s + "E";
+				}
+			}
+		}
+		
 		// Checks if a summito
-		if (isInLine(index)) {
+		else if (isInLine(index)) {
 			if (isStraightMove(index, direction)) {
 				if (isOwnMarble(index.get(0))) {
 					s = s + "Y";
@@ -118,7 +142,7 @@ public class MoveCheck {
 			s = "Not in line";
 		}
 
-		return s;
+		return s = s + "where are you?";
 	}
 
 	/**
@@ -139,53 +163,6 @@ public class MoveCheck {
 		return false;
 	}
 
-	/*
-	 * Checks whether the summito is a valid summito attack
-	 * 
-	 * @requires given that there's at least 2 or 3 marbles
-	 * 
-	 */
-	public boolean isValidSummitoAttack(ArrayList<Integer> index, String direction) {
-		int nextI = getNeighbourIndex(index.get(index.size() - 1), direction);
-		Marble nextM = board.getMarble(nextI);
-		int nextnextI = getNeighbourIndex(nextI, direction);
-		Marble nextnextM = board.getMarble(nextnextI);
-
-		if (isOpponent(nextI)) {
-			if (index.size() == 2) {
-				if (nextnextM == Marble.Empty || nextnextM == Marble.Death) {
-					return true;
-				}
-			} else if (index.size() == 3) {
-				int nextnextnextI = getNeighbourIndex(nextnextI, direction);
-				Marble nextnextnextM = board.getMarble(nextnextnextI);
-
-				if (nextnextM == Marble.Death || nextnextM == Marble.Empty) {
-					return true;
-				} else if (isOpponent(nextnextI)) {
-					if (nextnextnextM == Marble.Death || nextnextnextM == Marble.Empty) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	public boolean isValidSideMove(ArrayList<Integer> index, String direction) {
-		Marble[] marble = new Marble[index.size()];
-		int number = 0;
-		for (int i : index) {
-			marble[number] = board.getMarble(getNeighbourIndex(i, direction));
-			i++;
-		}
-		for (Marble m : marble) {
-			if (!(m == Marble.Empty)) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	// Reverses the list to get the front marble on index 0 for the direction west,
 	// northwest or northeast
@@ -276,10 +253,12 @@ public class MoveCheck {
 		} else {
 			int neighbourCount = 0;
 			int[] neighbours = board.getNeighbours(index.get(0));
-			for (int i = 0; i < index.size(); i++) {
-				for (int j = 0; j < neighbours.length; j++) {
-					if (index.get(j + 1) == neighbours[j]) {
+			for (int i = 0; i < (index.size()-1); i++) {
+				int j = 0;
+				while (j <= neighbours.length) {
+					if (index.get(i) == neighbours[j]) {
 						neighbourCount++;
+						j++;
 						neighbours = board.getNeighbours(index.get(j + 1));
 					}
 				}
@@ -398,16 +377,21 @@ public class MoveCheck {
 	public ArrayList<Integer> completeList(ArrayList<Integer> index, String direction) {
 		ArrayList<Integer> joinList = new ArrayList<Integer>();
 		joinList.addAll(index);
+		Collections.sort(joinList);
 		// If list is 1 and there is no hidden summito, return original list
 		if (index.size() == 1 && !(isHiddenSummito(index, direction))) {
-			return joinList;
+			int last = joinList.get(joinList.size() - 1);
+			joinList.add(getNeighbourIndex(last, direction));
+			this.index = joinList;
 		}
 		// If between 1 and 4, this will check if there is a hidden summito and add the
 		// indexes
-		flipList(index, direction);
-		if (isStraightMove(index, direction)) {
-			if ((0 < index.size()) && (index.size() < 5)) {
-				if (isHiddenSummito(index, direction)) {
+		
+		else {
+			joinList = flipList(index, direction);
+		    if (isStraightMove(index, direction)) {
+		    	if ((0 < index.size()) && (index.size() < 5)) {
+		    		if (isHiddenSummito(index, direction)) {
 					ArrayList<Integer> summitoList = getHiddenSummito(index, direction);
 					joinList.addAll(summitoList);
 				}
@@ -416,6 +400,7 @@ public class MoveCheck {
 			// list
 			int last = joinList.get(joinList.size() - 1);
 			joinList.add(getNeighbourIndex(last, direction));
+		}
 		}
 		return joinList;
 	}

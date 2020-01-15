@@ -416,7 +416,6 @@ public class MoveCheck {
 
 		return joinList;
 	}
-	
 	/**
 	 * Checks for list with 1 to 4 indexes if there is a hidden summito
 	 * @param index

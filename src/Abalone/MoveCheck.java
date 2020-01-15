@@ -67,12 +67,12 @@ public class MoveCheck {
 		int oppMarble = 0;
 		int emptyMarble = 0;
 		int deathMarble = 0;
-		
-		//Checks if a summito 
-			if (isInLine(index)) {
-				if (isStraightMove(index, direction)) {
-					if (isOwnMarble(index.get(0))) {
-						s = s + "Y";
+
+		// Checks if a summito
+		if (isInLine(index)) {
+			if (isStraightMove(index, direction)) {
+				if (isOwnMarble(index.get(0))) {
+					s = s + "Y";
 					for (int i : index) {
 						while (isOwnTeam(i)) {
 							int n = getNeighbourIndex(i, direction);
@@ -101,21 +101,21 @@ public class MoveCheck {
 							s = s + "D";
 						}
 					}
-				} 
-				
-		//Checks if a sidestep move is valid
-		} else {
-			if (hasOwnMarble(index) && index.size() < 4) {
-				for (int i : index) {
-					if (!(isOwnTeam(i))) {
-						return "False";
-					} else {
-						teamMarble++;
+				}
+
+				// Checks if a sidestep move is valid
+			} else {
+				if (hasOwnMarble(index) && index.size() < 4) {
+					for (int i : index) {
+						if (!(isOwnTeam(i))) {
+							return "False";
+						} else {
+							teamMarble++;
+						}
 					}
 				}
 			}
 		}
-	}
 
 		return "False";
 	}
@@ -186,8 +186,8 @@ public class MoveCheck {
 		return true;
 	}
 
-	
-	//Reverses the list to get the front marble on index 0 for the direction west, northwest or northeast
+	// Reverses the list to get the front marble on index 0 for the direction west,
+	// northwest or northeast
 	public ArrayList<Integer> flipList(ArrayList<Integer> index, String direction) {
 		if (direction == Directions.west || direction == Directions.northWest || direction == Directions.northEast) {
 			Collections.sort(index, Collections.reverseOrder());
@@ -264,19 +264,6 @@ public class MoveCheck {
 	}
 
 	/**
-	 * given two indexes, it checks whether the second index is the neighbour of the
-	 * first index
-	 * 
-	 * @param index1
-	 * @param index2
-	 * @return true is the indexes are neighbours, else false
-	 */
-	public boolean isNeighbour(int i1, int i2) {
-
-		return false;
-	}
-
-	/**
 	 * @requires To receive a minimum of 3 marbles Checks if the given 3 indexes are
 	 *           in line
 	 * @param index
@@ -295,14 +282,14 @@ public class MoveCheck {
 						neighbours = board.getNeighbours(index.get(j + 1));
 					}
 				}
-				
+
 			}
 			if (neighbourCount < index.size()) {
 				return false;
 			}
 		}
-		
-		//Checks if the direction of all the numbers is the same
+
+		// Checks if the direction of all the numbers is the same
 		for (int i = 0; i < (index.size() - 2); i++) {
 			String direction1 = getDirection(index.get(i), index.get(i + 1));
 			String direction2 = getDirection(index.get(i + 1), index.get(i + 2));
@@ -406,7 +393,7 @@ public class MoveCheck {
 		return false;
 	}
 
-	//Completes and finalizes the index list from the client
+	// Completes and finalizes the index list from the client
 	public ArrayList<Integer> completeList(ArrayList<Integer> index, String direction) {
 		ArrayList<Integer> joinList = new ArrayList<Integer>();
 		joinList.addAll(index);
@@ -414,7 +401,8 @@ public class MoveCheck {
 		if (index.size() == 1 && !(isHiddenSummito(index, direction))) {
 			return joinList;
 		}
-		// If between 1 and 4, this will check if there is a hidden summito and add the indexes
+		// If between 1 and 4, this will check if there is a hidden summito and add the
+		// indexes
 		flipList(index, direction);
 		if (isStraightMove(index, direction)) {
 			if ((0 < index.size()) && (index.size() < 5)) {
@@ -423,7 +411,8 @@ public class MoveCheck {
 					joinList.addAll(summitoList);
 				}
 			}
-			// If it is a straight move, this will add the index after the marbles to the list
+			// If it is a straight move, this will add the index after the marbles to the
+			// list
 			int last = joinList.get(joinList.size() - 1);
 			joinList.add(getNeighbourIndex(last, direction));
 		}
@@ -432,6 +421,7 @@ public class MoveCheck {
 
 	/**
 	 * Checks if there is a hidden summito
+	 * 
 	 * @param index
 	 * @param direction
 	 * @return

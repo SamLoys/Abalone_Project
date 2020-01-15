@@ -8,8 +8,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import Abalone.Exceptions.*;
+import Abalone.protocol.ProtocolMessages;
 
-public class AbaloneClientTUI implements Runnable{ 
+public class AbaloneClientTUI implements Runnable {
 
 	AbaloneClient client;
 	private PrintWriter consoleOUT;
@@ -18,10 +19,10 @@ public class AbaloneClientTUI implements Runnable{
 	public AbaloneClientTUI(AbaloneClient client) {
 		this.client = client;
 		consoleOUT = new PrintWriter(System.out, true);
-		BufferedReader consoleIN = new BufferedReader(new InputStreamReader(System.in));
+		consoleIN = new BufferedReader(new InputStreamReader(System.in));
 	}
 
-	public void start() {
+	public void run() {
 		boolean looping = true;
 		while (looping) {
 			String input;
@@ -37,11 +38,36 @@ public class AbaloneClientTUI implements Runnable{
 //				throw new ServerUnavailableException("The server is unavailble");
 //			}
 			}
-		} 
+		}
 	}
 
 	public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
+		String command = input.substring(0, 1);
+		String[] userInput = input.split(";");
+		switch (command) {
+		case ProtocolMessages.HELLO:
 
+			break;
+
+		case ProtocolMessages.JOIN:
+
+			break;
+
+		case ProtocolMessages.MOVE:
+
+			break;
+
+		case ProtocolMessages.QUEUE_SIZE:
+
+			break;
+
+		case ProtocolMessages.EXIT:
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public InetAddress getIp() {
@@ -124,6 +150,33 @@ public class AbaloneClientTUI implements Runnable{
 		return answerInt;
 	}
 
+	public int getInt(String question, int lowend, int highend) {
+		showMessage(question);
+		showMessage("use an integer to reply");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String answer = "";
+		try {
+			answer = br.readLine();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+		int answerInt = 0;
+		try {
+			answerInt = Integer.parseInt(answer);
+		} catch (NumberFormatException e) {
+			showMessage("The given entry is not an integer, please try again");
+			return getInt(question);
+		}
+		if (lowend <= answerInt && answerInt <= highend) {
+			return answerInt;
+		} else {
+			showMessage("not in range");
+			return getInt(question);
+		}
+
+	}
+
 	public String getString(String question) {
 		// To be implemented
 		showMessage(question);
@@ -164,9 +217,4 @@ public class AbaloneClientTUI implements Runnable{
 		consoleOUT.println(message);
 	}
 
-	@Override
-	public void run() {
-		start();
-		
-	}
 }

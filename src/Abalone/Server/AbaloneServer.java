@@ -186,7 +186,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			games.add(game); 
 			gameThread = new Thread(game);
 			gameThread.start();  
-			break;
+			break; 
 
 		case 3:
 			player1Name = queueThree.get(0);

@@ -36,7 +36,7 @@ public class MoveCheck {
 		Collections.sort(index);
 		return true;
 	}
-	
+
 	public boolean checkMove(Player player, Board board, int i1, int i2, int i3, int i4, String direction) {
 		this.board = board;
 		this.player = player;
@@ -47,7 +47,7 @@ public class MoveCheck {
 		Collections.sort(index);
 		return true;
 	}
-	
+
 	public boolean checkMove(Player player, Board board, int i1, int i2, int i3, int i4, int i5, String direction) {
 		this.board = board;
 		this.player = player;
@@ -59,48 +59,77 @@ public class MoveCheck {
 		Collections.sort(index);
 		return true;
 	}
-	
 
-	
-	public boolean isOwnValidMove(ArrayList<Integer> index, String direction) {
-		if (isOwnMarble(index.get(getFirstorLastFront(index, direction)))) {
-			if (index.size() == 1) {
-				
-			} else if ((index.size() == 2 && isNeighbour(index.get(0), index.get(1)))
-					|| (index.size() == 3 && isInLine(index))) {
-				// For 2 or 3 marbles, it must always be checked if they are neighbours
-				// Checks if first marble after a summito move for 2 marbles is empty
-				if (isSummitoMove(index, direction)) {
-					if (isValidSummitoMove(index, direction)) {
-						return true;
-					} else if (isValidSummitoAttack(index, direction)) {
-						return true;
+	public String MoveChecker(ArrayList<Integer> index, String direction) {
+		String s = "";
+		int ownMarble = 0;
+		int teamMarble = 0;
+		int oppMarble = 0;
+		int emptyMarble = 0;
+		int deathMarble = 0;
+		
+		//Checks if a summito 
+			if (isInLine(index)) {
+				if (isStraightMove(index, direction)) {
+					if (isOwnMarble(index.get(0))) {
+						s = s + "Y";
+					for (int i : index) {
+						while (isOwnTeam(i)) {
+							int n = getNeighbourIndex(i, direction);
+							if (isOwnTeam(n)) {
+								teamMarble++;
+								s = s + "T";
+							} else {
+								break;
+							}
+						}
+						while (isOpponent(i)) {
+							int n = getNeighbourIndex(i, direction);
+							if (isOpponent(n)) {
+								oppMarble++;
+								s = s + "O";
+								index.add(n);
+							} else {
+								break;
+							}
+						}
+						if (board.getMarble(i) == Marble.Empty) {
+							emptyMarble++;
+							s = s + "E";
+						} else if (board.getMarble(i) == Marble.Death) {
+							deathMarble++;
+							s = s + "D";
+						}
 					}
-				} else if (isValidSideMove(index, direction)) {
-					return true;
+				} 
+				
+		//Checks if a sidestep move is valid
+		} else {
+			if (hasOwnMarble(index) && index.size() < 4) {
+				for (int i : index) {
+					if (!(isOwnTeam(i))) {
+						return "False";
+					} else {
+						teamMarble++;
+					}
 				}
 			}
 		}
-		return false;
 	}
 
-	// getDirection --> determine summito --> check with given direction
-	public boolean isValidSummitoMove(ArrayList<Integer> index, String direction) {
-		Marble nextM = board.getMarble(getNeighbourIndex(index.get(getFirstorLastBack(index, direction)), direction));
-		if (nextM == Marble.Empty) {
-			return true;
-		}
-		return false;
+		return "False";
 	}
 
 	/**
-	 * Checks if the given 2 or 3 indexes make a summito move
+	 * Checks if the given 2 or 3 indexes make a straight move. If not, it is a side
+	 * move.
+	 * 
 	 * @requires array length to be at least 2
 	 * @param index
 	 * @param direction
 	 * @return
 	 */
-	public boolean isSummitoMove(ArrayList<Integer> index, String direction) {
+	public boolean isStraightMove(ArrayList<Integer> index, String direction) {
 		int givenOrientation = getOrientation(direction);
 		int indexOrientation = getOrientation(getDirection(index.get(0), index.get(1)));
 		if (givenOrientation == indexOrientation) {
@@ -115,29 +144,26 @@ public class MoveCheck {
 	 * @requires given that there's at least 2 or 3 marbles
 	 * 
 	 */
-
 	public boolean isValidSummitoAttack(ArrayList<Integer> index, String direction) {
-		if (isValidSummitoMove(index, direction)) {
-			int nextI = getNeighbourIndex(index.get(getFirstorLastBack(index, direction)), direction);
-			Marble nextM = board.getMarble(nextI);
-			int nextnextI = getNeighbourIndex(nextI, direction);
-			Marble nextnextM = board.getMarble(nextnextI);
+		int nextI = getNeighbourIndex(index.get(index.size() - 1), direction);
+		Marble nextM = board.getMarble(nextI);
+		int nextnextI = getNeighbourIndex(nextI, direction);
+		Marble nextnextM = board.getMarble(nextnextI);
 
-			if (isOpponent(nextI)) {
-				if (index.size() == 2) {
-					if (nextnextM == Marble.Empty || nextnextM == Marble.Death) {
-						return true;
-					}
-				} else if (index.size() == 3) {
-					int nextnextnextI = getNeighbourIndex(nextnextI, direction);
-					Marble nextnextnextM = board.getMarble(nextnextnextI);
+		if (isOpponent(nextI)) {
+			if (index.size() == 2) {
+				if (nextnextM == Marble.Empty || nextnextM == Marble.Death) {
+					return true;
+				}
+			} else if (index.size() == 3) {
+				int nextnextnextI = getNeighbourIndex(nextnextI, direction);
+				Marble nextnextnextM = board.getMarble(nextnextnextI);
 
-					if (nextnextM == Marble.Death || nextnextM == Marble.Empty) {
+				if (nextnextM == Marble.Death || nextnextM == Marble.Empty) {
+					return true;
+				} else if (isOpponent(nextnextI)) {
+					if (nextnextnextM == Marble.Death || nextnextnextM == Marble.Empty) {
 						return true;
-					} else if (isOpponent(nextnextI)) {
-						if (nextnextnextM == Marble.Death || nextnextnextM == Marble.Empty) {
-							return true;
-						}
 					}
 				}
 			}
@@ -160,54 +186,18 @@ public class MoveCheck {
 		return true;
 	}
 
-	/**
-	 * Determines whether the first or last index from the array should be used to find the index to be pushed
-	 * @param index
-	 * @param direction
-	 * @return
-	 */
-	public int getFirstorLastBack(ArrayList<Integer> index, String direction) {
-		int i;
-		if (direction == Directions.west || direction == Directions.northWest || direction == Directions.northEast) {
-			i = 0;
-		} else {
-			if (index.size() == 2) {
-				i = 1;
-			} else if (index.size() == 3) {
-				i = 2;
-			} else if (index.size() == 4) {
-				i = 3;
-			} else {
-				i = 4;
-			}
-		}
-		return i;
-	}
 	
-	public int getFirstorLastFront(ArrayList<Integer> index, String direction) {
-		int i;
-		if (direction == Directions.east || direction == Directions.southWest || direction == Directions.southEast) {
-			i = 0;
-		} else {
-			if (index.size() == 2) {
-				i = 1;
-			} else if (index.size() == 3){
-				i = 2;
-			} else if (index.size() == 4) {
-				i = 3;
-			} else {
-				i = 4;
-			}
+	//Reverses the list to get the front marble on index 0 for the direction west, northwest or northeast
+	public ArrayList<Integer> flipList(ArrayList<Integer> index, String direction) {
+		if (direction == Directions.west || direction == Directions.northWest || direction == Directions.northEast) {
+			Collections.sort(index, Collections.reverseOrder());
 		}
-		return i;
+		return index;
 	}
 
 	/**
-	 * get the orientation the the given indexes,
+	 * get the orientation of the given direction
 	 * 
-	 * @requires that it is already checked that they are neighbours.
-	 * @param index
-	 * @param index2
 	 * @return 1 if orientation is NW or SE 2 if orientation is NE or SW 3 if
 	 *         orientation is E or W if something goes wrong return 9999
 	 */
@@ -223,8 +213,6 @@ public class MoveCheck {
 		}
 		return 9999;
 	}
-
-
 
 	/**
 	 * @requires the two indexes to be neighbours
@@ -284,34 +272,48 @@ public class MoveCheck {
 	 * @return true is the indexes are neighbours, else false
 	 */
 	public boolean isNeighbour(int i1, int i2) {
-		int[] neighbours = board.getNeighbours(i1);
-		for (int i = 0; i < neighbours.length; i++) {
-			if (i2 == neighbours[i]) {
-				return true;
-			}
-		}
+
 		return false;
 	}
 
 	/**
-	 * @requires To receive a minimum of 3 marbles
-	 * Checks if the given 3 indexes are each others neighbour indexes
+	 * @requires To receive a minimum of 3 marbles Checks if the given 3 indexes are
+	 *           in line
 	 * @param index
 	 * @return
 	 */
 	public boolean isInLine(ArrayList<Integer> index) {
-		boolean valid = true;
-		for (int i = 0; i < index.size(); i++) {
+		if (index.size() == 1) {
+			return true;
+		} else {
+			int neighbourCount = 0;
+			int[] neighbours = board.getNeighbours(index.get(0));
+			for (int i = 0; i < index.size(); i++) {
+				for (int j = 0; j < neighbours.length; j++) {
+					if (index.get(j + 1) == neighbours[j]) {
+						neighbourCount++;
+						neighbours = board.getNeighbours(index.get(j + 1));
+					}
+				}
+				
+			}
+			if (neighbourCount < index.size()) {
+				return false;
+			}
+		}
+		
+		//Checks if the direction of all the numbers is the same
+		for (int i = 0; i < (index.size() - 2); i++) {
 			String direction1 = getDirection(index.get(i), index.get(i + 1));
 			String direction2 = getDirection(index.get(i + 1), index.get(i + 2));
 			if (!(direction1 == direction2)) {
-				valid = false;
+				return false;
 			}
 		}
-		return valid;
+		return true;
 	}
-	
-	
+
+	// Checks if the side step includes at least one own marble
 	public boolean hasOwnMarble(ArrayList<Integer> index) {
 		for (int i : index) {
 			if (board.getMarble(i) == player.getMarble()) {
@@ -320,8 +322,6 @@ public class MoveCheck {
 		}
 		return false;
 	}
-	
-	
 
 	public int getEast(int index) {
 		return index + 1;
@@ -347,7 +347,8 @@ public class MoveCheck {
 	public int getSouthWest(int index) {
 		return index + 10;
 	}
-	
+
+	// Checks if this is an opponent marble
 	public boolean isOpponent(int i1) {
 		Marble ownMarble = player.getMarble();
 		Marble checkMarble = board.getMarble(i1);
@@ -369,61 +370,74 @@ public class MoveCheck {
 			}
 		}
 		return false;
-	}	
+	}
 
-	// Checks own marbles for 2, 3 or 4 players. To be added!!
-	// Controleer van indexes of het eigen of team indexes zijn	
+	// Checks if this is a team marble for all 2, 3 or 4 player games.
 	public boolean isOwnTeam(int i1) {
 		Marble ownMarble = player.getMarble();
 		boolean valid = true;
 		if (board.getPlayerCount() == 2 || board.getPlayerCount() == 3) {
-				if (board.getMarble(i1) == ownMarble) {
-					return true;
-				}
-			} else {
-				if (ownMarble == Marble.White && (board.getMarble(i1) == Marble.Black || board.getMarble(i1) == ownMarble)) {
-					return true;
-				} else if (!(ownMarble == Marble.Black && (board.getMarble(i1) == Marble.White || board.getMarble(i1) == ownMarble))) {
-					return true;
-				} else if (!(ownMarble == Marble.Green && (board.getMarble(i1) == Marble.Red || board.getMarble(i1) == ownMarble))) {
-					return true;
-				} else if (!(ownMarble == Marble.Red && (board.getMarble(i1) == Marble.Green || board.getMarble(i1) == ownMarble))) {
-					return true;
-				} 
+			if (board.getMarble(i1) == ownMarble) {
+				return true;
 			}
+		} else {
+			if (ownMarble == Marble.White
+					&& (board.getMarble(i1) == Marble.Black || board.getMarble(i1) == ownMarble)) {
+				return true;
+			} else if (!(ownMarble == Marble.Black
+					&& (board.getMarble(i1) == Marble.White || board.getMarble(i1) == ownMarble))) {
+				return true;
+			} else if (!(ownMarble == Marble.Green
+					&& (board.getMarble(i1) == Marble.Red || board.getMarble(i1) == ownMarble))) {
+				return true;
+			} else if (!(ownMarble == Marble.Red
+					&& (board.getMarble(i1) == Marble.Green || board.getMarble(i1) == ownMarble))) {
+				return true;
+			}
+		}
 		return false;
-		} 
-	
-	
+	}
+
+	// Checks if the input marble is your own marble
 	public boolean isOwnMarble(int i1) {
 		if (board.getMarble(i1) == player.getMarble()) {
 			return true;
 		}
 		return false;
-		
 	}
-	
-	public ArrayList<Integer> fillSummito(ArrayList<Integer> index, String direction) {
-		ArrayList<Integer> summitoList = new ArrayList<Integer>();
-		if ((0 < index.size()) && (index.size() < 5)) {
-			if (isHiddenSummito(index, direction)) {
-				summitoList = getHiddenSummito(index, direction);
-			}
-		}
+
+	//Completes and finalizes the index list from the client
+	public ArrayList<Integer> completeList(ArrayList<Integer> index, String direction) {
 		ArrayList<Integer> joinList = new ArrayList<Integer>();
 		joinList.addAll(index);
-		joinList.addAll(summitoList);
-
+		// If list is 1 and there is no hidden summito, return original list
+		if (index.size() == 1 && !(isHiddenSummito(index, direction))) {
+			return joinList;
+		}
+		// If between 1 and 4, this will check if there is a hidden summito and add the indexes
+		flipList(index, direction);
+		if (isStraightMove(index, direction)) {
+			if ((0 < index.size()) && (index.size() < 5)) {
+				if (isHiddenSummito(index, direction)) {
+					ArrayList<Integer> summitoList = getHiddenSummito(index, direction);
+					joinList.addAll(summitoList);
+				}
+			}
+			// If it is a straight move, this will add the index after the marbles to the list
+			int last = joinList.get(joinList.size() - 1);
+			joinList.add(getNeighbourIndex(last, direction));
+		}
 		return joinList;
 	}
+
 	/**
-	 * Checks for list with 1 to 4 indexes if there is a hidden summito
+	 * Checks if there is a hidden summito
 	 * @param index
 	 * @param direction
 	 * @return
 	 */
 	public boolean isHiddenSummito(ArrayList<Integer> index, String direction) {
-		int next = getNeighbourIndex(getFirstorLastBack(index, direction), direction);
+		int next = getNeighbourIndex(index.get(index.size() - 1), direction);
 		if (index.size() < 3) {
 			if (isOwnTeam(next)) {
 				return true;
@@ -433,8 +447,7 @@ public class MoveCheck {
 		}
 		return false;
 	}
-	
-	
+
 	public ArrayList<Integer> getHiddenSummito(ArrayList<Integer> index, String direction) {
 		int ownTeam = 0;
 		int opponent = 0;
@@ -446,7 +459,7 @@ public class MoveCheck {
 			}
 		}
 		while (index.size() < 3 && ownTeam <= 3) {
-			int n = getNeighbourIndex(getFirstorLastBack(index, direction), direction);
+			int n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOwnTeam(n)) {
 				ownTeam++;
 				index.add(n);
@@ -455,7 +468,7 @@ public class MoveCheck {
 			}
 		}
 		while (index.size() < 5 && opponent < ownTeam) {
-			int n = getNeighbourIndex(getFirstorLastBack(index, direction), direction);
+			int n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOpponent(n)) {
 				opponent++;
 				index.add(n);
@@ -465,5 +478,5 @@ public class MoveCheck {
 		}
 		return index;
 	}
-	
+
 }

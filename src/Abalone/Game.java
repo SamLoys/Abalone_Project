@@ -1,18 +1,26 @@
 package Abalone;
 
+import Abalone.Server.AbaloneServer;
 
-public class Game {
+public class Game implements Runnable{
 	
 	private Board board; 
 	
 	
-	public Game(int players) {
+	public Game(int players, AbaloneServer srv, String Player1Name, String player2Name ) {
 		board = new Board(players);
-		
+	}
+	
+	public Game(int players, AbaloneServer srv, String Player1Name, String player2Name, String player3Name ) {
+		board = new Board(players);
+	}
+	
+	public Game(int players, AbaloneServer srv, String Player1Name, String player2Name, String player3Name, String player4name ) {
+		board = new Board(players);
 	}
 	
 	
-	public void start() {
+	public void run() {
 		boolean continueGame = true;
 		while (continueGame) {
 			reset();
@@ -36,4 +44,7 @@ public class Game {
 	public void update(){
 		System.out.println(board.toString());
 	}
+
+
+	
 }

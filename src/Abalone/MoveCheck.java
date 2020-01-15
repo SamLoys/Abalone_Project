@@ -79,7 +79,7 @@ public class MoveCheck {
 		int oppMarble = 0;
 		int emptyMarble = 0;
 		int deathMarble = 0;
-
+		
 		if (index.size() == 2) {
 			if (isOwnMarble(index.get(0))) {
 				s = s + "Y";
@@ -242,8 +242,7 @@ public class MoveCheck {
 	}
 
 	/**
-	 * @requires To receive a minimum of 3 marbles Checks if the given 3 indexes are
-	 *           in line
+	 * @requires Stuk!! Moet nog gemaakt
 	 * @param index
 	 * @return
 	 */
@@ -256,7 +255,7 @@ public class MoveCheck {
 			for (int i = 0; i < (index.size()-1); i++) {
 				int j = 0;
 				while (j <= neighbours.length) {
-					if (index.get(i) == neighbours[j]) {
+					if (index.get(i + 1) == neighbours[j]) {
 						neighbourCount++;
 						j++;
 						neighbours = board.getNeighbours(index.get(j + 1));
@@ -379,7 +378,7 @@ public class MoveCheck {
 		joinList.addAll(index);
 		Collections.sort(joinList);
 		// If list is 1 and there is no hidden summito, return original list
-		if (index.size() == 1 && !(isHiddenSummito(index, direction))) {
+		if ((index.size() == 1) && (!(isHiddenSummito(index, direction)))) {
 			int last = joinList.get(joinList.size() - 1);
 			joinList.add(getNeighbourIndex(last, direction));
 			this.index = joinList;

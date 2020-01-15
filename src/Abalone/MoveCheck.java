@@ -10,34 +10,33 @@ public class MoveCheck {
 	String typeMove;
 	Player player;
 
-	public boolean checkMove(Player player, Board board, int i1, String direction) {
+	public MoveCheck(Player player, Board board, int i1, String direction) {
 		this.board = board;
 		this.player = player;
 		index.add(i1);
 		Collections.sort(index);
-		return true;
 	}
 
-	public boolean checkMove(Player player, Board board, int i1, int i2, String direction) {
+	public MoveCheck(Player player, Board board, int i1, int i2, String direction) {
 		this.board = board;
 		this.player = player;
 		index.add(i1);
 		index.add(i2);
 		Collections.sort(index);
-		return true;
 	}
 
-	public boolean checkMove(Player player, Board board, int i1, int i2, int i3, String direction) {
+	public MoveCheck(Player player, Board board, int i1, int i2, int i3, String direction) {
 		this.board = board;
 		this.player = player;
 		index.add(i1);
 		index.add(i2);
 		index.add(i3);
 		Collections.sort(index);
-		return true;
+		String s = moveChecker(index, direction);
+		System.out.println(s);
 	}
 
-	public boolean checkMove(Player player, Board board, int i1, int i2, int i3, int i4, String direction) {
+	public MoveCheck(Player player, Board board, int i1, int i2, int i3, int i4, String direction) {
 		this.board = board;
 		this.player = player;
 		index.add(i1);
@@ -45,10 +44,9 @@ public class MoveCheck {
 		index.add(i3);
 		index.add(i4);
 		Collections.sort(index);
-		return true;
 	}
 
-	public boolean checkMove(Player player, Board board, int i1, int i2, int i3, int i4, int i5, String direction) {
+	public MoveCheck(Player player, Board board, int i1, int i2, int i3, int i4, int i5, String direction) {
 		this.board = board;
 		this.player = player;
 		index.add(i1);
@@ -57,10 +55,9 @@ public class MoveCheck {
 		index.add(i4);
 		index.add(i5);
 		Collections.sort(index);
-		return true;
 	}
 
-	public String MoveChecker(ArrayList<Integer> index, String direction) {
+	public String moveChecker(ArrayList<Integer> index, String direction) {
 		String s = "";
 		int ownMarble = 0;
 		int teamMarble = 0;
@@ -101,6 +98,8 @@ public class MoveCheck {
 							s = s + "D";
 						}
 					}
+				} else {
+					s = s + "Not own marble first";
 				}
 
 				// Checks if a sidestep move is valid
@@ -108,16 +107,18 @@ public class MoveCheck {
 				if (hasOwnMarble(index) && index.size() < 4) {
 					for (int i : index) {
 						if (!(isOwnTeam(i))) {
-							return "False";
+							s = s + "Contains wrong marble";
 						} else {
 							teamMarble++;
 						}
 					}
 				}
 			}
+		} else {
+			s = "Not in line";
 		}
 
-		return "False";
+		return s;
 	}
 
 	/**

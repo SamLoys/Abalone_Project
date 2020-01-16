@@ -116,8 +116,13 @@ public class Board {
 	/**
 	 * Copies the board needs to be implemented
 	 */
-	public void deepCopy() {
-
+	public Board deepCopy() {
+		Board copy = new Board(playerCount); 
+		for (int i = 0; i < 120; i++) {
+			copy.setMarble(i, this.getMarble(i));
+		}
+		
+		return copy;
 	}
 
 	/**

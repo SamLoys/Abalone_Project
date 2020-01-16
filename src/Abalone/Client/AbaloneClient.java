@@ -8,11 +8,14 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import Abalone.Board;
 import Abalone.Marble;
 import Abalone.Exceptions.ExitProgram;
 import Abalone.Exceptions.ProtocolException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.*;
+
+
 
 public class AbaloneClient implements ClientProtocol {
 	private Socket sock;
@@ -21,20 +24,27 @@ public class AbaloneClient implements ClientProtocol {
 	private AbaloneClientTUI clientTui;
 	private String name;
 	private Marble color;
-	private int clientSupportChatting = 0;
-	private int clientSupportChallenge = 0;
-	private int clientSupportLeaderboard = 0;
-	private int serverSupportChatting = 0;
-	private int serverSupportChallenge = 0;
-	private int serverSupportLeaderboard = 0;
+	private boolean clientSupportChatting = false;
+	private boolean clientSupportChallenge = false;
+	private boolean clientSupportLeaderboard = false;
+	private boolean serverSupportChatting = false;
+	private boolean serverSupportChallenge = false;
+	private boolean serverSupportLeaderboard = false;
 	private boolean handshakeComplete = false;
 	private boolean joiningComplete = false;
 	private int gameSize = 0;
 	private boolean gameStarted = false;
+	 private boolean yourTurn = false;
+	 Board clientBoard; 
+	String[] gamePlayers; 
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
 		client.start();
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	public AbaloneClient() {
@@ -51,13 +61,14 @@ public class AbaloneClient implements ClientProtocol {
 		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
 		try {
 			createConnection();
-			sendHello();
-			sendJoin();
+			handleHandshake(clientSupportChatting, clientSupportChallenge, clientSupportLeaderboard, name); 
+			gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
+			joinQueue(gameSize); 
 			Thread threadTUI = new Thread(clientTui);
 			threadTUI.start();
 			readServer();
 
-		} catch (ExitProgram | ServerUnavailableException | ProtocolException e) {
+		} catch (ExitProgram | ServerUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -139,26 +150,8 @@ public class AbaloneClient implements ClientProtocol {
 		networkOUT = null;
 	}
 
-	public void sendHello() throws ServerUnavailableException, ProtocolException {
-		sendMessage(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + clientSupportChatting
-				+ ProtocolMessages.DELIMITER + clientSupportChallenge + ProtocolMessages.DELIMITER
-				+ clientSupportLeaderboard + ProtocolMessages.DELIMITER + name + ProtocolMessages.EOC);
-		while (!handshakeComplete) {
-			String serverMessage = readLineFromServer();
-			handleServerCommands(serverMessage);
-		}
-	}
 
-	public void sendJoin() throws ServerUnavailableException {
-		gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
-		sendMessage(ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gameSize + ProtocolMessages.EOC);
-		while (!joiningComplete) {
-			clientTui.showMessage("Waiting for join conformaton");
-			String serverMessage = readLineFromServer();
-			handleServerCommands(serverMessage);
-		}
-
-	}
+	
 
 	public void handleServerCommands(String msg) {
 		String command = msg.substring(0, 1);
@@ -166,9 +159,10 @@ public class AbaloneClient implements ClientProtocol {
 		// getting commands from the server
 		switch (command) {
 		case ProtocolMessages.HELLO:
-			serverSupportChatting = Integer.parseInt(inputSrv[1]);
-			serverSupportChallenge = Integer.parseInt(inputSrv[2]);
-			serverSupportLeaderboard = Integer.parseInt(inputSrv[3]);
+			
+			serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
+			serverSupportChallenge = Integer.parseInt(inputSrv[2])== 1 ? true : false;
+			serverSupportLeaderboard = Integer.parseInt(inputSrv[3])== 1 ? true : false;
 			this.name = inputSrv[4];
 			clientTui.showMessage("The server has assigned you as the following name: " + name);
 			handshakeComplete = true;
@@ -189,6 +183,58 @@ public class AbaloneClient implements ClientProtocol {
 			break;
 
 		case ProtocolMessages.GAME_START:
+			gameStarted = true;
+			//only gets this message if the server sends it to me
+			for (int i = 0; i < inputSrv.length; i++) {
+				if(inputSrv[i].equals(name)) {
+					if (inputSrv.length == 4) {
+						gamePlayers = new String[2];
+						gamePlayers[0] =  inputSrv[1];
+						gamePlayers[1] =  inputSrv[2];
+						clientTui.showMessage("The game has started with the following players: "+ gamePlayers[0] +" and "+ gamePlayers[1] );
+						clientTui.showMessage("The game will be played in this order");
+						if (gamePlayers[0].equals(name)) {
+							clientTui.showMessage("this is you, go enter your move, remember typing h will print the help menu");
+							yourTurn = true; 
+						}
+						clientBoard = new Board(2); 
+						showBoard();
+					}
+					if (inputSrv.length == 5) {
+						gamePlayers = new String[3];
+						gamePlayers[0] =  inputSrv[1];
+						gamePlayers[1] =  inputSrv[2];
+						gamePlayers[2] =  inputSrv[3];
+						clientTui.showMessage("The game has started with the following players: "+ gamePlayers[0] 
+								+" and "+ gamePlayers[1] + " and " + gamePlayers[2]);
+						clientTui.showMessage("The game will be played in this order");
+						if (gamePlayers[0].equals(name)) {
+							clientTui.showMessage("this is you, go enter your move, remember typing h will print the help menu");
+							yourTurn = true; 
+						}
+						clientBoard = new Board(3); 
+						showBoard();
+					
+					}
+					if (inputSrv.length == 6) {
+						gamePlayers = new String[4];
+						gamePlayers[0] =  inputSrv[1];
+						gamePlayers[1] =  inputSrv[2];
+						gamePlayers[2] =  inputSrv[3];
+						gamePlayers[3] =  inputSrv[4];
+						clientTui.showMessage("The game has started with the following players: "+ gamePlayers[0] 
+								+" and "+ gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
+						clientTui.showMessage("The game will be played in this order");
+						if (gamePlayers[0].equals(name)) {
+							clientTui.showMessage("this is you, go enter your move, remember typing h will print the help menu");
+							yourTurn = true; 
+						}
+						clientBoard = new Board(4); 
+						showBoard();
+					} 
+				}
+			}
+			
 			break;
 
 		case ProtocolMessages.MOVE:
@@ -211,6 +257,69 @@ public class AbaloneClient implements ClientProtocol {
 			handleServerCommands(serverMessage);
 			// needs to keep reading the server messages
 		}
+	}
+	
+	public void showBoard() {
+		clientTui.showMessage(clientBoard.toString());
+	}
+	
+	
+//---------------------- protocol messages to send down below
+	@Override
+	public void handleHandshake(boolean chat, boolean challenge, boolean leaderboard, String playerName) throws ServerUnavailableException {
+		// TODO Auto-generated method stub
+		int chatInt = chat ? 1:0;
+		int challengeInt = challenge ? 1:0;
+		int leaderboardInt = leaderboard ? 1:0;
+		sendMessage(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt
+				+ ProtocolMessages.DELIMITER + challengeInt + ProtocolMessages.DELIMITER
+				+ leaderboardInt + ProtocolMessages.DELIMITER + name + ProtocolMessages.EOC);
+		while (!handshakeComplete) {
+			String serverMessage = readLineFromServer();
+			handleServerCommands(serverMessage);
+		} 
+	}
+
+	@Override
+	public void joinQueue(int gamesize) throws ServerUnavailableException{
+		// TODO Auto-generated method stub
+		
+		sendMessage(ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize + ProtocolMessages.EOC);
+		while (!joiningComplete) {
+			clientTui.showMessage("Waiting for join conformaton");
+			String serverMessage = readLineFromServer();
+			handleServerCommands(serverMessage);
+		}
+	}
+
+	@Override
+	public void sendMove(String playerName, String direction, int[] marbleIndices) throws ServerUnavailableException {
+		// TODO Auto-generated method stub
+		if (yourTurn) {
+			String marblesString = "";
+			for (int i = 0; i < marbleIndices.length; i++) {
+				marblesString = marblesString + ProtocolMessages.DELIMITER;
+				marblesString = marblesString +marbleIndices[i];	
+			}
+			sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName 
+					 + marblesString + ProtocolMessages.EOC);
+		} else {
+			clientTui.showMessage("It is not your turn, please wait");
+		}
+		
+	}
+
+	@Override
+	public void getCurrentQueueSizes() throws ServerUnavailableException {
+		// TODO Auto-generated method stub
+		sendMessage(ProtocolMessages.QUEUE_SIZE + ProtocolMessages.EOC);
+	} 
+
+	@Override
+	public void sendExit() throws ServerUnavailableException {
+		sendMessage(ProtocolMessages.EXIT+ ProtocolMessages.EOC);
+		// TODO Auto-generated method stub
+		
 	}
 
 }

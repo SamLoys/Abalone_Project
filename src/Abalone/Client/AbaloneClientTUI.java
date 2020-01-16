@@ -43,18 +43,27 @@ public class AbaloneClientTUI implements Runnable {
 
 	public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
 		String command = input.substring(0, 1);
-		String[] userInput = input.split(";");
+		String[] userInput = input.split(" ");
+		int[] marbles;
 		switch (command) {
-		case ProtocolMessages.HELLO:
-
-			break;
-
-		case ProtocolMessages.JOIN:
-
-			break;
 
 		case ProtocolMessages.MOVE:
-
+			if (userInput.length < 3) {
+				showMessage("Invalid command please try again");
+				printHelpMenu();
+				break;
+			}
+			int marbleCount = userInput.length - 2;
+			marbles = new int[marbleCount];
+			for (int i = 0; i < marbles.length; i++) {
+				try {
+					marbles[i] = Integer.parseInt(userInput[i + 2]);
+				} catch (NumberFormatException e) {
+					showMessage("Invalid command please try again");
+					break;
+				}
+			}
+			client.sendMove(client.getName(), userInput[1], marbles);
 			break;
 
 		case ProtocolMessages.QUEUE_SIZE:
@@ -64,10 +73,23 @@ public class AbaloneClientTUI implements Runnable {
 		case ProtocolMessages.EXIT:
 
 			break;
+		case "h":
+			printHelpMenu();
+			break;
 
 		default:
+			showMessage("Invalid command please try again");
+
 			break;
 		}
+	}
+
+	public void printHelpMenu() {
+		String helpmenu = "HELP MENU \n " + "To move a marble type <m><direction><marbles>" + "For example, <m r 2 3>"
+				+ "direction: " + "Type r for right" + "Type l for left" + "Type ur for upper right"
+				+ "Type ul for upper left" + "Type lr for lower right" + "Type ll for lower left"
+				+ "Type H for this help menu" + "Type Q for the queue list";
+		showMessage(helpmenu);
 	}
 
 	public InetAddress getIp() {

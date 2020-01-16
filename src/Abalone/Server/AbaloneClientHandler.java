@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import Abalone.Game;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
@@ -16,6 +17,12 @@ public class AbaloneClientHandler implements Runnable {
 	private BufferedReader in;
 	private BufferedWriter out;
 	private Socket sock;
+	
+	private Game currentGame;
+	
+	private int clientSupportChatting = 0;
+	private int clientSupportChallenge = 0;
+	private int clientSupportLeaderboard = 0;
 
 	/** The connected HotelServer */
 	private AbaloneServer srv;
@@ -30,6 +37,7 @@ public class AbaloneClientHandler implements Runnable {
 			this.sock = sock;
 			this.srv = srv;
 			this.clientName = name;
+			currentGame = null;
 		} catch (IOException e) {
 			shutdown();
 		}
@@ -37,6 +45,10 @@ public class AbaloneClientHandler implements Runnable {
 
 	public String getClientName() {
 		return clientName;
+	}
+	
+	public void addGame(Game game) {
+		this.currentGame = game; 
 	}
 
 	@Override
@@ -69,22 +81,21 @@ public class AbaloneClientHandler implements Runnable {
 
 		switch (command) {
 		case ProtocolMessages.HELLO:
-
-			String actualName = srv.setUserName(inputSrv[4]);
-			System.out.println("> [" + clientName + "] is now " + actualName);
-			clientName = actualName;
-
-			String response = ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + srv.getSupports() + actualName
-					+ ProtocolMessages.EOC;
+			boolean[] supports = srv.getSupports();
+			
+			String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
+			String[] responseSplit = response.split(";");
+			clientName = responseSplit[4];
 			sendMessage(response);
+
 			break;
 
 		case ProtocolMessages.JOIN:
 			int wantedGame = Integer.parseInt(inputSrv[1]);
-			srv.addToQueue(clientName, wantedGame);
-			response = ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + wantedGame
-					+ ProtocolMessages.DELIMITER + srv.getQueueSize(wantedGame) + ProtocolMessages.EOC;   
+			response = srv.handleJoin(clientName, wantedGame); 
+			//tell all 
 			srv.echo(response);
+			
 			if (srv.queueFull(wantedGame)) {
 				srv.setupGame(wantedGame);
 			}

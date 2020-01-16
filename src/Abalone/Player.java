@@ -2,9 +2,11 @@ package Abalone;
 
 public class Player {
 Marble marble;
+String name;
 
-public Player(Marble marble) {
+public Player(Marble marble, String name) {
 	this.marble = marble;
+	this.name = name;
 }
 
 public Marble getMarble() {

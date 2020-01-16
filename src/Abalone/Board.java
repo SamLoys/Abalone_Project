@@ -17,7 +17,7 @@ public class Board {
 	private int scoreWhite;
 	private int scoreRed;
 	private int scoreGreen;
-	
+	 
 	int playerCount = 0;
 	// field keeps track of the state of the field.
 	private Marble[][] fields;

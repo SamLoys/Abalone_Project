@@ -67,7 +67,7 @@ public class AbaloneClientTUI implements Runnable {
 			break;
 
 		case ProtocolMessages.QUEUE_SIZE:
-
+			client.getCurrentQueueSizes();
 			break;
 
 		case ProtocolMessages.EXIT:

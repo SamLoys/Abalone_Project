@@ -112,7 +112,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			clients.get(i).sendMessage(msg);
 		}
 	}
-	
+	 
 	public synchronized void multipleSend(String msg , String[] players) throws IOException, ClientUnavailableException {
 		for (int j = 0; j < players.length; j ++) {
 			for (int i = 0; i< clients.size(); i++) {
@@ -207,7 +207,9 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			queueTwo.remove(0);
 			game = new Game(2, this, player1Name, player2Name);
 			getClientHandler(player1Name).addGame(game); 
+			getClientHandler(player1Name).setColor(Marble.Black);
 			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).setColor(Marble.White);
 			games.add(game); 
 
 			gameThread = new Thread(game);
@@ -229,8 +231,11 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			queueThree.remove(0);
 			game = new Game(3, this, player1Name, player2Name, player3Name);
 			getClientHandler(player1Name).addGame(game);
+			getClientHandler(player1Name).setColor(Marble.Black);
 			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).setColor(Marble.Green);
 			getClientHandler(player3Name).addGame(game);
+			getClientHandler(player3Name).setColor(Marble.Red);
 			games.add(game);
 			
 			//construct an array with names to send to all the clients
@@ -254,9 +259,13 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			queueFour.remove(0);
 			game = new Game(4, this, player1Name, player2Name, player3Name, player4Name);
 			getClientHandler(player1Name).addGame(game);
+			getClientHandler(player1Name).setColor(Marble.Black);
 			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).setColor(Marble.Green);
 			getClientHandler(player3Name).addGame(game);
+			getClientHandler(player3Name).setColor(Marble.White);
 			getClientHandler(player4Name).addGame(game); 
+			getClientHandler(player4Name).setColor(Marble.Red); 
 			games.add(game);
 			
 			//construct an array with names to send to all the clients
@@ -341,7 +350,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	@Override
 	public String handlePlayerMove(String playerName) {
 		// TODO Auto-generated method stub
-		String nextplayer = ""; 
+		String nextplayer = "";  
 		String message = ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + nextplayer + playerName;
 		return message;
 	}

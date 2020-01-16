@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import Abalone.Game;
+import Abalone.Marble;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
@@ -23,6 +25,8 @@ public class AbaloneClientHandler implements Runnable {
 	private int clientSupportChatting = 0;
 	private int clientSupportChallenge = 0;
 	private int clientSupportLeaderboard = 0;
+	
+	private Marble color; 
 
 	/** The connected HotelServer */
 	private AbaloneServer srv;
@@ -45,6 +49,14 @@ public class AbaloneClientHandler implements Runnable {
 
 	public String getClientName() {
 		return clientName;
+	}
+	
+	public Marble getMarble() {
+		return color; 
+	}
+	
+	public void setColor(Marble color) {
+		this.color = color; 
 	}
 	
 	public void addGame(Game game) {
@@ -99,6 +111,17 @@ public class AbaloneClientHandler implements Runnable {
 			if (srv.queueFull(wantedGame)) {
 				srv.setupGame(wantedGame);
 			}
+			
+		case ProtocolMessages.MOVE:
+			ArrayList<Integer> indexes = new ArrayList<>();
+			for (int i = 3; i < inputSrv.length ; i++) {
+				if (!inputSrv.equals("*")) {
+					indexes.add(Integer.parseInt(inputSrv[i]));
+				}
+			}
+			
+			currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+			break;
 		default:
 			break;
 		}

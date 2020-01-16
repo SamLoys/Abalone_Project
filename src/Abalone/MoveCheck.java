@@ -11,17 +11,6 @@ public class MoveCheck {
 	Board board;
 	ArrayList<Integer> index;
 	Player player;
-	
-	public static void main(String[] args) {
-		Board board = new Board(2);
-		Board copy = board.deepCopy();
-		Player player = new Player(Marble.Black, "Henk");
-		
-		copy.setMarble(70, Marble.White);
-		MoveCheck mv = new MoveCheck(player, copy);
-		ArrayList<Integer> test = mv.moveChecker(103, 92, 81, Directions.northWest);
-		System.out.println(test);
-	}
 
 	public MoveCheck(Player player, Board board) {
 		this.board = board;
@@ -109,9 +98,6 @@ public class MoveCheck {
 		}
 	}
 
-	
-	
-	
 	
 	public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) {
 		ArrayList<Integer> all = new ArrayList<Integer>();
@@ -487,4 +473,15 @@ public class MoveCheck {
 		}
 		return index;
 	}
+	
+//	public static void main(String[] args) {
+//	Board board = new Board(2);
+//	Board copy = board.deepCopy();
+//	Player player = new Player(Marble.Black, "Henk");
+//	
+//	copy.setMarble(70, Marble.White);
+//	MoveCheck mv = new MoveCheck(player, copy);
+//	ArrayList<Integer> test = mv.moveChecker(103, 92, 81, Directions.northWest);
+//	System.out.println(test);
+//}
 }

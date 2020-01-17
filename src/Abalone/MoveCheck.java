@@ -12,6 +12,17 @@ public class MoveCheck {
 	ArrayList<Integer> index;
 	Player player;
 
+	public static void main(String[] args) {
+		Board board = new Board(2);
+		Board copy = board.deepCopy();
+		Player player = new Player(Marble.Black, "Henk");
+
+		copy.setMarble(70, Marble.White);
+		MoveCheck mv = new MoveCheck(player, copy);
+		ArrayList<Integer> test = mv.moveChecker(103, 92, 81, Directions.northWest);
+		System.out.println(test);
+	}
+
 	public MoveCheck(Player player, Board board) {
 		this.board = board;
 		this.player = player;
@@ -30,7 +41,7 @@ public class MoveCheck {
 			return empty;
 		}
 	}
-	
+
 	public ArrayList<Integer> moveChecker(int i1, int i2, String direction) {
 		index = new ArrayList<Integer>();
 		index.add(i1);
@@ -45,7 +56,7 @@ public class MoveCheck {
 			return empty;
 		}
 	}
-	
+
 	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, String direction) {
 		index = new ArrayList<Integer>();
 		index.add(i1);
@@ -61,7 +72,7 @@ public class MoveCheck {
 			return empty;
 		}
 	}
-	
+
 	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, String direction) {
 		index = new ArrayList<Integer>();
 		index.add(i1);
@@ -78,7 +89,7 @@ public class MoveCheck {
 			return empty;
 		}
 	}
-	
+
 	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, int i5, String direction) {
 
 		index = new ArrayList<Integer>();
@@ -98,7 +109,6 @@ public class MoveCheck {
 		}
 	}
 
-	
 	public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) {
 		ArrayList<Integer> all = new ArrayList<Integer>();
 
@@ -106,7 +116,7 @@ public class MoveCheck {
 		if (isInLine(index)) {
 			if (isStraightMove(index, direction)) {
 				if (isOwnMarble(index.get(0))) {
-					switch ((index.size()-1)) {
+					switch ((index.size() - 1)) {
 					case 1:
 						if (board.getMarble(index.get(1)) == Marble.Empty) {
 							all.add(index.get(0));
@@ -177,9 +187,23 @@ public class MoveCheck {
 						break;
 					}
 				}
+			} else {
+				if (hasOwnMarble(index) && index.size() < 4) {
+					for (int i : index) {
+						if (!(isOwnTeam(i))) {
+							break;
+						} else {
+							if (!(isValidSideStep(index, direction))) {
+								break;
+							} else {
+							}
+						}
+					}
+				}
 			}
 		}
 		return all;
+
 	}
 
 	// Checks if the given values are on the board
@@ -473,15 +497,98 @@ public class MoveCheck {
 		}
 		return index;
 	}
-	
-//	public static void main(String[] args) {
-//	Board board = new Board(2);
-//	Board copy = board.deepCopy();
-//	Player player = new Player(Marble.Black, "Henk");
-//	
-//	copy.setMarble(70, Marble.White);
-//	MoveCheck mv = new MoveCheck(player, copy);
-//	ArrayList<Integer> test = mv.moveChecker(103, 92, 81, Directions.northWest);
-//	System.out.println(test);
+
+//	public String stringMove(ArrayList<Integer> index, String direction) {
+//	String s = "";
+//	int ownMarble = 0;
+//	int teamMarble = 0;
+//	int oppMarble = 0;
+//	int emptyMarble = 0;
+//	int deathMarble = 0;
+//
+//	if (isStraightMove(index, direction) && index.size() == 2) {
+//		if (isOwnMarble(index.get(0))) {
+//			s = s + "Y";
+//			if (board.getMarble(index.get(1)) == Marble.Empty) {
+//				return s = s + "E";
+//			}
+//		}
+//	}
+//
+//	// Checks if a summito
+//	if (isInLine(index)) {
+//		if (isStraightMove(index, direction)) {
+//			if (isOwnMarble(index.get(0))) {
+//				for (int j = 0; (j < index.size() - 1); j++) {
+//					if (board.getMarble(index.get(j)) == Marble.Empty
+//							|| board.getMarble(index.get(j)) == Marble.Death) {
+//						s = s + "False input, empty or death spaces";
+//					}
+//				}
+//				s = s + "Y";
+//				int i = 0;
+//				while ((i < index.size() - 1) && (isOwnTeam(index.get(i)))) {
+//					int n = getNeighbourIndex(index.get(i), direction);
+//					if (isOwnTeam(n)) {
+//						teamMarble++;
+//						s = s + "T";
+//						if (teamMarble > 3) {
+//							return s = s + "Too many marbles moved";
+//						}
+//					} else {
+//						break;
+//					}
+//					i++;
+//				}
+//				while (isOpponent(index.get(i))) {
+//					int n = getNeighbourIndex(index.get(i), direction);
+//					if (isOpponent(n) || oppMarble < teamMarble) {
+//						oppMarble++;
+//						s = s + "O";
+//						index.add(n);
+//					} else {
+//						break;
+//					}
+//					i++;
+//				}
+//				if (oppMarble >= ownMarble) {
+//					return s = s + "Too many opponents";
+//				}
+//				if (board.getMarble(index.get(index.size() - 1)) == Marble.Empty) {
+//					emptyMarble++;
+//					s = s + "E";
+//				} else if (board.getMarble(index.get(index.size() - 1)) == Marble.Death) {
+//					deathMarble++;
+//					s = s + "D";
+//				}
+//
+//			} else {
+//				s = s + "Not own marble first";
+//			}
+//
+//			// Checks if a sidestep move is valid
+//		} else {
+//			if (hasOwnMarble(index) && index.size() < 4) {
+//				for (int i : index) {
+//					if (!(isOwnTeam(i))) {
+//						s = s + "Contains wrong marble";
+//					} else {
+//						if (isValidSideStep(index, direction)) {
+//							teamMarble++;
+//							s = s + "T";
+//						} else {
+//							return s = s + "Not valid sidestep";
+//						}
+//					}
+//				}
+//			} else {
+//				return s = s + "Not own marble in sidestep or sidestep too long";
+//			}
+//			return s;
+//		}
+//	} else {
+//		return s = s + "Not in line";
+//	}
+//	return s;
 //}
 }

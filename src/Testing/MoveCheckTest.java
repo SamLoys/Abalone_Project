@@ -263,10 +263,11 @@ class MoveCheckTest {
   		board = new Board(4);
   		copy = board.deepCopy();
   		
+  		green = new Player(Marble.Green, "Henk");
   		movecheck = new MoveCheck(green, copy);
   		//Checks for invalid move three marbles with one opponent to empty space
   		//Gets a null pointer exception for some reason????
-  		copy.setMarble(82, Marble.White);
+  		copy.setMarble(82, Marble.Empty);
   		ArrayList<Integer> test = new ArrayList<Integer>();
   		ArrayList<Integer> list = movecheck.moveChecker(93, 81, 69, Directions.northEast);
   		assertEquals(test, list);

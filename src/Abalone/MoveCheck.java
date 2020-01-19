@@ -12,16 +12,16 @@ public class MoveCheck {
 	ArrayList<Integer> index;
 	Player player;
 
-	public static void main(String[] args) {
-		Board board = new Board(4);
-		Board copy = board.deepCopy();
-		Player player = new Player(Marble.Green, "Henk");
-
-  		copy.setMarble(82, Marble.White);
-		MoveCheck mv = new MoveCheck(player, copy);
-		ArrayList<Integer> test = mv.moveChecker(93, 81, 69, Directions.northEast);
-		System.out.println(test);
-	}
+//	public static void main(String[] args) {
+//		Board board = new Board(4);
+//		Board copy = board.deepCopy();
+//		player = new Player(Marble.Green, "Henk");
+//
+//  	copy.setMarble(82, Marble.White);
+//		MoveCheck mv = new MoveCheck(player, copy);
+//		ArrayList<Integer> test = mv.moveChecker(93, 81, 69, Directions.northEast);
+//		System.out.println(test);
+//	}
 
 	public MoveCheck(Player player, Board board) {
 		this.board = board;

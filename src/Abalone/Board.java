@@ -2,6 +2,7 @@ package Abalone;
 
 import Abalone.Marble;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
@@ -17,34 +18,34 @@ public class Board {
 	private int scoreWhite;
 	private int scoreRed;
 	private int scoreGreen;
-	 
+
 	int playerCount = 0;
 	// field keeps track of the state of the field.
 	private Marble[][] fields;
-	
+
 	public Board(int players) {
 		if (players == 2) {
 			initBoard2();
 			this.playerCount = 2;
-			this.scoreBlack = 0; 
-			this.scoreWhite = 0; 
-			
+			this.scoreBlack = 0;
+			this.scoreWhite = 0;
+
 		}
 
 		else if (players == 3) {
 			initBoard3();
 			this.playerCount = 3;
-			this.scoreBlack = 0; 
-			this.scoreWhite = 0; 
+			this.scoreBlack = 0;
+			this.scoreWhite = 0;
 			this.scoreRed = 0;
-		
+
 		}
 
 		else if (players == 4) {
 			initBoard4();
 			this.playerCount = 4;
-			this.scoreBlack = 0; 
-			this.scoreWhite = 0; 
+			this.scoreBlack = 0;
+			this.scoreWhite = 0;
 			this.scoreRed = 0;
 			this.scoreGreen = 0;
 		} else {
@@ -52,7 +53,7 @@ public class Board {
 		}
 
 	}
-	
+
 	public int getPlayerCount() {
 		return playerCount;
 	}
@@ -117,11 +118,11 @@ public class Board {
 	 * Copies the board needs to be implemented
 	 */
 	public Board deepCopy() {
-		Board copy = new Board(playerCount); 
+		Board copy = new Board(playerCount);
 		for (int i = 0; i < 120; i++) {
 			copy.setMarble(i, this.getMarble(i));
 		}
-		
+
 		return copy;
 	}
 
@@ -196,6 +197,14 @@ public class Board {
 
 	}
 
+	public ArrayList<Integer> protocolToIndex(ArrayList<Integer> indexes) {
+		ArrayList<Integer> toIndex = new ArrayList<Integer>();
+		for (int index : indexes) {
+			toIndex.add(indexToProtocol(index));
+		}
+		return toIndex;
+	}
+
 	/**
 	 * given the own coordinate index, returns the index given in the protocol
 	 * 
@@ -215,6 +224,14 @@ public class Board {
 			looping++;
 		}
 		return 9999;
+	}
+
+	public ArrayList<Integer> indexToProtocol(ArrayList<Integer> indexes) {
+		ArrayList<Integer> toProtocol = new ArrayList<Integer>();
+		for (int index : indexes) {
+			toProtocol.add(indexToProtocol(index));
+		}
+		return toProtocol;
 	}
 
 	/**
@@ -309,6 +326,28 @@ public class Board {
 		return index + 10;
 	}
 
+	public int getNeighbour(int index, String direction) {
+		switch (direction) {
+		case Directions.east:
+			return getEast(index);
+		case Directions.west:
+			return getWest(index);
+		case Directions.northEast:
+			return getNorthEast(index);
+		case Directions.northWest:
+			return getNorthWest(index);
+		case Directions.southEast:
+			return getSouthEast(index);
+		case Directions.southWest:
+			return getSouthWest(index);
+
+		default:
+			return 9999;
+
+		}
+
+	}
+
 	/**
 	 * checks if the field exists given the row and the col
 	 * 
@@ -332,6 +371,25 @@ public class Board {
 		int col = getCol(index);
 		int row = getRow(index);
 		return isValidField(row, col);
+	}
+
+	public boolean move(ArrayList<Integer> indexes, String direction) {
+		boolean scored = false;
+		ArrayList<Marble> placeholders = new ArrayList<Marble>();
+			for (int index : indexes) {
+				placeholders.add(getMarble(index));
+				setMarble(index, Marble.Empty);
+			}
+			for (int i = 0; i < indexes.size(); i ++) {
+				if (getMarble(getNeighbour(indexes.get(i), direction)) == Marble.Empty) {
+					scored = true; 
+				}else {
+					setMarble(getNeighbour(indexes.get(i), direction), placeholders.get(i));
+				}
+				
+			}
+			return scored; 
+
 	}
 
 	/**
@@ -527,20 +585,19 @@ public class Board {
 	public void attackMove(int index, int index2, String direction) {
 		Marble placeholderAttacker = getMarble(index);
 
-		int [] indexes =new int[2];
+		int[] indexes = new int[2];
 		indexes[0] = index;
-		indexes[1] = index2 ;
-		Arrays.sort(indexes); 
-		
+		indexes[1] = index2;
+		Arrays.sort(indexes);
+
 		switch (direction) {
 		case Directions.east:
-			
-			if (getMarble(getEast(getEast(indexes[1]))) == Marble.Death){
+
+			if (getMarble(getEast(getEast(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
-				addScore(placeholderAttacker); 
-			} 
-			else {
-				move(getEast(indexes[1]),direction);
+				addScore(placeholderAttacker);
+			} else {
+				move(getEast(indexes[1]), direction);
 				move(index, index2, direction);
 			}
 			break;
@@ -548,76 +605,70 @@ public class Board {
 			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
+			} else {
 				move(getWest(indexes[0]), direction);
-				move(index, index2, direction); 
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.northEast:
 			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
+			} else {
 				move(getNorthEast(indexes[0]), direction);
-				move(index, index2, direction); 
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.northWest:
 			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
-				move(getNorthWest(indexes[0]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getNorthWest(indexes[0]), direction);
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.southEast:
 			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else { 
-				move(getSouthEast(indexes[1]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getSouthEast(indexes[1]), direction);
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.southWest:
 			if (getMarble(getSouthWest(getSouthWest(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			} 
-			else { 
-				move(getSouthWest(indexes[1]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getSouthWest(indexes[1]), direction);
+				move(index, index2, direction);
 			}
 			break;
 
 		}
 
 	}
-	
+
 	public void attackMove(int index, int index2, int index3, String direction) {
 		Marble placeholderAttacker = getMarble(index);
 
-		int [] indexes =new int[3];
+		int[] indexes = new int[3];
 		indexes[0] = index;
 		indexes[1] = index2;
 		indexes[2] = index3;
-		Arrays.sort(indexes); 
-		
+		Arrays.sort(indexes);
+
 		switch (direction) {
 		case Directions.east:
-			
-			if (getMarble(getEast(getEast(indexes[2]))) == Marble.Death ||
-					getMarble(getEast(getEast(getEast(indexes[2])))) == Marble.Death){
+
+			if (getMarble(getEast(getEast(indexes[2]))) == Marble.Death
+					|| getMarble(getEast(getEast(getEast(indexes[2])))) == Marble.Death) {
 				move(index, index2, direction);
-				addScore(placeholderAttacker); 
-			} 
-			else {
-				move(getEast(indexes[2]),direction);
+				addScore(placeholderAttacker);
+			} else {
+				move(getEast(indexes[2]), direction);
 				move(index, index2, direction);
 			}
 			break;
@@ -625,87 +676,80 @@ public class Board {
 			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
+			} else {
 				move(getWest(indexes[0]), direction);
-				move(index, index2, direction); 
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.northEast:
 			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
+			} else {
 				move(getNorthEast(indexes[0]), direction);
-				move(index, index2, direction); 
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.northWest:
 			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else {
-				move(getNorthWest(indexes[0]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getNorthWest(indexes[0]), direction);
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.southEast:
 			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			}
-			else { 
-				move(getSouthEast(indexes[1]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getSouthEast(indexes[1]), direction);
+				move(index, index2, direction);
 			}
 			break;
 		case Directions.southWest:
 			if (getMarble(getSouthWest(getSouthWest(indexes[1]))) == Marble.Death) {
 				move(index, index2, direction);
 				addScore(placeholderAttacker);
-			} 
-			else { 
-				move(getSouthWest(indexes[1]),direction);
-				move(index, index2, direction);  
+			} else {
+				move(getSouthWest(indexes[1]), direction);
+				move(index, index2, direction);
 			}
 			break;
 
 		}
 
 	}
-	
-	
-	
+
 	public void addScore(Marble marble) {
 		if (marble == Marble.Black) {
-			scoreBlack++; 
+			scoreBlack++;
 		}
 		if (marble == Marble.White) {
-			scoreWhite++; 
+			scoreWhite++;
 		}
 		if (marble == Marble.Red) {
-			scoreRed++; 
+			scoreRed++;
 		}
 		if (marble == Marble.Green) {
-			scoreGreen++; 
-		} 
+			scoreGreen++;
+		}
 	}
-	
+
 	public int getScore(Marble marble) {
 		if (marble == Marble.Black) {
-			return scoreBlack; 
+			return scoreBlack;
 		}
 		if (marble == Marble.White) {
-			return scoreWhite; 
+			return scoreWhite;
 		}
 		if (marble == Marble.Red) {
-			return scoreRed; 
+			return scoreRed;
 		}
 		if (marble == Marble.Green) {
-			return scoreGreen; 
-		} 
+			return scoreGreen;
+		}
 		return 9999;
 	}
 
@@ -805,7 +849,7 @@ public class Board {
 	 * @return
 	 */
 	public boolean GameOver() {
-		if (scoreBlack < 6|| scoreGreen< 6|| scoreRed< 6 || scoreWhite< 6) {
+		if (scoreBlack < 6 || scoreGreen < 6 || scoreRed < 6 || scoreWhite < 6) {
 			return true;
 		}
 		return false;

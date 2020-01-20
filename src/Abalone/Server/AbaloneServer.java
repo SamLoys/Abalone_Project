@@ -31,7 +31,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	private boolean serverSupportChatting = false;
 	private boolean serverSupportChallenge = false;
 	private boolean serverSupportLeaderboard = false;
-
+	
 	private String serverName;
 
 	public AbaloneServer() {
@@ -235,7 +235,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			getClientHandler(player2Name).addGame(game); 
 			getClientHandler(player2Name).setColor(Marble.Green);
 			getClientHandler(player3Name).addGame(game);
-			getClientHandler(player3Name).setColor(Marble.Red);
+			getClientHandler(player3Name).setColor(Marble.White);
 			games.add(game);
 			
 			//construct an array with names to send to all the clients
@@ -350,8 +350,8 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	@Override
 	public String handlePlayerMove(String playerName) {
 		// TODO Auto-generated method stub
-		String nextplayer = "";  
-		String message = ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + nextplayer + playerName;
+		String nextplayer = playerName;  
+		String message = ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + nextplayer + ProtocolMessages.DELIMITER;
 		return message;
 	}
 

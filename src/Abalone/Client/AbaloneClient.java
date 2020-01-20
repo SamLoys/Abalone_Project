@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import Abalone.Board;
 import Abalone.Marble;
+import Abalone.MoveCheck;
 import Abalone.Exceptions.ExitProgram;
 import Abalone.Exceptions.ProtocolException;
 import Abalone.Exceptions.ServerUnavailableException;
@@ -36,6 +37,7 @@ public class AbaloneClient implements ClientProtocol {
 	private boolean yourTurn = false;
 	Board clientBoard;
 	String[] gamePlayers;
+	MoveCheck moveChecker; 
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
@@ -199,6 +201,7 @@ public class AbaloneClient implements ClientProtocol {
 						setPropperColor();
 
 						clientBoard = new Board(2);
+						moveChecker = new MoveCheck(color, clientBoard);
 						showBoard();
 					}
 					if (inputSrv.length == 5) {
@@ -218,7 +221,7 @@ public class AbaloneClient implements ClientProtocol {
 						setPropperColor();
 						clientBoard = new Board(3);
 						showBoard();
-
+						moveChecker = new MoveCheck(color, clientBoard);
 					}
 					if (inputSrv.length == 6) {
 						gamePlayers = new String[4];
@@ -237,6 +240,7 @@ public class AbaloneClient implements ClientProtocol {
 						setPropperColor();
 						clientBoard = new Board(4);
 						showBoard();
+						moveChecker = new MoveCheck(color, clientBoard);
 					}
 				}
 			}
@@ -244,18 +248,26 @@ public class AbaloneClient implements ClientProtocol {
 			break;
 
 		case ProtocolMessages.MOVE:
+			ArrayList<Integer> newIndexes = new ArrayList<>();
+			ArrayList<Integer> totalMove = new ArrayList<>();
+			ArrayList<Integer> indexes = new ArrayList<>();
 			yourTurn = false;
 			clientTui.showMessage(
 					"Player " + inputSrv[2] + "has moved " + "\n it is now the turn of player: " + inputSrv[1]);
 			String direction = inputSrv[3];
-			ArrayList<Integer> indexes = new ArrayList<>();
-			for (int i = 3; i < inputSrv.length; i++) {
-				if (!inputSrv[i].equals("*")) {
+		
+			for (int i = 0; i < inputSrv.length; i++) {
+				if (inputSrv[i].matches("([0-9]*)")) {
 					indexes.add(Integer.parseInt(inputSrv[i]));
 				}
 
 			}
-			updateBoard(indexes, direction);
+			newIndexes = clientBoard.protocolToIndex(indexes);
+			totalMove = moveChecker.moveChecker(newIndexes, direction); 
+			boolean scores = clientBoard.move(totalMove, direction); 
+			if (scores) {
+				clientBoard.addScore(getPlayerMarble(inputSrv[2]));
+			}
 			showBoard();
 			if (inputSrv[1].equals(name)) {
 				clientTui.showMessage("it is now your turn, enter your move");
@@ -291,7 +303,7 @@ public class AbaloneClient implements ClientProtocol {
 			} else if (gamePlayers[1].equals(name)) {
 				color = Marble.Green;
 			} else {
-				color = Marble.Red;
+				color = Marble.White;
 			}
 			break;
 
@@ -323,7 +335,7 @@ public class AbaloneClient implements ClientProtocol {
 			} else if (gamePlayers[1].equals(name)) {
 				return Marble.Green;
 			} else
-				return Marble.Red;
+				return Marble.White;
 
 		case 4:
 			if (gamePlayers[0].equals(name)) {
@@ -351,10 +363,7 @@ public class AbaloneClient implements ClientProtocol {
 		clientTui.showMessage(clientBoard.toString());
 	}
 
-	public void updateBoard(ArrayList<Integer> indices, String direction) {
-
-		// clientBoard.mo
-	}
+	
 
 //---------------------- protocol messages to send down below
 	@Override
@@ -370,7 +379,7 @@ public class AbaloneClient implements ClientProtocol {
 		while (!handshakeComplete) {
 			String serverMessage = readLineFromServer();
 			handleServerCommands(serverMessage);
-		}
+		} 
 	}
 
 	@Override
@@ -394,7 +403,7 @@ public class AbaloneClient implements ClientProtocol {
 				marblesString = marblesString + ProtocolMessages.DELIMITER;
 				marblesString = marblesString + marbleIndices[i];
 			}
-			sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + marblesString
+			sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER+ direction +marblesString
 					+ ProtocolMessages.EOC);
 		} else {
 			clientTui.showMessage("It is not your turn, please wait");

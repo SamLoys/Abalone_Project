@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import Abalone.Directions;
 import Abalone.Exceptions.*;
 import Abalone.protocol.ProtocolMessages;
 
@@ -53,18 +54,26 @@ public class AbaloneClientTUI implements Runnable {
 				printHelpMenu();
 				break;
 			}
-			int marbleCount = userInput.length - 2;
-			marbles = new int[marbleCount];
-			for (int i = 0; i < marbles.length; i++) {
-				try {
-					marbles[i] = Integer.parseInt(userInput[i + 2]);
-				} catch (NumberFormatException e) {
-					showMessage("Invalid command please try again");
-					break;
+			if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
+					|| userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
+					|| userInput[1].equals(Directions.southEast) || userInput[1].equals(Directions.southWest)) {
+				int marbleCount = userInput.length - 2;
+				marbles = new int[marbleCount];
+				for (int i = 0; i < marbles.length; i++) {
+					try {
+						marbles[i] = Integer.parseInt(userInput[i + 2]);
+					} catch (NumberFormatException e) {
+						showMessage("Invalid command please try again");
+						break;
+					}
 				}
+				client.sendMove(client.getName(), userInput[1], marbles);
+				break;
+			} else {
+				showMessage("Invalid command please try again");
+				printHelpMenu();
+				break;
 			}
-			client.sendMove(client.getName(), userInput[1], marbles);
-			break;
 
 		case ProtocolMessages.QUEUE_SIZE:
 			client.getCurrentQueueSizes();

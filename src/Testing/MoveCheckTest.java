@@ -19,7 +19,7 @@ class MoveCheckTest {
 	Board board;
 	Board copy;
 	Player black;
-	Player white;
+	Player white; 
 	Player green; 
 	Player red;
 	

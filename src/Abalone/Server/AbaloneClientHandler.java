@@ -13,20 +13,21 @@ import Abalone.Marble;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
+import Abalone.protocol.ProtocolMessages.Directions;
 
 public class AbaloneClientHandler implements Runnable {
 
 	private BufferedReader in;
 	private BufferedWriter out;
 	private Socket sock;
-	
+
 	private Game currentGame;
-	
+
 	private int clientSupportChatting = 0;
 	private int clientSupportChallenge = 0;
 	private int clientSupportLeaderboard = 0;
-	
-	private Marble color; 
+
+	private Marble color;
 
 	/** The connected HotelServer */
 	private AbaloneServer srv;
@@ -50,17 +51,17 @@ public class AbaloneClientHandler implements Runnable {
 	public String getClientName() {
 		return clientName;
 	}
-	
+
 	public Marble getMarble() {
-		return color; 
+		return color;
 	}
-	
+
 	public void setColor(Marble color) {
-		this.color = color; 
+		this.color = color;
 	}
-	
+
 	public void addGame(Game game) {
-		this.currentGame = game; 
+		this.currentGame = game;
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class AbaloneClientHandler implements Runnable {
 		switch (command) {
 		case ProtocolMessages.HELLO:
 			boolean[] supports = srv.getSupports();
-			
+
 			String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
 			String[] responseSplit = response.split(";");
 			clientName = responseSplit[4];
@@ -104,31 +105,34 @@ public class AbaloneClientHandler implements Runnable {
 
 		case ProtocolMessages.JOIN:
 			int wantedGame = Integer.parseInt(inputSrv[1]);
-			response = srv.handleJoin(clientName, wantedGame); 
-			//tell all 
+			response = srv.handleJoin(clientName, wantedGame);
+			// tell all
 			srv.echo(response);
-			
+
 			if (srv.queueFull(wantedGame)) {
 				srv.setupGame(wantedGame);
 			}
-			
+
 		case ProtocolMessages.MOVE:
 			ArrayList<Integer> indexes = new ArrayList<>();
-			for (int i = 3; i < inputSrv.length ; i++) {
-				if (!inputSrv.equals("*")) {
-					indexes.add(Integer.parseInt(inputSrv[i]));
+			if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
+					|| inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
+					|| inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
+
+				for (int i = 3; i < inputSrv.length; i++) {
+					if (inputSrv[i].matches("([0-9]*)")) {
+						indexes.add(Integer.parseInt(inputSrv[i]));
+					}
 				}
+				currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
 			}
-			
-			currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+
 			break;
 		default:
 			break;
 		}
 
 	}
-	
-	
 
 	public void sendMessage(String msg) throws IOException, ClientUnavailableException {
 		if (out != null) {
@@ -136,6 +140,7 @@ public class AbaloneClientHandler implements Runnable {
 				out.write(msg);
 				out.newLine();
 				out.flush();
+				System.out.println("Wrote to: " + clientName + msg);
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 				throw new ClientUnavailableException("Could not write to client");

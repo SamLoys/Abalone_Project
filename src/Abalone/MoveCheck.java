@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 public class MoveCheck {
 	Board board;
 	ArrayList<Integer> index;
-	Player player;
+
+	Marble color;
 
 //	public static void main(String[] args) {
 //		Board board = new Board(4);
@@ -23,13 +24,19 @@ public class MoveCheck {
 //		System.out.println(test);
 //	}
 
-	public MoveCheck(Player player, Board board) {
+	public MoveCheck(Marble color, Board board) {
 		this.board = board;
-		this.player = player; 
+
+		this.color = color;
+	}
+	
+	public Marble getColor() {
+		return color; 
 	}
 
 	/*
-	 * @requires that the indexes are already converted to own indexes insteads of protocol indexes
+	 * @requires that the indexes are already converted to own indexes insteads of
+	 * protocol indexes
 	 */
 	public ArrayList<Integer> moveChecker(int i1, String direction) {
 		index = new ArrayList<Integer>();
@@ -108,6 +115,29 @@ public class MoveCheck {
 		} else {
 			ArrayList<Integer> empty = new ArrayList<Integer>();
 			return empty;
+		}
+	}
+
+	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) {
+		switch (index.size()) {
+		case 1:
+			return moveChecker(index.get(0), direction);
+
+		case 2:
+			return moveChecker(index.get(0), index.get(1), direction);
+		case 3:
+
+			return moveChecker(index.get(0), index.get(1), index.get(2), direction);
+		case 4:
+			return moveChecker(index.get(0), index.get(1), index.get(3), index.get(4), direction);
+
+		case 5:
+			return moveChecker(index.get(0),index.get(1), index.get(2), index.get(3), index.get(4), direction);
+		default: 
+			System.out.println("ït happend"); 
+			return null; 
+			// this should not happen
+			
 		}
 	}
 
@@ -364,7 +394,7 @@ public class MoveCheck {
 	// Checks if the side step includes at least one own marble
 	public boolean hasOwnMarble(ArrayList<Integer> index) {
 		for (int i : index) {
-			if (board.getMarble(i) == player.getMarble()) {
+			if (board.getMarble(i) == color) {
 				return true;
 			}
 		}
@@ -398,7 +428,7 @@ public class MoveCheck {
 
 	// Checks if this is an opponent marble
 	public boolean isOpponent(int i1) {
-		Marble ownMarble = player.getMarble();
+		Marble ownMarble = color;
 		Marble checkMarble = board.getMarble(i1);
 		if (board.getPlayerCount() == 2 || board.getPlayerCount() == 3) {
 			if (ownMarble == checkMarble || checkMarble == Marble.Death || checkMarble == Marble.Empty) {
@@ -422,7 +452,7 @@ public class MoveCheck {
 
 	// Checks if this is a team marble for all 2, 3 or 4 player games.
 	public boolean isOwnTeam(int i1) {
-		Marble ownMarble = player.getMarble();
+		Marble ownMarble = color;
 		if (board.getPlayerCount() == 2 || board.getPlayerCount() == 3) {
 			if (board.getMarble(i1) == ownMarble) {
 				return true;
@@ -431,7 +461,8 @@ public class MoveCheck {
 			if (ownMarble == Marble.White
 					&& (board.getMarble(i1) == Marble.Black || board.getMarble(i1) == ownMarble)) {
 				return true;
-			} else if ((ownMarble == Marble.Black) && (board.getMarble(i1) == Marble.White || board.getMarble(i1) == ownMarble)) {
+			} else if ((ownMarble == Marble.Black)
+					&& (board.getMarble(i1) == Marble.White || board.getMarble(i1) == ownMarble)) {
 				return true;
 			} else if ((ownMarble == Marble.Green
 					&& (board.getMarble(i1) == Marble.Red || board.getMarble(i1) == ownMarble))) {
@@ -446,7 +477,7 @@ public class MoveCheck {
 
 	// Checks if the input marble is your own marble
 	public boolean isOwnMarble(int i1) {
-		if (board.getMarble(i1) == player.getMarble()) {
+		if (board.getMarble(i1) == color) {
 			return true;
 		}
 		return false;

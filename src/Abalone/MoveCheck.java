@@ -25,9 +25,12 @@ public class MoveCheck {
 
 	public MoveCheck(Player player, Board board) {
 		this.board = board;
-		this.player = player;
+		this.player = player; 
 	}
 
+	/*
+	 * @requires that the indexes are already converted to own indexes insteads of protocol indexes
+	 */
 	public ArrayList<Integer> moveChecker(int i1, String direction) {
 		index = new ArrayList<Integer>();
 		index.add(i1);

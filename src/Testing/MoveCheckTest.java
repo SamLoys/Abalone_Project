@@ -25,8 +25,6 @@ class MoveCheckTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		black = new Player(Marble.Black, "Henk");
-		white = new Player(Marble.White, "Grietje");
 	}
 
 	@Test
@@ -34,7 +32,7 @@ class MoveCheckTest {
 		board = new Board(2);
 		copy = board.deepCopy();
 		
-		movecheck = new MoveCheck(black, copy);
+		movecheck = new MoveCheck(Marble.Black, copy);
 		//Checks for one marble to empty space
 		ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(81));
 		ArrayList<Integer> list = movecheck.moveChecker(81, Directions.northWest);
@@ -130,8 +128,7 @@ class MoveCheckTest {
     void test3PlayerStraightMoves() {
     	board = new Board(3);
     	Board copy = board.deepCopy();
-    	green = new Player(Marble.Green, "Gert");
-    	movecheck = new MoveCheck(green, copy);
+    	movecheck = new MoveCheck(Marble.Green, copy);
     	
 		//Checks for one marble to empty space
 		ArrayList<Integer> test = new ArrayList<Integer>();
@@ -167,9 +164,7 @@ class MoveCheckTest {
     void test4PlayerStraightMoves() {
     	board = new Board(4);
     	Board copy = board.deepCopy();
-    	green = new Player(Marble.Green, "Gert");
-    	red = new Player(Marble.Red, "Annie");
-    	movecheck = new MoveCheck(red, copy);
+    	movecheck = new MoveCheck(Marble.Red, copy);
     	
 		//Checks for three marbles not in line
 		ArrayList<Integer> test = new ArrayList<Integer>();
@@ -208,7 +203,7 @@ class MoveCheckTest {
     		board = new Board(2);
     		copy = board.deepCopy();
     		
-    		movecheck = new MoveCheck(black, copy);
+    		movecheck = new MoveCheck(Marble.Black, copy);
     		//Checks for one marble to empty space
     		ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(82, 81));
     		ArrayList<Integer> list = movecheck.moveChecker(81, 82, Directions.northWest);
@@ -228,7 +223,7 @@ class MoveCheckTest {
  		board = new Board(3);
  		copy = board.deepCopy();
  		
- 		movecheck = new MoveCheck(white, copy);
+ 		movecheck = new MoveCheck(Marble.White, copy);
  		//Checks for valid move three marbles to empty space
  		ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(47, 57, 67));
  		ArrayList<Integer> list = movecheck.moveChecker(67, 57, 47, Directions.southEast);
@@ -263,8 +258,7 @@ class MoveCheckTest {
   		board = new Board(4);
   		copy = board.deepCopy();
   		
-  		green = new Player(Marble.Green, "Henk");
-  		movecheck = new MoveCheck(green, copy);
+  		movecheck = new MoveCheck(Marble.Green, copy);
   		//Checks for invalid move three marbles with one opponent to empty space
   		//Gets a null pointer exception for some reason????
   		copy.setMarble(82, Marble.Empty);

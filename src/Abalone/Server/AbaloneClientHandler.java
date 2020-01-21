@@ -15,6 +15,7 @@ import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
 import Abalone.protocol.ProtocolMessages.Directions;
 
+
 public class AbaloneClientHandler implements Runnable {
 
 	private BufferedReader in;
@@ -94,16 +95,21 @@ public class AbaloneClientHandler implements Runnable {
 
 		switch (command) {
 		case ProtocolMessages.HELLO:
+			clientSupportChatting = Integer.parseInt(inputSrv[1]);
+			clientSupportChallenge = Integer.parseInt(inputSrv[2]);
+			clientSupportLeaderboard =Integer.parseInt(inputSrv[3]);
 			boolean[] supports = srv.getSupports();
 
 			String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
 			String[] responseSplit = response.split(";");
 			clientName = responseSplit[4];
+			srv.setClientHandlerToName(clientName, this);
 			sendMessage(response);
 
 			break;
 
 		case ProtocolMessages.JOIN:
+			currentGame = null;
 			int wantedGame = Integer.parseInt(inputSrv[1]);
 			response = srv.handleJoin(clientName, wantedGame);
 			// tell all
@@ -128,6 +134,13 @@ public class AbaloneClientHandler implements Runnable {
 			}
 
 			break;
+			
+		case ProtocolMessages.QUEUE_SIZE:{
+			sendMessage(srv.handleQueueSizeQuery());
+		}
+		break;
+		case ProtocolMessages.EXIT:
+			shutdown();
 		default:
 			break;
 		}
@@ -159,7 +172,7 @@ public class AbaloneClientHandler implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		srv.removeClient(this);
+		srv.removeClient(clientName);
 	}
 
 }

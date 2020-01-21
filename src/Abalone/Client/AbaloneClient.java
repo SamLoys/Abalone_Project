@@ -39,6 +39,7 @@ public class AbaloneClient implements ClientProtocol {
 	String[] gamePlayers;
 	MoveCheck moveChecker;
 	MoveCheck moveEnemyCheck;
+	boolean running = true; 
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
@@ -64,6 +65,10 @@ public class AbaloneClient implements ClientProtocol {
 		try {
 			createConnection();
 			handleHandshake(clientSupportChatting, clientSupportChallenge, clientSupportLeaderboard, name);
+			getCurrentQueueSizes();
+			String serverMessage = readLineFromServer();
+			handleServerCommands(serverMessage);
+
 			gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
 			joinQueue(gameSize);
 			Thread threadTUI = new Thread(clientTui);
@@ -72,7 +77,10 @@ public class AbaloneClient implements ClientProtocol {
 
 		} catch (ExitProgram | ServerUnavailableException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			clientTui.showMessage("The connection has been lost");
+			closeConnection();
+			clientTui.stopThread();
+			
 		}
 	}
 
@@ -138,9 +146,12 @@ public class AbaloneClient implements ClientProtocol {
 	public void closeConnection() {
 		System.out.println("Closing the connection...");
 		try {
+			running = false;
 			networkIN.close();
 			networkIN.close();
 			sock.close();
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -152,7 +163,7 @@ public class AbaloneClient implements ClientProtocol {
 		networkOUT = null;
 	}
 
-	public void handleServerCommands(String msg) {
+	public void handleServerCommands(String msg) throws ServerUnavailableException {
 		if (!msg.equals("")) {
 
 			String command = msg.substring(0, 1);
@@ -278,6 +289,52 @@ public class AbaloneClient implements ClientProtocol {
 				}
 				break;
 			case ProtocolMessages.GAME_FINISHED:
+				clientTui.showMessage("The game has finished");
+				if (inputSrv[1].equals(ProtocolMessages.GameResult.DRAW)) {
+					joiningComplete = false;
+					gameStarted = false;
+					gameSize = 0;
+					clientTui.showMessage("There was a draw");
+					joinQueue(clientTui.getInt("what queue do you want to join?"));
+				}
+				if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
+					clientTui.showMessage("There is a winner");
+					if (gameSize == 2 || gameSize == 3) {
+						clientTui.showMessage("the winner is: " + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
+						joiningComplete = false;
+						gameStarted = false;
+						gameSize = 0;
+						joinQueue(clientTui.getInt("what queue do you want to join?"));
+					}
+
+					if (gameSize == 4) {
+						if (Integer.parseInt(inputSrv[2]) == 1) {
+							clientTui
+									.showMessage("the winners are: " + gamePlayers[0] + "and player " + gamePlayers[2]);
+							joiningComplete = false;
+							gameStarted = false;
+							gameSize = 0;
+							joinQueue(clientTui.getInt("what queue do you want to join?"));
+						}
+						if (Integer.parseInt(inputSrv[2]) == 2) {
+							clientTui
+									.showMessage("the winners are: " + gamePlayers[1] + "and player " + gamePlayers[3]);
+							joiningComplete = false;
+							gameStarted = false;
+							gameSize = 0;
+							joinQueue(clientTui.getInt("what queue do you want to join?"));
+						}
+
+					}
+				}
+				if (inputSrv[1].equals(ProtocolMessages.GameResult.EXCEPTION)) {
+					clientTui.showMessage("There was an error, the game has now ended");
+					joiningComplete = false;
+					gameStarted = false;
+					gameSize = 0;
+					joinQueue(clientTui.getInt("what queue do you want to join?"));
+				}
+
 				break;
 			case ProtocolMessages.QUEUE_SIZE:
 				clientTui.showMessage(
@@ -285,6 +342,9 @@ public class AbaloneClient implements ClientProtocol {
 								+ inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
 				break;
 			case ProtocolMessages.EXIT:
+				clientTui.showMessage("The server gives the command to exit");
+				closeConnection();
+				clientTui.stopThread();
 				break;
 			default:
 				break;
@@ -360,9 +420,13 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	public void readServer() throws ServerUnavailableException {
-		while (true) {
+		while (running) {
 
 			String serverMessage = readLineFromServer();
+			if (serverMessage.startsWith("x")) {
+				running = false;
+			}
+			
 			handleServerCommands(serverMessage);
 			// needs to keep reading the server messages
 		}
@@ -372,19 +436,28 @@ public class AbaloneClient implements ClientProtocol {
 		clientTui.showMessage(clientBoard.toString());
 		switch (gameSize) {
 		case 2:
-			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
 			break;
 		case 3:
-			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("The score for: "+gamePlayers[2]+"("+getPlayerMarble(gamePlayers[2]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
 			break;
 		case 4:
-			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("The score for: "+gamePlayers[2]+"("+getPlayerMarble(gamePlayers[2]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
-			clientTui.showMessage("The score for: "+gamePlayers[3]+"("+getPlayerMarble(gamePlayers[3]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
+			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+			clientTui.showMessage("The score for: " + gamePlayers[3] + "(" + getPlayerMarble(gamePlayers[3]).toString()
+					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
 			break;
 
 		default:
@@ -426,13 +499,13 @@ public class AbaloneClient implements ClientProtocol {
 			throws ServerUnavailableException {
 		// TODO Auto-generated method stub
 		if (yourTurn) {
-			System.out.println("this are the marbleIndicis " + marbleIndices);
-			System.out.println("This is the given direction :" + direction);
+			// System.out.println("this are the marbleIndicis " + marbleIndices);
+			// System.out.println("This is the given direction :" + direction);
 			ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
-			System.out.println("this are the converteIndexes " + convertIndexes);
+			// System.out.println("this are the converteIndexes " + convertIndexes);
 			ArrayList<Integer> allMoved = moveChecker.moveChecker(convertIndexes, direction);
-			System.out.println("this are the allMovedIndexes " + allMoved);
-			System.out.println("his is your color: " + color.toString());
+			// System.out.println("this are the allMovedIndexes " + allMoved);
+			// System.out.println("his is your color: " + color.toString());
 			if (!allMoved.isEmpty()) {
 				ArrayList<Integer> protocolAll = new ArrayList<>();
 				protocolAll = clientBoard.indexToProtocol(allMoved);

@@ -44,6 +44,7 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
+		if (!input.equals("")) {
 		String command = input.substring(0, 1);
 		String[] userInput = input.split(" ");
 		
@@ -90,6 +91,7 @@ public class AbaloneClientTUI implements Runnable {
 			showMessage("Invalid command please try again");
 
 			break;
+		}
 		}
 	}
 

@@ -38,6 +38,7 @@ public class AbaloneClient implements ClientProtocol {
 	Board clientBoard;
 	String[] gamePlayers;
 	MoveCheck moveChecker; 
+	MoveCheck moveEnemyCheck; 
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
@@ -260,10 +261,10 @@ public class AbaloneClient implements ClientProtocol {
 				if (inputSrv[i].matches("([0-9]*)")) {
 					indexes.add(Integer.parseInt(inputSrv[i]));
 				}
-
 			}
 			newIndexes = clientBoard.protocolToIndex(indexes);
-			totalMove = moveChecker.moveChecker(newIndexes, direction); 
+			moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard) ;
+			totalMove = moveEnemyCheck.moveChecker(newIndexes, direction); 
 			boolean scores = clientBoard.move(totalMove, direction); 
 			if (scores) {
 				clientBoard.addScore(getPlayerMarble(inputSrv[2]));
@@ -395,16 +396,31 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	@Override
-	public void sendMove(String playerName, String direction, int[] marbleIndices) throws ServerUnavailableException {
+	public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices) throws ServerUnavailableException {
 		// TODO Auto-generated method stub
 		if (yourTurn) {
-			String marblesString = "";
-			for (int i = 0; i < marbleIndices.length; i++) {
-				marblesString = marblesString + ProtocolMessages.DELIMITER;
-				marblesString = marblesString + marbleIndices[i];
+			System.out.println("this are the marbleIndicis " + marbleIndices);
+			System.out.println("This is the given direction :" + direction);
+			ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
+			System.out.println("this are the converteIndexes " + convertIndexes);
+			ArrayList<Integer> allMoved =  moveChecker.moveChecker(convertIndexes, direction);
+			System.out.println("this are the allMovedIndexes " + allMoved);
+			System.out.println("his is your color: " + color.toString());
+			if (!allMoved.isEmpty()) {
+				ArrayList<Integer> protocolAll = new ArrayList<>();
+				protocolAll = clientBoard.indexToProtocol(allMoved);
+				String toSendMarbles = "";
+				for (int i = 0; i < protocolAll.size(); i++) {
+					toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
+					toSendMarbles = toSendMarbles + protocolAll.get(i); 
+				}
+				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER+ direction +toSendMarbles
+						+ ProtocolMessages.EOC);  
+				
+			} else {
+			 clientTui.showMessage("The input is not valid, please try again");
 			}
-			sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER+ direction +marblesString
-					+ ProtocolMessages.EOC);
+			
 		} else {
 			clientTui.showMessage("It is not your turn, please wait");
 		}

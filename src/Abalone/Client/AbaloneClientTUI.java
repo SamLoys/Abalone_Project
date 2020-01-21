@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import Abalone.Directions;
 import Abalone.Exceptions.*;
@@ -45,7 +46,8 @@ public class AbaloneClientTUI implements Runnable {
 	public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
 		String command = input.substring(0, 1);
 		String[] userInput = input.split(" ");
-		int[] marbles;
+		
+		ArrayList<Integer> marbles = new ArrayList<>();
 		switch (command) {
 
 		case ProtocolMessages.MOVE:
@@ -57,16 +59,14 @@ public class AbaloneClientTUI implements Runnable {
 			if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
 					|| userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
 					|| userInput[1].equals(Directions.southEast) || userInput[1].equals(Directions.southWest)) {
-				int marbleCount = userInput.length - 2;
-				marbles = new int[marbleCount];
-				for (int i = 0; i < marbles.length; i++) {
-					try {
-						marbles[i] = Integer.parseInt(userInput[i + 2]);
-					} catch (NumberFormatException e) {
-						showMessage("Invalid command please try again");
-						break;
+				
+				for (int i = 0; i < userInput.length; i++) {
+					if (userInput[i].matches("([0-9]*)")) {
+						marbles.add(Integer.parseInt(userInput[i]));
 					}
+
 				}
+				
 				client.sendMove(client.getName(), userInput[1], marbles);
 				break;
 			} else {

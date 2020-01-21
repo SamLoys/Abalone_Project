@@ -39,12 +39,18 @@ public class MoveCheck {
 	 * protocol indexes
 	 */
 	public ArrayList<Integer> moveChecker(int i1, String direction) {
+		System.out.println("dit is de i1:" + i1);
 		index = new ArrayList<Integer>();
 		index.add(i1);
+		System.out.print("dit is de index arraylist:" + index); 
 		if (isOnBoard(index)) {
+			System.out.println("hij is on board"); 
 			Collections.sort(index);
 			ArrayList<Integer> newList = completeList(index, direction);
+			System.out.println("Dit is de completeList: "+ newList);
 			ArrayList<Integer> returnList = returnMoves(newList, direction);
+			System.out.println("Dit is de returnList: "+ returnList);
+			
 			return returnList;
 		} else {
 			ArrayList<Integer> empty = new ArrayList<Integer>();
@@ -119,10 +125,12 @@ public class MoveCheck {
 	}
 
 	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) {
+		System.out.println("Dit krijgt de move checker binnen" + index);
 		switch (index.size()) {
 		case 1:
+			System.out.println("case 1 is aangeroepen"); 
 			return moveChecker(index.get(0), direction);
-
+			
 		case 2:
 			return moveChecker(index.get(0), index.get(1), direction);
 		case 3:
@@ -146,12 +154,18 @@ public class MoveCheck {
 
 		// Checks if a summito
 		if (isInLine(index)) {
+			System.out.println("is inline");
 			if (isStraightMove(index, direction)) {
+				System.out.println("is Straight move");
 				if (isOwnMarble(index.get(0))) {
+					System.out.println("is own marble");
 					switch ((index.size() - 1)) {
 					case 1:
+						System.out.println("case 1");
 						if (board.getMarble(index.get(1)) == Marble.Empty) {
+							
 							all.add(index.get(0));
+							System.out.println("hij is erin , plus all : "+ all);
 						}
 						break;
 					case 2:
@@ -271,7 +285,7 @@ public class MoveCheck {
 	// Reverses the list to get the front marble on index 0 for the direction west,
 	// northwest or northeast
 	public ArrayList<Integer> flipList(ArrayList<Integer> index, String direction) {
-		if (direction == Directions.west || direction == Directions.northWest || direction == Directions.northEast) {
+		if (direction.equals(Directions.west) || direction.equals(Directions.northWest)|| direction.equals(Directions.northEast)) {
 			Collections.sort(index, Collections.reverseOrder());
 		}
 		return index;
@@ -284,13 +298,13 @@ public class MoveCheck {
 	 *         orientation is E or W if something goes wrong return 9999
 	 */
 	public int getOrientation(String direction) {
-		if (direction == Directions.west || direction == Directions.east) {
+		if (direction.equals(Directions.west)|| direction.equals(Directions.east)) {
 			return 3;
 		}
-		if (direction == Directions.northEast || direction == Directions.southWest) {
+		if (direction.equals(Directions.northEast) || direction.equals(Directions.southWest)) {
 			return 2;
 		}
-		if (direction == Directions.southEast || direction == Directions.northWest) {
+		if (direction.equals(Directions.southEast)|| direction.equals(Directions.northWest)) {
 			return 1;
 		}
 		return 9999;

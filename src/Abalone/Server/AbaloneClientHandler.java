@@ -119,7 +119,7 @@ public class AbaloneClientHandler implements Runnable {
 					|| inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
 					|| inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
 
-				for (int i = 3; i < inputSrv.length; i++) {
+				for (int i = 0; i < inputSrv.length; i++) {
 					if (inputSrv[i].matches("([0-9]*)")) {
 						indexes.add(Integer.parseInt(inputSrv[i]));
 					}

@@ -1,5 +1,7 @@
 package Abalone.protocol;
 
+import java.util.ArrayList;
+
 import Abalone.Exceptions.ServerUnavailableException;
 
 public interface ClientProtocol {
@@ -43,7 +45,7 @@ public interface ClientProtocol {
      * @param direction The direction that the line of marbles should move to.
      * @param marbleIndices All indices of the marbles involved in this move. The order of the indices does not matter.
      */
-    void sendMove(String playerName, String direction, int[] marbleIndices) throws ServerUnavailableException;
+    void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices) throws ServerUnavailableException;
     
 
     /**

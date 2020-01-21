@@ -200,7 +200,7 @@ public class Board {
 	public ArrayList<Integer> protocolToIndex(ArrayList<Integer> indexes) {
 		ArrayList<Integer> toIndex = new ArrayList<Integer>();
 		for (int index : indexes) {
-			toIndex.add(indexToProtocol(index));
+			toIndex.add(protocolToIndex(index));
 		}
 		return toIndex;
 	}
@@ -381,7 +381,7 @@ public class Board {
 				setMarble(index, Marble.Empty);
 			}
 			for (int i = 0; i < indexes.size(); i ++) {
-				if (getMarble(getNeighbour(indexes.get(i), direction)) == Marble.Empty) {
+				if (getMarble(getNeighbour(indexes.get(i), direction)) == Marble.Death) {
 					scored = true; 
 				}else {
 					setMarble(getNeighbour(indexes.get(i), direction), placeholders.get(i));

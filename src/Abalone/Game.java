@@ -97,12 +97,13 @@ public class Game implements Runnable {
 		ArrayList<Integer> newIndexes = new ArrayList<>();
 		ArrayList<Integer> totalMove = new ArrayList<>();
 		ArrayList<Integer> totalMoveToProtocol = new ArrayList<Integer>();
+		
 		if (name.equals(getNextPlayer())) { 
 			newIndexes = board.protocolToIndex(indexes);
 			System.out.println("this is the next Indexes value: "+ newIndexes);
 			totalMove = checkmap.get(name).moveChecker(newIndexes, direction); 
 			System.out.println("this is the totalmove value: "+ totalMove);
-			if (totalMove.size() > 5) {
+			if (totalMove.size() ==0) {
 				// something went wrong it is not good
 
 			}
@@ -110,7 +111,7 @@ public class Game implements Runnable {
 			if (scores) {
 				board.addScore(checkmap.get(name).getColor());
 			}
-			
+			System.out.println(board.toString());
 			moves++;
 			totalMoveToProtocol = board.indexToProtocol(totalMove);
 			String Nextplayer = getNextPlayer();

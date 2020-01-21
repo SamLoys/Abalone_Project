@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -17,14 +18,16 @@ import Abalone.protocol.ServerProtocol;
 public class AbaloneServer implements ServerProtocol, Runnable {
 
 	private ServerSocket ssock;
-	private List<AbaloneClientHandler> clients;
+	
 	private List<Game> games = new ArrayList<Game>();
 	private List<String> userNames = new ArrayList<String>();
+	
+	HashMap<String, AbaloneClientHandler> clientsMap = new HashMap<>();
 
 	private List<String> queueTwo = new ArrayList<String>();
 	private List<String> queueThree = new ArrayList<String>();
 	private List<String> queueFour = new ArrayList<String>();
-
+ 
 	private int nextPlayerNo;
 	private AbaloneServerTUI myTUI;
 
@@ -35,7 +38,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	private String serverName;
 
 	public AbaloneServer() {
-		clients = new ArrayList<>();
+		
 		myTUI = new AbaloneServerTUI();
 		nextPlayerNo = 1;
 		serverName = "Aba_lonely";
@@ -46,15 +49,16 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	}
 
 	public AbaloneClientHandler getClientHandler(String name) {
-		for (int i = 0; i < clients.size(); i++) {
-
-			if (clients.get(i).getClientName().equals(name)) {
-				return clients.get(i);
-			}
+		if (clientsMap.containsKey(name)) {
+			return clientsMap.get(name);
 		}
 		return null;
 
-	} 
+	}
+	
+	public void setClientHandlerToName(String name, AbaloneClientHandler handler) {
+		clientsMap.put(name, handler);
+	}
 
 	public synchronized void addToQueue(String name, int lobby) {
 		switch (lobby) {
@@ -108,18 +112,14 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	}
 
 	public synchronized void echo(String msg) throws IOException, ClientUnavailableException {
-		for (int i = 0; i < clients.size(); i++) {
-			clients.get(i).sendMessage(msg);
+		for(String name : clientsMap.keySet()) {
+			clientsMap.get(name).sendMessage(msg); 
 		}
 	}
 	 
 	public synchronized void multipleSend(String msg , String[] players) throws IOException, ClientUnavailableException {
-		for (int j = 0; j < players.length; j ++) {
-			for (int i = 0; i< clients.size(); i++) {
-				if (players[j].equals(clients.get(i).getClientName())) {
-					clients.get(i).sendMessage(msg);
-				}
-			}
+		for (String name : players) {
+			clientsMap.get(name).sendMessage(msg);
 		}
 	}
 
@@ -149,8 +149,8 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 					myTUI.showMessage("New Player [" + name + "] connected!");
 					AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
 					new Thread(handler).start();
-					clients.add(handler);
-					System.out.println("This many clients" + clients.size());
+					
+					
 				}
 			} catch (ExitProgram e) {
 				e.printStackTrace();
@@ -282,8 +282,13 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		}
 	}
 
-	public void removeClient(AbaloneClientHandler client) {
-		this.clients.remove(client);
+	public void removeGame(Game game) {
+		this.games.remove(game);
+	}
+	
+	public void removeClient(String name) {
+		clientsMap.remove(name);
+		userNames.remove(name);
 	}
 
 	public boolean[] getSupports() {

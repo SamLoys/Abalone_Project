@@ -17,11 +17,16 @@ public class AbaloneClientTUI implements Runnable {
 	AbaloneClient client;
 	private PrintWriter consoleOUT;
 	private BufferedReader consoleIN;
+	boolean looping = true;
 
 	public AbaloneClientTUI(AbaloneClient client) {
 		this.client = client;
 		consoleOUT = new PrintWriter(System.out, true);
 		consoleIN = new BufferedReader(new InputStreamReader(System.in));
+	}
+
+	public void stopThread() {
+		looping = false;
 	}
 
 	public void run() {
@@ -45,53 +50,55 @@ public class AbaloneClientTUI implements Runnable {
 
 	public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
 		if (!input.equals("")) {
-		String command = input.substring(0, 1);
-		String[] userInput = input.split(" ");
-		
-		ArrayList<Integer> marbles = new ArrayList<>();
-		switch (command) {
+			String command = input.substring(0, 1);
+			String[] userInput = input.split(" ");
 
-		case ProtocolMessages.MOVE:
-			if (userInput.length < 3) {
-				showMessage("Invalid command please try again");
-				printHelpMenu();
-				break;
-			}
-			if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
-					|| userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
-					|| userInput[1].equals(Directions.southEast) || userInput[1].equals(Directions.southWest)) {
-				
-				for (int i = 0; i < userInput.length; i++) {
-					if (userInput[i].matches("([0-9]*)")) {
-						marbles.add(Integer.parseInt(userInput[i]));
+			ArrayList<Integer> marbles = new ArrayList<>();
+			switch (command) {
+
+			case ProtocolMessages.MOVE:
+				if (userInput.length < 3) {
+					showMessage("Invalid command please try again");
+					printHelpMenu();
+					break;
+				}
+				if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
+						|| userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
+						|| userInput[1].equals(Directions.southEast) || userInput[1].equals(Directions.southWest)) {
+
+					for (int i = 0; i < userInput.length; i++) {
+						if (userInput[i].matches("([0-9]*)")) {
+							marbles.add(Integer.parseInt(userInput[i]));
+						}
+
 					}
 
+					client.sendMove(client.getName(), userInput[1], marbles);
+					break;
+				} else {
+					showMessage("Invalid command please try again");
+					printHelpMenu();
+					break;
 				}
-				
-				client.sendMove(client.getName(), userInput[1], marbles);
+
+			case ProtocolMessages.QUEUE_SIZE:
+				client.getCurrentQueueSizes();
 				break;
-			} else {
-				showMessage("Invalid command please try again");
+
+			case ProtocolMessages.EXIT:
+				client.sendExit();
+				client.closeConnection();
+				stopThread();
+				break;
+			case "h":
 				printHelpMenu();
 				break;
+
+			default:
+				showMessage("Invalid command please try again");
+
+				break;
 			}
-
-		case ProtocolMessages.QUEUE_SIZE:
-			client.getCurrentQueueSizes();
-			break;
-
-		case ProtocolMessages.EXIT:
-
-			break;
-		case "h":
-			printHelpMenu();
-			break;
-
-		default:
-			showMessage("Invalid command please try again");
-
-			break;
-		}
 		}
 	}
 
@@ -212,16 +219,24 @@ public class AbaloneClientTUI implements Runnable {
 
 	public String getString(String question) {
 		// To be implemented
-		showMessage(question);
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String answer = "";
-		try {
-			answer = br.readLine();
-		} catch (IOException e) {
 
-			e.printStackTrace();
+		while (true) {
+			showMessage(question);
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String answer = "";
+			try {
+				answer = br.readLine();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+			if (answer.trim().equals("")) {
+				showMessage("The name is empty");
+			} else {
+				return answer;
+			}
 		}
-		return answer;
+
 	}
 
 	public boolean getBool(String question) {

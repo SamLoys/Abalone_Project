@@ -33,7 +33,8 @@ public class MoveCheck {
 	public Marble getColor() {
 		return color; 
 	}
-
+ 
+	
 	/*
 	 * @requires that the indexes are already converted to own indexes insteads of
 	 * protocol indexes

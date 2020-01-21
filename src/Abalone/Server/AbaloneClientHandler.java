@@ -15,7 +15,6 @@ import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
 import Abalone.protocol.ProtocolMessages.Directions;
 
-
 public class AbaloneClientHandler implements Runnable {
 
 	private BufferedReader in;
@@ -27,7 +26,6 @@ public class AbaloneClientHandler implements Runnable {
 	private int clientSupportChatting = 0;
 	private int clientSupportChallenge = 0;
 	private int clientSupportLeaderboard = 0;
-
 	private Marble color;
 
 	/** The connected HotelServer */
@@ -97,7 +95,7 @@ public class AbaloneClientHandler implements Runnable {
 		case ProtocolMessages.HELLO:
 			clientSupportChatting = Integer.parseInt(inputSrv[1]);
 			clientSupportChallenge = Integer.parseInt(inputSrv[2]);
-			clientSupportLeaderboard =Integer.parseInt(inputSrv[3]);
+			clientSupportLeaderboard = Integer.parseInt(inputSrv[3]);
 			boolean[] supports = srv.getSupports();
 
 			String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
@@ -134,11 +132,11 @@ public class AbaloneClientHandler implements Runnable {
 			}
 
 			break;
-			
-		case ProtocolMessages.QUEUE_SIZE:{
+
+		case ProtocolMessages.QUEUE_SIZE: {
 			sendMessage(srv.handleQueueSizeQuery());
 		}
-		break;
+			break;
 		case ProtocolMessages.EXIT:
 			shutdown();
 		default:

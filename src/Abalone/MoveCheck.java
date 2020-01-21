@@ -131,15 +131,12 @@ public class MoveCheck {
 		case 1:
 			System.out.println("case 1 is aangeroepen"); 
 			return moveChecker(index.get(0), direction);
-			
 		case 2:
 			return moveChecker(index.get(0), index.get(1), direction);
 		case 3:
-
 			return moveChecker(index.get(0), index.get(1), index.get(2), direction);
 		case 4:
-			return moveChecker(index.get(0), index.get(1), index.get(3), index.get(4), direction);
-
+			return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), direction);
 		case 5:
 			return moveChecker(index.get(0),index.get(1), index.get(2), index.get(3), index.get(4), direction);
 		default: 

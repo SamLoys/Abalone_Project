@@ -37,8 +37,8 @@ public class AbaloneClient implements ClientProtocol {
 	private boolean yourTurn = false;
 	Board clientBoard;
 	String[] gamePlayers;
-	MoveCheck moveChecker; 
-	MoveCheck moveEnemyCheck; 
+	MoveCheck moveChecker;
+	MoveCheck moveEnemyCheck;
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
@@ -153,138 +153,144 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	public void handleServerCommands(String msg) {
-		String command = msg.substring(0, 1);
-		String[] inputSrv = msg.split(";");
-		// getting commands from the server
-		switch (command) {
-		case ProtocolMessages.HELLO:
+		if (!msg.equals("")) {
 
-			serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
-			serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
-			serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
-			this.name = inputSrv[4];
-			clientTui.showMessage("The server has assigned you as the following name: " + name);
-			handshakeComplete = true;
-			break;
+			String command = msg.substring(0, 1);
+			String[] inputSrv = msg.split(";");
+			// getting commands from the server
+			switch (command) {
+			case ProtocolMessages.HELLO:
 
-		case ProtocolMessages.JOIN:
-			if (Integer.parseInt(inputSrv[1]) == gameSize) {
-				// this message is for you
-				if (joiningComplete == false) {
-					clientTui.showMessage("You succesfully joined");
-					clientTui.showMessage("there are " + inputSrv[2] + "out of " + inputSrv[1] + " joined");
-					joiningComplete = true;
-				} else {
-					clientTui.showMessage("new Player joined queue , now " + inputSrv[2] + "out of " + inputSrv[1]);
+				serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
+				serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
+				serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
+				this.name = inputSrv[4];
+				clientTui.showMessage("The server has assigned you as the following name: " + name);
+				handshakeComplete = true;
+				break;
+
+			case ProtocolMessages.JOIN:
+				if (Integer.parseInt(inputSrv[1]) == gameSize) {
+					// this message is for you
+					if (joiningComplete == false) {
+						clientTui.showMessage("You succesfully joined");
+						clientTui.showMessage("there are " + inputSrv[2] + "out of " + inputSrv[1] + " joined");
+						joiningComplete = true;
+					} else {
+						clientTui.showMessage("new Player joined queue , now " + inputSrv[2] + "out of " + inputSrv[1]);
+					}
+
+				}
+				break;
+
+			case ProtocolMessages.GAME_START:
+				gameStarted = true;
+				// only gets this message if the server sends it to me
+				for (int i = 0; i < inputSrv.length; i++) {
+					if (inputSrv[i].equals(name)) {
+						if (inputSrv.length == 4) {
+							gamePlayers = new String[2];
+							gamePlayers[0] = inputSrv[1];
+							gamePlayers[1] = inputSrv[2];
+							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+									+ " and " + gamePlayers[1]);
+							clientTui.showMessage("The game will be played in this order");
+							if (gamePlayers[0].equals(name)) {
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
+								yourTurn = true;
+
+							}
+							setPropperColor();
+
+							clientBoard = new Board(2);
+							moveChecker = new MoveCheck(color, clientBoard);
+							showBoard();
+						}
+						if (inputSrv.length == 5) {
+							gamePlayers = new String[3];
+							gamePlayers[0] = inputSrv[1];
+							gamePlayers[1] = inputSrv[2];
+							gamePlayers[2] = inputSrv[3];
+							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+									+ " and " + gamePlayers[1] + " and " + gamePlayers[2]);
+							clientTui.showMessage("The game will be played in this order");
+							if (gamePlayers[0].equals(name)) {
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
+								yourTurn = true;
+
+							}
+							setPropperColor();
+							clientBoard = new Board(3);
+							showBoard();
+							moveChecker = new MoveCheck(color, clientBoard);
+						}
+						if (inputSrv.length == 6) {
+							gamePlayers = new String[4];
+							gamePlayers[0] = inputSrv[1];
+							gamePlayers[1] = inputSrv[2];
+							gamePlayers[2] = inputSrv[3];
+							gamePlayers[3] = inputSrv[4];
+							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+									+ " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
+							clientTui.showMessage("The game will be played in this order");
+							if (gamePlayers[0].equals(name)) {
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
+								yourTurn = true;
+							}
+							setPropperColor();
+							clientBoard = new Board(4);
+							showBoard();
+							moveChecker = new MoveCheck(color, clientBoard);
+						}
+					}
 				}
 
-			}
-			break;
+				break;
 
-		case ProtocolMessages.GAME_START:
-			gameStarted = true;
-			// only gets this message if the server sends it to me
-			for (int i = 0; i < inputSrv.length; i++) {
-				if (inputSrv[i].equals(name)) {
-					if (inputSrv.length == 4) {
-						gamePlayers = new String[2];
-						gamePlayers[0] = inputSrv[1];
-						gamePlayers[1] = inputSrv[2];
-						clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-								+ " and " + gamePlayers[1]);
-						clientTui.showMessage("The game will be played in this order");
-						if (gamePlayers[0].equals(name)) {
-							clientTui.showMessage(
-									"this is you, go enter your move, remember typing h will print the help menu");
-							yourTurn = true;
+			case ProtocolMessages.MOVE:
+				ArrayList<Integer> newIndexes = new ArrayList<>();
+				ArrayList<Integer> totalMove = new ArrayList<>();
+				ArrayList<Integer> indexes = new ArrayList<>();
+				yourTurn = false;
+				clientTui.showMessage(
+						"Player " + inputSrv[2] + "has moved " + "\n it is now the turn of player: " + inputSrv[1]);
+				String direction = inputSrv[3];
 
-						}
-						setPropperColor();
-
-						clientBoard = new Board(2);
-						moveChecker = new MoveCheck(color, clientBoard);
-						showBoard();
-					}
-					if (inputSrv.length == 5) {
-						gamePlayers = new String[3];
-						gamePlayers[0] = inputSrv[1];
-						gamePlayers[1] = inputSrv[2];
-						gamePlayers[2] = inputSrv[3];
-						clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-								+ " and " + gamePlayers[1] + " and " + gamePlayers[2]);
-						clientTui.showMessage("The game will be played in this order");
-						if (gamePlayers[0].equals(name)) {
-							clientTui.showMessage(
-									"this is you, go enter your move, remember typing h will print the help menu");
-							yourTurn = true;
-
-						}
-						setPropperColor();
-						clientBoard = new Board(3);
-						showBoard();
-						moveChecker = new MoveCheck(color, clientBoard);
-					}
-					if (inputSrv.length == 6) {
-						gamePlayers = new String[4];
-						gamePlayers[0] = inputSrv[1];
-						gamePlayers[1] = inputSrv[2];
-						gamePlayers[2] = inputSrv[3];
-						gamePlayers[3] = inputSrv[4];
-						clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-								+ " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
-						clientTui.showMessage("The game will be played in this order");
-						if (gamePlayers[0].equals(name)) {
-							clientTui.showMessage(
-									"this is you, go enter your move, remember typing h will print the help menu");
-							yourTurn = true;
-						}
-						setPropperColor();
-						clientBoard = new Board(4);
-						showBoard();
-						moveChecker = new MoveCheck(color, clientBoard);
+				for (int i = 0; i < inputSrv.length; i++) {
+					if (inputSrv[i].matches("([0-9]*)")) {
+						indexes.add(Integer.parseInt(inputSrv[i]));
 					}
 				}
-			}
-
-			break;
-
-		case ProtocolMessages.MOVE:
-			ArrayList<Integer> newIndexes = new ArrayList<>();
-			ArrayList<Integer> totalMove = new ArrayList<>();
-			ArrayList<Integer> indexes = new ArrayList<>();
-			yourTurn = false;
-			clientTui.showMessage(
-					"Player " + inputSrv[2] + "has moved " + "\n it is now the turn of player: " + inputSrv[1]);
-			String direction = inputSrv[3];
-		
-			for (int i = 0; i < inputSrv.length; i++) {
-				if (inputSrv[i].matches("([0-9]*)")) {
-					indexes.add(Integer.parseInt(inputSrv[i]));
+				newIndexes = clientBoard.protocolToIndex(indexes);
+				moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard);
+				totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
+				boolean scores = clientBoard.move(totalMove, direction);
+				if (scores) {
+					clientBoard.addScore(getPlayerMarble(inputSrv[2]));
 				}
+				showBoard();
+				if (inputSrv[1].equals(name)) {
+					clientTui.showMessage("it is now your turn, enter your move");
+					yourTurn = true;
+				}
+				break;
+			case ProtocolMessages.GAME_FINISHED:
+				break;
+			case ProtocolMessages.QUEUE_SIZE:
+				clientTui.showMessage(
+						"the queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
+								+ inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
+				break;
+			case ProtocolMessages.EXIT:
+				break;
+			default:
+				break;
 			}
-			newIndexes = clientBoard.protocolToIndex(indexes);
-			moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard) ;
-			totalMove = moveEnemyCheck.moveChecker(newIndexes, direction); 
-			boolean scores = clientBoard.move(totalMove, direction); 
-			if (scores) {
-				clientBoard.addScore(getPlayerMarble(inputSrv[2]));
-			}
-			showBoard();
-			if (inputSrv[1].equals(name)) {
-				clientTui.showMessage("it is now your turn, enter your move");
-				yourTurn = true;
-			}
-			break;
-		case ProtocolMessages.GAME_FINISHED:
-			break;
-		case ProtocolMessages.QUEUE_SIZE:
-			clientTui.showMessage("the queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
-					+ inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
-			break;
-		case ProtocolMessages.EXIT:
-			break;
-		default:
-			break;
+		} else {
+			clientTui.showMessage("Try again");
 		}
 	}
 
@@ -324,7 +330,7 @@ public class AbaloneClient implements ClientProtocol {
 
 	public Marble getPlayerMarble(String name) {
 		switch (gameSize) {
-		case 2: 
+		case 2:
 			if (gamePlayers[0].equals(name)) {
 				return Marble.Black;
 			} else
@@ -345,8 +351,10 @@ public class AbaloneClient implements ClientProtocol {
 				return Marble.Green;
 			} else if (gamePlayers[2].equals(name)) {
 				return Marble.White;
-			}else {return Marble.Red;}
-		
+			} else {
+				return Marble.Red;
+			}
+
 		}
 		return Marble.Death;
 	}
@@ -364,8 +372,6 @@ public class AbaloneClient implements ClientProtocol {
 		clientTui.showMessage(clientBoard.toString());
 	}
 
-	
-
 //---------------------- protocol messages to send down below
 	@Override
 	public void handleHandshake(boolean chat, boolean challenge, boolean leaderboard, String playerName)
@@ -380,7 +386,7 @@ public class AbaloneClient implements ClientProtocol {
 		while (!handshakeComplete) {
 			String serverMessage = readLineFromServer();
 			handleServerCommands(serverMessage);
-		} 
+		}
 	}
 
 	@Override
@@ -396,14 +402,15 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	@Override
-	public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices) throws ServerUnavailableException {
+	public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices)
+			throws ServerUnavailableException {
 		// TODO Auto-generated method stub
 		if (yourTurn) {
 			System.out.println("this are the marbleIndicis " + marbleIndices);
 			System.out.println("This is the given direction :" + direction);
 			ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
 			System.out.println("this are the converteIndexes " + convertIndexes);
-			ArrayList<Integer> allMoved =  moveChecker.moveChecker(convertIndexes, direction);
+			ArrayList<Integer> allMoved = moveChecker.moveChecker(convertIndexes, direction);
 			System.out.println("this are the allMovedIndexes " + allMoved);
 			System.out.println("his is your color: " + color.toString());
 			if (!allMoved.isEmpty()) {
@@ -412,15 +419,15 @@ public class AbaloneClient implements ClientProtocol {
 				String toSendMarbles = "";
 				for (int i = 0; i < protocolAll.size(); i++) {
 					toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
-					toSendMarbles = toSendMarbles + protocolAll.get(i); 
+					toSendMarbles = toSendMarbles + protocolAll.get(i);
 				}
-				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER+ direction +toSendMarbles
-						+ ProtocolMessages.EOC);  
-				
+				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER
+						+ direction + toSendMarbles + ProtocolMessages.EOC);
+
 			} else {
-			 clientTui.showMessage("The input is not valid, please try again");
+				clientTui.showMessage("The input is not valid, please try again");
 			}
-			
+
 		} else {
 			clientTui.showMessage("It is not your turn, please wait");
 		}

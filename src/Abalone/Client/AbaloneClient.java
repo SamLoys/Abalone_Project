@@ -497,32 +497,35 @@ public class AbaloneClient implements ClientProtocol {
 	@Override
 	public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices)
 			throws ServerUnavailableException {
-		// TODO Auto-generated method stub
-		if (yourTurn) {
-			// System.out.println("this are the marbleIndicis " + marbleIndices);
-			// System.out.println("This is the given direction :" + direction);
-			ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
-			// System.out.println("this are the converteIndexes " + convertIndexes);
-			ArrayList<Integer> allMoved = moveChecker.moveChecker(convertIndexes, direction);
-			// System.out.println("this are the allMovedIndexes " + allMoved);
-			// System.out.println("his is your color: " + color.toString());
-			if (!allMoved.isEmpty()) {
-				ArrayList<Integer> protocolAll = new ArrayList<>();
-				protocolAll = clientBoard.indexToProtocol(allMoved);
-				String toSendMarbles = "";
-				for (int i = 0; i < protocolAll.size(); i++) {
-					toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
-					toSendMarbles = toSendMarbles + protocolAll.get(i);
-				}
-				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER
-						+ direction + toSendMarbles + ProtocolMessages.EOC);
 
+		if (yourTurn) {
+			if (gameStarted) {
+				ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
+
+				ArrayList<Integer> allMoved = moveChecker.moveChecker(convertIndexes, direction);
+
+				if (!allMoved.isEmpty()) {
+					ArrayList<Integer> protocolAll = new ArrayList<>();
+					protocolAll = clientBoard.indexToProtocol(allMoved);
+					String toSendMarbles = "";
+					for (int i = 0; i < protocolAll.size(); i++) {
+						toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
+						toSendMarbles = toSendMarbles + protocolAll.get(i);
+					}
+					sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER
+							+ direction + toSendMarbles + ProtocolMessages.EOC);
+
+				} else {
+					clientTui.showMessage("The input is not valid, please try again");
+				}
 			} else {
-				clientTui.showMessage("The input is not valid, please try again");
+				clientTui.showMessage("It is not your turn, please wait");
 			}
+			
+			
 
 		} else {
-			clientTui.showMessage("It is not your turn, please wait");
+			clientTui.showMessage("The game hasnt started yet");
 		}
 
 	}

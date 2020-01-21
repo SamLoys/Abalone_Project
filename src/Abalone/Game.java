@@ -13,7 +13,7 @@ public class Game implements Runnable {
 	private Board board;
 	private String[] playerNames;
 	private AbaloneServer srv;
-	private int moves;
+	private int moves = 0;
 	boolean finished = false;
 	private static final int maximumMoves = 96;
 
@@ -80,9 +80,9 @@ public class Game implements Runnable {
 
 	public void run() {
 		boolean continueGame = true;
-		while (continueGame) {
+		while (continueGame) { 
 			reset();
-			try {
+			try { 
 				play();
 			} catch (IOException | ClientUnavailableException e) {
 				// TODO Auto-generated catch block
@@ -136,7 +136,7 @@ public class Game implements Runnable {
 					finished= true;
 					srv.multipleSend(msg, playerNames);
 					srv.removeGame(this);
-					// player 1 wins
+					// player 1 wins 
 				} else if (scoreteam2 >= 6) {
 					String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
 							+ ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "2" + ProtocolMessages.EOC;
@@ -321,11 +321,13 @@ public class Game implements Runnable {
 			}
 			message = message + name + ProtocolMessages.DELIMITER + direction + indexesString + ProtocolMessages.EOC;
 			srv.multipleSend(message, playerNames);
+		
 
 		}
 
 	}
 
+	
 	public String getNextPlayer() {
 		while (moves >= playerNames.length) {
 			moves = moves - playerNames.length;

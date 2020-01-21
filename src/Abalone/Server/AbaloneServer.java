@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import Abalone.*;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.ExitProgram;
@@ -18,27 +17,27 @@ import Abalone.protocol.ServerProtocol;
 public class AbaloneServer implements ServerProtocol, Runnable {
 
 	private ServerSocket ssock;
-	
+
 	private List<Game> games = new ArrayList<Game>();
 	private List<String> userNames = new ArrayList<String>();
-	
+
 	HashMap<String, AbaloneClientHandler> clientsMap = new HashMap<>();
 
 	private List<String> queueTwo = new ArrayList<String>();
 	private List<String> queueThree = new ArrayList<String>();
 	private List<String> queueFour = new ArrayList<String>();
- 
+
 	private int nextPlayerNo;
 	private AbaloneServerTUI myTUI;
 
 	private boolean serverSupportChatting = false;
 	private boolean serverSupportChallenge = false;
 	private boolean serverSupportLeaderboard = false;
-	
+
 	private String serverName;
 
 	public AbaloneServer() {
-		
+
 		myTUI = new AbaloneServerTUI();
 		nextPlayerNo = 1;
 		serverName = "Aba_lonely";
@@ -55,7 +54,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		return null;
 
 	}
-	
+
 	public void setClientHandlerToName(String name, AbaloneClientHandler handler) {
 		clientsMap.put(name, handler);
 	}
@@ -112,12 +111,12 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	}
 
 	public synchronized void echo(String msg) throws IOException, ClientUnavailableException {
-		for(String name : clientsMap.keySet()) {
-			clientsMap.get(name).sendMessage(msg); 
+		for (String name : clientsMap.keySet()) {
+			clientsMap.get(name).sendMessage(msg);
 		}
 	}
-	 
-	public synchronized void multipleSend(String msg , String[] players) throws IOException, ClientUnavailableException {
+
+	public synchronized void multipleSend(String msg, String[] players) throws IOException, ClientUnavailableException {
 		for (String name : players) {
 			clientsMap.get(name).sendMessage(msg);
 		}
@@ -149,8 +148,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 					myTUI.showMessage("New Player [" + name + "] connected!");
 					AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
 					new Thread(handler).start();
-					
-					
+
 				}
 			} catch (ExitProgram e) {
 				e.printStackTrace();
@@ -198,7 +196,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		String player4Name = "";
 		Game game;
 		Thread gameThread;
-		String[] Players; 
+		String[] Players;
 		switch (lobby) {
 		case 2:
 			player1Name = queueTwo.get(0);
@@ -206,19 +204,19 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			player2Name = queueTwo.get(0);
 			queueTwo.remove(0);
 			game = new Game(2, this, player1Name, player2Name);
-			getClientHandler(player1Name).addGame(game); 
+			getClientHandler(player1Name).addGame(game);
 			getClientHandler(player1Name).setColor(Marble.Black);
-			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).addGame(game);
 			getClientHandler(player2Name).setColor(Marble.White);
-			games.add(game); 
+			games.add(game);
 
 			gameThread = new Thread(game);
 			gameThread.start();
-			
-			//construct an array with names to send to all the clients
-			Players = new String[2]; 
-			Players[0] = player1Name; 
-			Players[1] = player2Name; 
+
+			// construct an array with names to send to all the clients
+			Players = new String[2];
+			Players[0] = player1Name;
+			Players[1] = player2Name;
 			handleGameStart(Players);
 			break;
 
@@ -232,19 +230,19 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			game = new Game(3, this, player1Name, player2Name, player3Name);
 			getClientHandler(player1Name).addGame(game);
 			getClientHandler(player1Name).setColor(Marble.Black);
-			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).addGame(game);
 			getClientHandler(player2Name).setColor(Marble.Green);
 			getClientHandler(player3Name).addGame(game);
 			getClientHandler(player3Name).setColor(Marble.White);
 			games.add(game);
-			
-			//construct an array with names to send to all the clients
-			Players = new String[3]; 
-			Players[0] = player1Name; 
-			Players[1] = player2Name; 
-			Players[2] = player3Name; 
+
+			// construct an array with names to send to all the clients
+			Players = new String[3];
+			Players[0] = player1Name;
+			Players[1] = player2Name;
+			Players[2] = player3Name;
 			handleGameStart(Players);
-			
+
 			gameThread = new Thread(game);
 			gameThread.start();
 
@@ -260,22 +258,22 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			game = new Game(4, this, player1Name, player2Name, player3Name, player4Name);
 			getClientHandler(player1Name).addGame(game);
 			getClientHandler(player1Name).setColor(Marble.Black);
-			getClientHandler(player2Name).addGame(game); 
+			getClientHandler(player2Name).addGame(game);
 			getClientHandler(player2Name).setColor(Marble.Green);
 			getClientHandler(player3Name).addGame(game);
 			getClientHandler(player3Name).setColor(Marble.White);
-			getClientHandler(player4Name).addGame(game); 
-			getClientHandler(player4Name).setColor(Marble.Red); 
+			getClientHandler(player4Name).addGame(game);
+			getClientHandler(player4Name).setColor(Marble.Red);
 			games.add(game);
-			
-			//construct an array with names to send to all the clients
-			Players = new String[3]; 
-			Players[0] = player1Name; 
-			Players[1] = player2Name; 
-			Players[2] = player3Name; 
-			Players[3] = player4Name; 
+
+			// construct an array with names to send to all the clients
+			Players = new String[3];
+			Players[0] = player1Name;
+			Players[1] = player2Name;
+			Players[2] = player3Name;
+			Players[3] = player4Name;
 			handleGameStart(Players);
-			
+
 			gameThread = new Thread(game);
 			gameThread.start();
 			break;
@@ -285,7 +283,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	public void removeGame(Game game) {
 		this.games.remove(game);
 	}
-	
+
 	public void removeClient(String name) {
 		clientsMap.remove(name);
 		userNames.remove(name);
@@ -296,9 +294,9 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		supports[0] = serverSupportChatting;
 		supports[1] = serverSupportChallenge;
 		supports[2] = serverSupportLeaderboard;
-		
+
 		return supports;
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -308,38 +306,37 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
 	@Override
 	public synchronized String handleHello(String playerName, boolean chat, boolean challenge, boolean leaderboard) {
-		String actualName = setUserName(playerName);  
-		int chatInt = chat? 1: 0 ;
-		int challengeInt = challenge? 1: 0 ;
-		int leaderboardInt = leaderboard? 1: 0 ;
-		
+		String actualName = setUserName(playerName);
+		int chatInt = chat ? 1 : 0;
+		int challengeInt = challenge ? 1 : 0;
+		int leaderboardInt = leaderboard ? 1 : 0;
 
-		String response = ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt + ProtocolMessages.DELIMITER  
-				+challengeInt + ProtocolMessages.DELIMITER +leaderboardInt + ProtocolMessages.DELIMITER+ actualName
+		String response = ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt + ProtocolMessages.DELIMITER
+				+ challengeInt + ProtocolMessages.DELIMITER + leaderboardInt + ProtocolMessages.DELIMITER + actualName
 				+ ProtocolMessages.EOC;
-		return response; 
+		return response;
 	}
 
 	@Override
 	public String handleJoin(String playerName, int gamesize) {
 		addToQueue(playerName, gamesize);
-		String response = ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize
-				+ ProtocolMessages.DELIMITER + getQueueSize(gamesize) + ProtocolMessages.EOC;   
-		
-		return response; 
+		String response = ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize + ProtocolMessages.DELIMITER
+				+ getQueueSize(gamesize) + ProtocolMessages.EOC;
+
+		return response;
 	}
 
 	@Override
 	public String handleGameStart(String[] playerNames) {
-		
-		String names = null; 
-		
-		for (int i = 0; i < playerNames.length ; i++) {
+
+		String names = null;
+
+		for (int i = 0; i < playerNames.length; i++) {
 			names = names + ProtocolMessages.DELIMITER;
-			names = names + playerNames[i]; 
-		
+			names = names + playerNames[i];
+
 		}
-		String message = ProtocolMessages.GAME_START  + names + ProtocolMessages.EOC;
+		String message = ProtocolMessages.GAME_START + names + ProtocolMessages.EOC;
 		try {
 			multipleSend(message, playerNames);
 		} catch (IOException e) {
@@ -347,25 +344,26 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		} catch (ClientUnavailableException e) {
 			e.printStackTrace();
 		}
-		//add games to the 
-		//echo the game is going to start 
+		// add games to the
+		// echo the game is going to start
 		return message;
 	}
 
 	@Override
 	public String handlePlayerMove(String playerName) {
 		// TODO Auto-generated method stub
-		String nextplayer = playerName;  
+		String nextplayer = playerName;
 		String message = ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + nextplayer + ProtocolMessages.DELIMITER;
 		return message;
 	}
 
 	@Override
 	public String handleQueueSizeQuery() {
-		String message = ProtocolMessages.QUEUE_SIZE + ProtocolMessages.DELIMITER + getQueueSize(2) + ProtocolMessages.DELIMITER 
-				+ getQueueSize(3) + ProtocolMessages.DELIMITER + getQueueSize(4) + ProtocolMessages.EOC;
-		 
-		// TODO Auto-generated method stub 
+		String message = ProtocolMessages.QUEUE_SIZE + ProtocolMessages.DELIMITER + getQueueSize(2)
+				+ ProtocolMessages.DELIMITER + getQueueSize(3) + ProtocolMessages.DELIMITER + getQueueSize(4)
+				+ ProtocolMessages.EOC;
+
+		// TODO Auto-generated method stub
 		return message;
 	}
 

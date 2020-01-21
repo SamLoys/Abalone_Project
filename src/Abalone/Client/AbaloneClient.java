@@ -370,6 +370,26 @@ public class AbaloneClient implements ClientProtocol {
 
 	public void showBoard() {
 		clientTui.showMessage(clientBoard.toString());
+		switch (gameSize) {
+		case 2:
+			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			break;
+		case 3:
+			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("The score for: "+gamePlayers[2]+"("+getPlayerMarble(gamePlayers[2]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+			break;
+		case 4:
+			clientTui.showMessage("The score for: "+gamePlayers[0]+"("+getPlayerMarble(gamePlayers[0]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+			clientTui.showMessage("The score for: "+gamePlayers[1]+"("+getPlayerMarble(gamePlayers[1]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("The score for: "+gamePlayers[2]+"("+getPlayerMarble(gamePlayers[2]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+			clientTui.showMessage("The score for: "+gamePlayers[3]+"("+getPlayerMarble(gamePlayers[3]).toString()+")" +"is "+ clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
+			break;
+
+		default:
+			break;
+		}
 	}
 
 //---------------------- protocol messages to send down below

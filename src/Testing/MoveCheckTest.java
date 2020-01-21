@@ -46,6 +46,17 @@ class MoveCheckTest {
 		test.clear();
 		list.clear();
 		
+		//Checks for marble 91 to empty space
+		copy.reset();
+		test.add(91);
+		test.add(80);
+		list = movecheck.moveChecker(91, Directions.northWest);
+		System.out.println(copy.toString());
+		assertEquals(test, list);
+		test.clear();
+		list.clear();
+		
+		
 		//Checks for three marbles to empty space
 		test.add(103);
 		test.add(92);

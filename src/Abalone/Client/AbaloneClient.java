@@ -553,7 +553,7 @@ public class AbaloneClient implements ClientProtocol {
 				} catch (IllegalMoveException e) {
 					clientTui.showMessage(e.getMessage() + "please try again");
 				}
-
+ 
 			} else {
 				clientTui.showMessage("The game hasnt started yet");
 			}

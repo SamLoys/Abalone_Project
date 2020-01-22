@@ -138,7 +138,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		boolean getMoreConnections = true;
 		myTUI.showMessage("Welcome to the server program of abalone");
 		while (getMoreConnections) {
-
+ 
 			try {
 				setupSocket();
 				while (true) {

@@ -29,7 +29,7 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void stopThread() {
-		try {
+		try { 
 			consoleIN.close();
 			consoleOUT.close();
 			Robot robot = new Robot();

@@ -12,7 +12,7 @@ public class AbaloneServerTUI {
 	AbaloneServerTUI(){
 		console = new PrintWriter(System.out, true);
 	}
-
+ 
 	public int getInt(String question) {
 		showMessage(question);
 		showMessage("use an integer to reply");

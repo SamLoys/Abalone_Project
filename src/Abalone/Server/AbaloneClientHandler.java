@@ -51,7 +51,7 @@ public class AbaloneClientHandler implements Runnable {
 		return clientName;
 	}
 
-	public Marble getMarble() {
+	public Marble getMarble() { 
 		return color;
 	}
 

@@ -12,4 +12,4 @@ public Player(Marble marble, String name) {
 public Marble getMarble() {
 	return marble;
 }
-}
+} 

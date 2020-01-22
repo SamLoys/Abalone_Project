@@ -6,5 +6,5 @@ public class ComputerPlayer extends Player {
 		super(marble, name); 
 		// TODO Auto-generated constructor stub
 	}
-
+ 
 }

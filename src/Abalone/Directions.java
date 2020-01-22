@@ -7,6 +7,6 @@ public class Directions {
 	public static final String west = "l";
 	public static final String southEast = "lr";
 	public static final String southWest = "ll";
-	
+	 
 	
 }

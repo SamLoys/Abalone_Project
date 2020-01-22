@@ -183,7 +183,7 @@ class MoveCheckTest {
 		try {
 			list = movecheck.moveChecker(103, Directions.east);
 		} catch (IllegalMoveException e) {
-			assertEquals(e.getMessage(), "for two input, direction is not empty");
+			assertEquals(e.getMessage(), "direction is not empty");
 		}
 
 		test.clear();

@@ -13,6 +13,7 @@ import Abalone.Board;
 import Abalone.Marble;
 import Abalone.MoveCheck;
 import Abalone.Exceptions.ExitProgram;
+import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Exceptions.ProtocolException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.*;
@@ -39,11 +40,12 @@ public class AbaloneClient implements ClientProtocol {
 	String[] gamePlayers;
 	MoveCheck moveChecker;
 	MoveCheck moveEnemyCheck;
-	boolean running = true; 
+	boolean running = true;
 
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
 		client.start();
+		
 	}
 
 	public String getName() {
@@ -75,14 +77,16 @@ public class AbaloneClient implements ClientProtocol {
 			threadTUI.start();
 			readServer();
 
-		} catch ( ServerUnavailableException e) {
-			e.printStackTrace();
+		} catch (ServerUnavailableException e) {
+			clientTui.showMessage(e.getMessage());
 			clientTui.showMessage("The connection has been lost");
-			closeConnection();
 			clientTui.stopThread();
 			
-		}
-		catch(ExitProgram e){
+			closeConnection();
+			
+			
+
+		} catch (ExitProgram e) {
 			clientTui.showMessage("closing... user didnt want to try again");
 			closeConnection();
 		}
@@ -90,10 +94,9 @@ public class AbaloneClient implements ClientProtocol {
 
 	public void createConnection() throws ExitProgram {
 		clearConnection();
-		clearConnection();
 		while (sock == null) {
 			InetAddress host = null;
-			int port = clientTui.getInt("Please enter the port");
+			int port = clientTui.getInt("Please enter port number", 0, 65535);
 			host = clientTui.getIp();
 			// try to open a Socket to the server
 			try {
@@ -152,12 +155,14 @@ public class AbaloneClient implements ClientProtocol {
 		try {
 			running = false;
 			networkIN.close();
-			networkIN.close();
+			System.out.println("NetworkIN closed...");
+			networkOUT.close();
+			System.out.println("NetworkOUT closed...");
 			sock.close();
-			
-			
+			System.out.println("Socked Closed...");
+
 		} catch (IOException e) {
-			e.printStackTrace();
+			clientTui.showMessage("Error during closing the connection");
 		}
 	}
 
@@ -174,6 +179,21 @@ public class AbaloneClient implements ClientProtocol {
 			String[] inputSrv = msg.split(";");
 			// getting commands from the server
 			switch (command) {
+
+			case ProtocolMessages.GameResult.EXCEPTION:
+				clientTui.showMessage("The server send an exception");
+				if (inputSrv.length > 2) {
+					if (inputSrv[1].equals("i")) {
+						clientTui.showMessage("IllegalMoveException: " + inputSrv[2]);
+					}
+					if (inputSrv[1].equals("i")) {
+						clientTui.showMessage("JoinException: " + inputSrv[2]);
+					}
+
+				} else {
+					clientTui.showMessage("exception not complete");
+				}
+				break;
 			case ProtocolMessages.HELLO:
 
 				serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
@@ -281,7 +301,14 @@ public class AbaloneClient implements ClientProtocol {
 				}
 				newIndexes = clientBoard.protocolToIndex(indexes);
 				moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard);
-				totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
+				try {
+					totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
+				} catch (IllegalMoveException e) {
+					clientTui.showMessage("player " + inputSrv[2] + "Tried a move that is not valid according to us");
+					clientTui.showMessage("the error is: " + e.getMessage());
+					clientTui.showMessage("We did not move the marble, discuss with the party");
+					break;
+				}
 				boolean scores = clientBoard.move(totalMove, direction);
 				if (scores) {
 					clientBoard.addScore(getPlayerMarble(inputSrv[2]));
@@ -292,7 +319,7 @@ public class AbaloneClient implements ClientProtocol {
 					yourTurn = true;
 				}
 				break;
-				
+
 			case ProtocolMessages.GAME_FINISHED:
 				clientTui.showMessage("The game has finished");
 				if (inputSrv[1].equals(ProtocolMessages.GameResult.DRAW)) {
@@ -300,7 +327,8 @@ public class AbaloneClient implements ClientProtocol {
 					gameStarted = false;
 					gameSize = 0;
 					clientTui.showMessage("There was a draw");
-					joinQueue(clientTui.getInt("what queue do you want to join?"));
+					gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+					joinQueue(gameSize);
 				}
 				if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
 					clientTui.showMessage("There is a winner");
@@ -308,8 +336,8 @@ public class AbaloneClient implements ClientProtocol {
 						clientTui.showMessage("the winner is: " + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
 						joiningComplete = false;
 						gameStarted = false;
-						gameSize = 0;
-						joinQueue(clientTui.getInt("what queue do you want to join?"));
+						gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+						joinQueue(gameSize);
 					}
 
 					if (gameSize == 4) {
@@ -318,16 +346,16 @@ public class AbaloneClient implements ClientProtocol {
 									.showMessage("the winners are: " + gamePlayers[0] + "and player " + gamePlayers[2]);
 							joiningComplete = false;
 							gameStarted = false;
-							gameSize = 0;
-							joinQueue(clientTui.getInt("what queue do you want to join?"));
+							gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+							joinQueue(gameSize);
 						}
 						if (Integer.parseInt(inputSrv[2]) == 2) {
 							clientTui
 									.showMessage("the winners are: " + gamePlayers[1] + "and player " + gamePlayers[3]);
 							joiningComplete = false;
 							gameStarted = false;
-							gameSize = 0;
-							joinQueue(clientTui.getInt("what queue do you want to join?"));
+							gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+							joinQueue(gameSize);
 						}
 
 					}
@@ -431,7 +459,7 @@ public class AbaloneClient implements ClientProtocol {
 			if (serverMessage.startsWith("x")) {
 				running = false;
 			}
-			
+
 			handleServerCommands(serverMessage);
 			// needs to keep reading the server messages
 		}
@@ -445,7 +473,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
 			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
+			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
 			break;
 		case 3:
 			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
@@ -454,7 +482,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
 			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
+			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
 			break;
 		case 4:
 			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
@@ -465,7 +493,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
 			clientTui.showMessage("The score for: " + gamePlayers[3] + "(" + getPlayerMarble(gamePlayers[3]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
+			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
 			break;
 
 		default:
@@ -509,10 +537,10 @@ public class AbaloneClient implements ClientProtocol {
 		if (yourTurn) {
 			if (gameStarted) {
 				ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
-
-				ArrayList<Integer> allMoved = moveChecker.moveChecker(convertIndexes, direction);
-
-				if (!allMoved.isEmpty()) {
+				System.out.print("This is the convert indexes" + convertIndexes.toString());
+				ArrayList<Integer> allMoved = new ArrayList<>();
+				try {
+					allMoved = moveChecker.moveChecker(convertIndexes, direction);
 					ArrayList<Integer> protocolAll = new ArrayList<>();
 					protocolAll = clientBoard.indexToProtocol(allMoved);
 					String toSendMarbles = "";
@@ -520,20 +548,18 @@ public class AbaloneClient implements ClientProtocol {
 						toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
 						toSendMarbles = toSendMarbles + protocolAll.get(i);
 					}
-					sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName + ProtocolMessages.DELIMITER
-							+ direction + toSendMarbles + ProtocolMessages.EOC);
-
-				} else {
-					clientTui.showMessage("The input is not valid, please try again");
+					sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName
+							+ ProtocolMessages.DELIMITER + direction + toSendMarbles + ProtocolMessages.EOC);
+				} catch (IllegalMoveException e) {
+					clientTui.showMessage(e.getMessage() + "please try again");
 				}
+
 			} else {
-				clientTui.showMessage("It is not your turn, please wait");
+				clientTui.showMessage("The game hasnt started yet");
 			}
-			
-			
 
 		} else {
-			clientTui.showMessage("The game hasnt started yet");
+			clientTui.showMessage("It is not your turn, please wait");
 		}
 
 	}
@@ -547,7 +573,6 @@ public class AbaloneClient implements ClientProtocol {
 	@Override
 	public void sendExit() throws ServerUnavailableException {
 		sendMessage(ProtocolMessages.EXIT + ProtocolMessages.EOC);
-	
 
 	}
 

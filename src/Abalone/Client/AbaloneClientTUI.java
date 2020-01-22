@@ -1,5 +1,8 @@
 package Abalone.Client;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +29,23 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void stopThread() {
+		try {
+			consoleIN.close();
+			consoleOUT.close();
+			Robot robot = new Robot();
+			robot.keyPress(KeyEvent.VK_ENTER);
+			robot.keyRelease(KeyEvent.VK_ENTER);
+			System.out.println("The TUI has teminated");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error closing consonle IN");
+		} catch (AWTException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		looping = false;
+		 
 	}
 
 	public void run() {
@@ -40,7 +59,8 @@ public class AbaloneClientTUI implements Runnable {
 				// TODO Auto-generated catch block
 				looping = false;
 				// client.sendExit();
-				e.printStackTrace();
+				
+				System.out.println("Closed");
 //			} catch (IOException e) {
 //				throw new ServerUnavailableException("The server is unavailble");
 //			}
@@ -72,7 +92,7 @@ public class AbaloneClientTUI implements Runnable {
 						}
 
 					}
-
+					System.out.println("this is the marbles" + marbles.toString());
 					client.sendMove(client.getName(), userInput[1], marbles);
 					break;
 				} else {
@@ -103,10 +123,12 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void printHelpMenu() {
-		String helpmenu = "HELP MENU \n " + "To move a marble type <m><direction><marbles>" + "For example, <m r 2 3>"
-				+ "direction: " + "Type r for right" + "Type l for left" + "Type ur for upper right"
-				+ "Type ul for upper left" + "Type lr for lower right" + "Type ll for lower left"
-				+ "Type H for this help menu" + "Type Q for the queue list";
+		String helpmenu = "HELP MENU"+ "\\n" + "To move a marble type <m><direction><marbles>" 
+				+ "For example, <m r 2 3>" +"\\n"
+				+"direction: " +"\\n"+"Only include marbles you want to move"
+				+ "Type r for right" + "Type l for left" +"\\n"+ "Type ur for upper right"
+				+ "Type ul for upper left" +"\\n"+ "Type lr for lower right" + "Type ll for lower left"
+				+ "Type h for this help menu" + "Type q for the queue list";
 		showMessage(helpmenu);
 	}
 
@@ -117,7 +139,6 @@ public class AbaloneClientTUI implements Runnable {
 		 * 
 		 * @return a valid IP
 		 */
-
 		BufferedReader inputIn = new BufferedReader(new InputStreamReader(System.in));
 		String ip = null;
 		while (true) {
@@ -128,43 +149,18 @@ public class AbaloneClientTUI implements Runnable {
 
 				e.printStackTrace();
 			}
-			boolean valid = false;
-			try {
-				if (ip == null || ip.isEmpty()) {
-					valid = false;
-				}
 
-				String[] parts = ip.split("\\.");
-				if (parts.length != 4) {
-					valid = false;
-				}
-
-				for (String s : parts) {
-					int i = Integer.parseInt(s);
-					if ((i < 0) || (i > 255)) {
-						valid = false;
-					}
-				}
-				if (ip.endsWith(".")) {
-					valid = false;
-				}
-
-				valid = true;
-			} catch (NumberFormatException nfe) {
-				valid = false;
-			}
-
-			if (valid) {
+			if (ip.matches("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
 				InetAddress addr = null;
 				try {
 					addr = InetAddress.getByName(ip);
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					showMessage("Invalid try again");
 				}
 				return addr;
 			}
-			System.out.println("INVALID");
+
 		}
 
 	}
@@ -238,7 +234,7 @@ public class AbaloneClientTUI implements Runnable {
 		}
 
 	}
-	
+
 	public String getUserName(String question) {
 		while (true) {
 			showMessage(question);
@@ -251,13 +247,13 @@ public class AbaloneClientTUI implements Runnable {
 				e.printStackTrace();
 			}
 			answer = answer.trim();
-			if (answer.matches("[\\\\w,.: ]")) {
-				return answer; 
+			if (answer.matches("(\\w|[ ])+")) {
+				return answer;
 			} else {
 				showMessage("This is not a valid username");
 			}
 		}
-		
+
 	}
 
 	public boolean getBool(String question) {

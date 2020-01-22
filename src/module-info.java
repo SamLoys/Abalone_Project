@@ -3,4 +3,5 @@ module abalone_project {
 	exports Testing;
 	
 	requires org.junit.jupiter.api;
+	requires java.desktop;
 }

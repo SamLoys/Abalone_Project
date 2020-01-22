@@ -116,7 +116,7 @@ public class AbaloneClientHandler implements Runnable {
 			if (srv.queueFull(wantedGame)) {
 				srv.setupGame(wantedGame);
 			}
-
+			break;
 		case ProtocolMessages.MOVE:
 			ArrayList<Integer> indexes = new ArrayList<>();
 			if (inputSrv.length < 3) {
@@ -140,7 +140,7 @@ public class AbaloneClientHandler implements Runnable {
 					sendIllegalMoveException(error);
 				}
 			} else {
-				System.out.println("> [" + clientName + "] Exception: " +"ERROR: There is no given direction");
+				System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
 				sendIllegalMoveException("ERROR: There is no given direction");
 			}
 

@@ -102,7 +102,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		case 2:
 			return queueTwo.size();
 		case 3:
-			return queueTwo.size();
+			return queueThree.size();
 		case 4:
 			return queueFour.size();
 		default:
@@ -137,7 +137,6 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		// indicates if the server should connect more connection
 		boolean getMoreConnections = true;
 		myTUI.showMessage("Welcome to the server program of abalone");
-		serverName = myTUI.getString("Please give a name for the server");
 		while (getMoreConnections) {
 
 			try {

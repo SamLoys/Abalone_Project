@@ -237,6 +237,7 @@ class MoveCheckTest {
 		list.clear();
 		
 		//Checks if 3-2 summito is valid with marbles from team and two opponents
+		copy.setMarble(48, Marble.Empty);
 		copy.setMarble(49, Marble.Black);
 		copy.setMarble(60, Marble.White);
 		copy.setMarble(38, Marble.Green);
@@ -249,6 +250,7 @@ class MoveCheckTest {
 		try {
 			list = movecheck.moveChecker(16, Directions.southEast);
 		} catch (IllegalMoveException e) {
+			e.printStackTrace();
 		}
 		assertEquals(test, list);
 		test.clear();

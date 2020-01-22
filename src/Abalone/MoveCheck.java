@@ -175,6 +175,8 @@ public class MoveCheck {
 									all.add(index.get(0));
 									all.add(index.get(1));
 									all.add(index.get(2));
+								} else {
+									throw new IllegalMoveException("push is blocked");
 								}
 							} else if (isOpponent(index.get(2))) {
 								if (board.getMarble(index.get(3)) == Marble.Empty
@@ -203,7 +205,7 @@ public class MoveCheck {
 										all.add(index.get(2));
 										all.add(index.get(3));
 									} else {
-										throw new IllegalMoveException("for four input, the push is blocked");
+										throw new IllegalMoveException("the push is blocked");
 									}
 								} else {
 									throw new IllegalMoveException("for four input, fourth marble is not opponenet");
@@ -211,7 +213,6 @@ public class MoveCheck {
 							} else {
 								throw new IllegalMoveException("four four input, Third marble is not own team");
 							}
-
 						} else {
 							throw new IllegalMoveException("for four input, second marble is not own team");
 						}
@@ -254,7 +255,7 @@ public class MoveCheck {
 					int marbles = 0;
 					for (int i = 0; i < index.size(); i++) {
 						if (!(isOwnTeam(index.get(i)))) {
-							break;
+							throw new IllegalMoveException("Not all marbles are in your team");
 						} else {
 							marbles++;
 						}
@@ -542,10 +543,10 @@ public class MoveCheck {
 	}
 
 	public ArrayList<Integer> getHiddenSummito(ArrayList<Integer> index, String direction) {
-		int ownTeam = 1;
+		int ownTeam = 0;
 		int opponent = 0;
 		for (int i = 0; i < index.size(); i++) {
-			if (isOwnTeam(i + 1)) {
+			if (isOwnTeam(i)) {
 				ownTeam++;
 			}
 			if (isOpponent(i)) {
@@ -574,5 +575,4 @@ public class MoveCheck {
 		}
 		return index;
 	}
-
 }

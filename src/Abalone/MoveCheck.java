@@ -491,7 +491,7 @@ public class MoveCheck {
 		// If between 1 and 4, this will check if there is a hidden summito and add the
 		// indexes
 		newIndex = flipList(index, direction);
-		if (index.size() == 1 || isStraightMove(index, direction)) {
+		if (index.size() == 1 || (isStraightMove(index, direction) && isOwnMarble(index.get(0)))) {
 			if (isInLine(index)) {
 				ArrayList<Integer> summitoList = getHiddenSummito(newIndex, direction);
 				// If it is a straight move, this will add the index after the marbles to the
@@ -505,10 +505,18 @@ public class MoveCheck {
 	}
 
 	public ArrayList<Integer> getHiddenSummito(ArrayList<Integer> index, String direction) {
-		int ownTeam = 0;
+		int ownTeam = 1;
 		int opponent = 0;
+		for (int i = 0; i < index.size(); i++) {
+			if (isOwnTeam(i + 1)) {
+				ownTeam++;
+			}
+			if (isOpponent(i)) {
+				opponent++;
+			}
+		}
 
-		while (index.size() < 3 && ownTeam <= 3) {
+		while (index.size() < 3) {
 			int n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOwnTeam(n)) {
 				ownTeam++;
@@ -518,7 +526,7 @@ public class MoveCheck {
 			}
 		}
 		int n;
-		while (index.size() <= 5 && opponent <= 2) {
+		while (index.size() < 5 && opponent < ownTeam) {
 			n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOpponent(n)) {
 				opponent++;

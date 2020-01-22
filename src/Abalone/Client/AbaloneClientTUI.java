@@ -238,6 +238,27 @@ public class AbaloneClientTUI implements Runnable {
 		}
 
 	}
+	
+	public String getUserName(String question) {
+		while (true) {
+			showMessage(question);
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String answer = "";
+			try {
+				answer = br.readLine();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+			answer = answer.trim();
+			if (answer.matches("[\\\\w,.: ]")) {
+				return answer; 
+			} else {
+				showMessage("This is not a valid username");
+			}
+		}
+		
+	}
 
 	public boolean getBool(String question) {
 		showMessage(question);

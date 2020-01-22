@@ -7,6 +7,8 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import Abalone.Exceptions.IllegalMoveException;
+
 public class MoveCheck {
 	Board board;
 	ArrayList<Integer> index;
@@ -27,7 +29,7 @@ public class MoveCheck {
 	 * @requires that the indexes are already converted to own indexes insteads of
 	 * protocol indexes
 	 */
-	public ArrayList<Integer> moveChecker(int i1, String direction) {
+	public ArrayList<Integer> moveChecker(int i1, String direction) throws IllegalMoveException {
 
 		index = new ArrayList<Integer>();
 		index.add(i1);
@@ -41,12 +43,12 @@ public class MoveCheck {
 
 			return returnList;
 		} else {
-			ArrayList<Integer> empty = new ArrayList<Integer>();
-			return empty;
+			throw new IllegalMoveException("Is not on board");
+
 		}
 	}
 
-	public ArrayList<Integer> moveChecker(int i1, int i2, String direction) {
+	public ArrayList<Integer> moveChecker(int i1, int i2, String direction) throws IllegalMoveException {
 		index = new ArrayList<Integer>();
 		index.add(i1);
 		index.add(i2);
@@ -56,12 +58,11 @@ public class MoveCheck {
 			ArrayList<Integer> returnList = returnMoves(newList, direction);
 			return returnList;
 		} else {
-			ArrayList<Integer> empty = new ArrayList<Integer>();
-			return empty;
+			throw new IllegalMoveException("Is not on board");
 		}
 	}
 
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, String direction) {
+	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, String direction) throws IllegalMoveException {
 		index = new ArrayList<Integer>();
 		index.add(i1);
 		index.add(i2);
@@ -72,12 +73,12 @@ public class MoveCheck {
 			ArrayList<Integer> returnList = returnMoves(newList, direction);
 			return returnList;
 		} else {
-			ArrayList<Integer> empty = new ArrayList<Integer>();
-			return empty;
+			throw new IllegalMoveException("Is not on board");
 		}
 	}
 
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, String direction) {
+	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, String direction)
+			throws IllegalMoveException {
 		index = new ArrayList<Integer>();
 		index.add(i1);
 		index.add(i2);
@@ -89,12 +90,12 @@ public class MoveCheck {
 			ArrayList<Integer> returnList = returnMoves(newList, direction);
 			return returnList;
 		} else {
-			ArrayList<Integer> empty = new ArrayList<Integer>();
-			return empty;
+			throw new IllegalMoveException("Is not on board");
 		}
 	}
 
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, int i5, String direction) {
+	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, int i5, String direction)
+			throws IllegalMoveException {
 		index = new ArrayList<Integer>();
 		index.add(i1);
 		index.add(i2);
@@ -107,16 +108,14 @@ public class MoveCheck {
 			ArrayList<Integer> returnList = returnMoves(newList, direction);
 			return returnList;
 		} else {
-			ArrayList<Integer> empty = new ArrayList<Integer>();
-			return empty;
+			throw new IllegalMoveException("Is not on board");
 		}
 	}
 
-	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) {
+	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) throws IllegalMoveException {
 
 		switch (index.size()) {
 		case 1:
-
 			return moveChecker(index.get(0), direction);
 		case 2:
 			return moveChecker(index.get(0), index.get(1), direction);
@@ -127,14 +126,14 @@ public class MoveCheck {
 		case 5:
 			return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), index.get(4), direction);
 		default:
-
-			return null;
+			throw new IllegalMoveException("Too little or too many indexes");
+			
 		// this should not happen
 
 		}
 	}
 
-	public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) {
+	public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) throws IllegalMoveException {
 		ArrayList<Integer> all = new ArrayList<Integer>();
 
 		// Checks if a summito
@@ -151,6 +150,8 @@ public class MoveCheck {
 
 							all.add(index.get(0));
 
+						} else {
+							throw new IllegalMoveException("is not valid single move");
 						}
 						break;
 					case 2:
@@ -159,8 +160,13 @@ public class MoveCheck {
 								all.add(index.get(0));
 								all.add(index.get(1));
 
+							} else {
+								throw new IllegalMoveException("for two input, direction is not empty");
 							}
+						} else {
+							throw new IllegalMoveException("for two input, second marble is not own team");
 						}
+
 						break;
 					case 3:
 						if (isOwnTeam(index.get(1))) {
@@ -176,8 +182,14 @@ public class MoveCheck {
 									all.add(index.get(0));
 									all.add(index.get(1));
 									all.add(index.get(2));
+								} else {
+									throw new IllegalMoveException("push is blocked");
 								}
+							} else {
+								throw new IllegalMoveException("the three input, third is death or empty");
 							}
+						} else {
+							throw new IllegalMoveException("for three input, second marble is not own team");
 						}
 						break;
 					case 4:
@@ -190,10 +202,18 @@ public class MoveCheck {
 										all.add(index.get(1));
 										all.add(index.get(2));
 										all.add(index.get(3));
+									} else {
+										throw new IllegalMoveException("for four input, the push is blocked");
 									}
+								} else {
+									throw new IllegalMoveException("for four input, fourth marble is not opponenet");
 								}
+							} else {
+								throw new IllegalMoveException("four four input, Third marble is not own team");
 							}
 
+						} else {
+							throw new IllegalMoveException("for four input, second marble is not own team");
 						}
 						break;
 					case 5:
@@ -208,14 +228,26 @@ public class MoveCheck {
 											all.add(index.get(2));
 											all.add(index.get(3));
 											all.add(index.get(4));
+										} else {
+											throw new IllegalMoveException("for 5 input, the push is blocked");
 										}
+									} else {
+										throw new IllegalMoveException("for 5 input, fifth marble is not opponent");
 									}
+								} else {
+									throw new IllegalMoveException("for 5 input, fourth marble is not opponent");
 								}
+							} else {
+								throw new IllegalMoveException("for 5 input, third marble is not own team");
 							}
 
+						} else {
+							throw new IllegalMoveException("for 5 input, second marble is not own team");
 						}
 						break;
 					}
+				} else {
+					throw new IllegalMoveException("is not a valid straight move, the first marble is not your own");
 				}
 			} else {
 				if ((hasOwnMarble(index)) && (index.size() < 4) && (isValidSideStep(index, direction))) {
@@ -232,8 +264,13 @@ public class MoveCheck {
 							all.add(index.get(j));
 						}
 					}
+				} else {
+					throw new IllegalMoveException("is not a valid sidestep");
 				}
 			}
+		}
+		if (all.isEmpty()) {
+			throw new IllegalMoveException("is not inline");
 		}
 		return all;
 
@@ -538,97 +575,4 @@ public class MoveCheck {
 		return index;
 	}
 
-//	public String stringMove(ArrayList<Integer> index, String direction) {
-//	String s = "";
-//	int ownMarble = 0;
-//	int teamMarble = 0;
-//	int oppMarble = 0;
-//	int emptyMarble = 0;
-//	int deathMarble = 0;
-//
-//	if (isStraightMove(index, direction) && index.size() == 2) {
-//		if (isOwnMarble(index.get(0))) {
-//			s = s + "Y";
-//			if (board.getMarble(index.get(1)) == Marble.Empty) {
-//				return s = s + "E";
-//			}
-//		}
-//	}
-//
-//	// Checks if a summito
-//	if (isInLine(index)) {
-//		if (isStraightMove(index, direction)) {
-//			if (isOwnMarble(index.get(0))) {
-//				for (int j = 0; (j < index.size() - 1); j++) {
-//					if (board.getMarble(index.get(j)) == Marble.Empty
-//							|| board.getMarble(index.get(j)) == Marble.Death) {
-//						s = s + "False input, empty or death spaces";
-//					}
-//				}
-//				s = s + "Y";
-//				int i = 0;
-//				while ((i < index.size() - 1) && (isOwnTeam(index.get(i)))) {
-//					int n = getNeighbourIndex(index.get(i), direction);
-//					if (isOwnTeam(n)) {
-//						teamMarble++;
-//						s = s + "T";
-//						if (teamMarble > 3) {
-//							return s = s + "Too many marbles moved";
-//						}
-//					} else {
-//						break;
-//					}
-//					i++;
-//				}
-//				while (isOpponent(index.get(i))) {
-//					int n = getNeighbourIndex(index.get(i), direction);
-//					if (isOpponent(n) || oppMarble < teamMarble) {
-//						oppMarble++;
-//						s = s + "O";
-//						index.add(n);
-//					} else {
-//						break;
-//					}
-//					i++;
-//				}
-//				if (oppMarble >= ownMarble) {
-//					return s = s + "Too many opponents";
-//				}
-//				if (board.getMarble(index.get(index.size() - 1)) == Marble.Empty) {
-//					emptyMarble++;
-//					s = s + "E";
-//				} else if (board.getMarble(index.get(index.size() - 1)) == Marble.Death) {
-//					deathMarble++;
-//					s = s + "D";
-//				}
-//
-//			} else {
-//				s = s + "Not own marble first";
-//			}
-//
-//			// Checks if a sidestep move is valid
-//		} else {
-//			if (hasOwnMarble(index) && index.size() < 4) {
-//				for (int i : index) {
-//					if (!(isOwnTeam(i))) {
-//						s = s + "Contains wrong marble";
-//					} else {
-//						if (isValidSideStep(index, direction)) {
-//							teamMarble++;
-//							s = s + "T";
-//						} else {
-//							return s = s + "Not valid sidestep";
-//						}
-//					}
-//				}
-//			} else {
-//				return s = s + "Not own marble in sidestep or sidestep too long";
-//			}
-//			return s;
-//		}
-//	} else {
-//		return s = s + "Not in line";
-//	}
-//	return s;
-//}
 }

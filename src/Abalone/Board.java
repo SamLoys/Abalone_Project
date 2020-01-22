@@ -18,6 +18,9 @@ public class Board {
 	private int scoreWhite;
 	private int scoreRed;
 	private int scoreGreen;
+	
+	private int moves = 0; 
+	private final static int MaxMoves = 96; 
 
 	int playerCount = 0;
 	// field keeps track of the state of the field.
@@ -52,6 +55,14 @@ public class Board {
 			System.out.println("NotValid the board cannot be initialized");
 		}
 
+	}
+	
+	public int getTurns() {
+		return moves; 
+	} 
+	
+	public int getMaxTurns() {
+		return MaxMoves;
 	}
 
 	public int getPlayerCount() {
@@ -388,6 +399,7 @@ public class Board {
 				}
 				
 			}
+			moves++;
 			return scored; 
 
 	}

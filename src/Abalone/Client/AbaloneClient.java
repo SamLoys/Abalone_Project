@@ -60,7 +60,7 @@ public class AbaloneClient implements ClientProtocol {
 
 	public void start() {
 		clientTui.showMessage("Welcome to the Abalone Client program");
-		name = clientTui.getString("Please give your wanted user name");
+		name = clientTui.getUserName("Please give your wanted username");
 		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
 		try {
 			createConnection();
@@ -75,12 +75,16 @@ public class AbaloneClient implements ClientProtocol {
 			threadTUI.start();
 			readServer();
 
-		} catch (ExitProgram | ServerUnavailableException e) {
-			// TODO Auto-generated catch block
+		} catch ( ServerUnavailableException e) {
+			e.printStackTrace();
 			clientTui.showMessage("The connection has been lost");
 			closeConnection();
 			clientTui.stopThread();
 			
+		}
+		catch(ExitProgram e){
+			clientTui.showMessage("closing... user didnt want to try again");
+			closeConnection();
 		}
 	}
 
@@ -102,7 +106,7 @@ public class AbaloneClient implements ClientProtocol {
 				System.out.println("ERROR: could not create a socket on " + host + " and port " + port + ".");
 
 				// Do you want to try again? (ask user, to be implemented)
-				if (false) {
+				if (!clientTui.getBool("Do you want to try again")) {
 					throw new ExitProgram("User indicated to exit.");
 				}
 			}
@@ -288,6 +292,7 @@ public class AbaloneClient implements ClientProtocol {
 					yourTurn = true;
 				}
 				break;
+				
 			case ProtocolMessages.GAME_FINISHED:
 				clientTui.showMessage("The game has finished");
 				if (inputSrv[1].equals(ProtocolMessages.GameResult.DRAW)) {
@@ -440,6 +445,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
 			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
 			break;
 		case 3:
 			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
@@ -448,6 +454,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
 			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
 			break;
 		case 4:
 			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
@@ -458,6 +465,7 @@ public class AbaloneClient implements ClientProtocol {
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
 			clientTui.showMessage("The score for: " + gamePlayers[3] + "(" + getPlayerMarble(gamePlayers[3]).toString()
 					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
+			clientTui.showMessage("Turn: " + clientBoard.getTurns()+ "out of: " + clientBoard.getMaxTurns());
 			break;
 
 		default:
@@ -532,14 +540,14 @@ public class AbaloneClient implements ClientProtocol {
 
 	@Override
 	public void getCurrentQueueSizes() throws ServerUnavailableException {
-		// TODO Auto-generated method stub
+
 		sendMessage(ProtocolMessages.QUEUE_SIZE + ProtocolMessages.EOC);
 	}
 
 	@Override
 	public void sendExit() throws ServerUnavailableException {
 		sendMessage(ProtocolMessages.EXIT + ProtocolMessages.EOC);
-		// TODO Auto-generated method stub
+	
 
 	}
 

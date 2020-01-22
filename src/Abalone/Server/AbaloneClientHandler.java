@@ -119,6 +119,10 @@ public class AbaloneClientHandler implements Runnable {
 
 		case ProtocolMessages.MOVE:
 			ArrayList<Integer> indexes = new ArrayList<>();
+			if (inputSrv.length < 3) {
+				sendIllegalMoveException("not enough information");
+				break;
+			}
 			if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
 					|| inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
 					|| inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
@@ -128,7 +132,16 @@ public class AbaloneClientHandler implements Runnable {
 						indexes.add(Integer.parseInt(inputSrv[i]));
 					}
 				}
-				currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+				String error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+				if (error.equals("good")) {
+
+				} else {
+					System.out.println("> [" + clientName + "] Exception: " + error);
+					sendIllegalMoveException(error);
+				}
+			} else {
+				System.out.println("> [" + clientName + "] Exception: " +"ERROR: There is no given direction");
+				sendIllegalMoveException("ERROR: There is no given direction");
 			}
 
 			break;
@@ -159,6 +172,12 @@ public class AbaloneClientHandler implements Runnable {
 		} else {
 			throw new ClientUnavailableException("client not connected");
 		}
+	}
+
+	public void sendIllegalMoveException(String reason) throws IOException, ClientUnavailableException {
+		String message = ProtocolMessages.GameResult.EXCEPTION + ProtocolMessages.DELIMITER + "i"
+				+ ProtocolMessages.DELIMITER + reason + ProtocolMessages.EOC;
+		sendMessage(message);
 	}
 
 	private void shutdown() {

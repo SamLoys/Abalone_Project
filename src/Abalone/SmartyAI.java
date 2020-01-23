@@ -26,7 +26,7 @@ public class SmartyAI {
 	Board board;
 	Marble color;
 	AbaloneClient client;
-	MoveCheck checker;
+	MoveCheck checker; 
 	String name;
 
 	public SmartyAI(Board board, Marble color, AbaloneClient client, MoveCheck checker, String name) {

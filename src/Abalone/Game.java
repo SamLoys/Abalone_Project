@@ -21,7 +21,7 @@ public class Game {
 	private int MaxMoves;
 	HashMap<String, MoveCheck> checkmap;
 	HashMap<String, Marble> marbleMap;
-
+ 
 	public Game(int Amountplayers, AbaloneServer srv, String player1Name, String player2Name) {
 		board = new Board(Amountplayers);
 		playerNames = new String[2];

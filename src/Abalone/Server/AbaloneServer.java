@@ -284,7 +284,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 		this.games.remove(game); 
 	}
 
-	public void removeClient(String name) {
+	public void removeClient(String name) { 
 		clientsMap.remove(name);
 		userNames.remove(name); 
 	}

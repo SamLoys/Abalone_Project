@@ -31,7 +31,7 @@ public class AbaloneClient implements ClientProtocol {
 	private boolean clientSupportLeaderboard = false;
 	private boolean serverSupportChatting = false;
 	private boolean serverSupportChallenge = false;
-	private boolean serverSupportLeaderboard = false;
+	private boolean serverSupportLeaderboard = false; 
 	private boolean handshakeComplete = false;
 	private boolean joiningComplete = false;
 	private int gameSize = 0;

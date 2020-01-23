@@ -35,7 +35,7 @@ public class SmartyAI {
 		this.client = client;
 		this.checker = checker;
 		this.name = name;
-	}
+	} 
 	
 	public String getHint(Board board, Marble color, MoveCheck checker) {
 		try {

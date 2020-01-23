@@ -835,7 +835,7 @@ public class Board {
 		indexes[2] = index3;
 		Arrays.sort(indexes);
 		return getOrientation(indexes[0], indexes[1]);
-	}
+	} 
 
 	public String getDirectionToCenter(int index) {
 		int row = getRow(index);

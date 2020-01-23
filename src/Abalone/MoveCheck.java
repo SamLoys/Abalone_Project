@@ -555,7 +555,7 @@ public class MoveCheck {
 			}
 		}
 
-		while (index.size() < 3) {
+		while (index.size() < 3 && ownTeam < 3) {
 			int n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOwnTeam(n)) {
 				ownTeam++;

@@ -1,5 +1,7 @@
 package Abalone;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,9 +12,8 @@ import org.junit.jupiter.api.Test;
 import Abalone.Exceptions.IllegalMoveException;
 
 public class MoveCheck {
-	Board board;
+	static Board board;
 	ArrayList<Integer> index;
-
 	Marble color;
 
 	public MoveCheck(Marble color, Board board) {
@@ -24,7 +25,6 @@ public class MoveCheck {
 	public Marble getColor() {
 		return color;
 	}
-
 	/*
 	 * @requires that the indexes are already converted to own indexes insteads of
 	 * protocol indexes
@@ -161,7 +161,7 @@ public class MoveCheck {
 								all.add(index.get(1));
 
 							} else {
-								throw new IllegalMoveException("for two input, direction is not empty");
+								throw new IllegalMoveException("direction is not empty");
 							}
 						} else {
 							throw new IllegalMoveException("for two input, second marble is not own team");
@@ -188,7 +188,7 @@ public class MoveCheck {
 									throw new IllegalMoveException("push is blocked");
 								}
 							} else {
-								throw new IllegalMoveException("the three input, third is death or empty");
+								throw new IllegalMoveException("input is death or empty");
 							}
 						} else {
 							throw new IllegalMoveException("for three input, second marble is not own team");
@@ -241,7 +241,6 @@ public class MoveCheck {
 							} else {
 								throw new IllegalMoveException("for 5 input, third marble is not own team");
 							}
-
 						} else {
 							throw new IllegalMoveException("for 5 input, second marble is not own team");
 						}
@@ -546,15 +545,17 @@ public class MoveCheck {
 		int ownTeam = 0;
 		int opponent = 0;
 		for (int i = 0; i < index.size(); i++) {
-			if (isOwnTeam(i)) {
+			if (isOwnTeam(index.get(i))) {
 				ownTeam++;
 			}
 			if (isOpponent(i)) {
 				opponent++;
+			} else {
+				break;
 			}
 		}
 
-		while (index.size() < 3) {
+		while (index.size() < 3 && ownTeam < 3) {
 			int n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOwnTeam(n)) {
 				ownTeam++;
@@ -564,7 +565,7 @@ public class MoveCheck {
 			}
 		}
 		int n;
-		while (index.size() < 5 && opponent < ownTeam) {
+		while (index.size() < 5 && (ownTeam - opponent > 1)) {
 			n = getNeighbourIndex(index.get(index.size() - 1), direction);
 			if (isOpponent(n)) {
 				opponent++;

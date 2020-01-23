@@ -341,4 +341,8 @@ public class Game {
 		}
 		return playerNames[tempmoves];
 	}
+	
+	public String[] getPlayers() {
+		return playerNames;
+	}
 }

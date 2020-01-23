@@ -30,7 +30,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 	private int nextPlayerNo;
 	private AbaloneServerTUI myTUI;
 
-	private boolean serverSupportChatting = false;
+	private boolean serverSupportChatting = true;
 	private boolean serverSupportChallenge = false;
 	private boolean serverSupportLeaderboard = false;
 

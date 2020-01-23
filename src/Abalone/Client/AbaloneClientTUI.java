@@ -19,7 +19,7 @@ public class AbaloneClientTUI implements Runnable {
 
 	AbaloneClient client;
 	private PrintWriter consoleOUT;
-	private BufferedReader consoleIN; 
+	private BufferedReader consoleIN;
 	boolean looping = true;
 
 	public AbaloneClientTUI(AbaloneClient client) {
@@ -30,7 +30,7 @@ public class AbaloneClientTUI implements Runnable {
 
 	public void stopThread() {
 		looping = false;
-		try { 
+		try {
 			consoleIN.close();
 			consoleOUT.close();
 			Robot robot = new Robot();
@@ -42,12 +42,10 @@ public class AbaloneClientTUI implements Runnable {
 			System.out.println("Error closing consonle IN");
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
-			
+
 			e.printStackTrace();
 		}
-		
-	
-		 
+
 	}
 
 	public void run() {
@@ -61,7 +59,7 @@ public class AbaloneClientTUI implements Runnable {
 				// TODO Auto-generated catch block
 				looping = false;
 				// client.sendExit();
-				
+
 				System.out.println("Closed");
 //			} catch (IOException e) {
 //				throw new ServerUnavailableException("The server is unavailble");
@@ -107,6 +105,18 @@ public class AbaloneClientTUI implements Runnable {
 				client.getCurrentQueueSizes();
 				break;
 
+			case "c":
+
+				if (userInput.length > 1) {
+					String fullmessage ="";
+					for (int i = 1; i < userInput.length; i ++) {
+						fullmessage = fullmessage + userInput[i];
+						fullmessage = fullmessage +" ";
+					}
+					client.sendChat(fullmessage);
+				}
+				
+				break;
 			case ProtocolMessages.EXIT:
 				client.sendExit();
 				client.closeConnection();
@@ -128,12 +138,10 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void printHelpMenu() {
-		String helpmenu = "HELP MENU \n" + "To move a marble type <m><direction><marbles>" 
-				+ "For example, <m r 2 3> \n"
-				+"direction: \n"+"Only include marbles you want to move"
-				+ "Type r for right" + "Type l for left \n"+ "Type ur for upper right"
-				+ "Type ul for upper left \n"+ "Type lr for lower right" + "Type ll for lower left"
-				+ "Type h for this help menu \n" + "Type q for the queue list \n"
+		String helpmenu = "HELP MENU \n" + "To move a marble type <m><direction><marbles>" + "For example, <m r 2 3> \n"
+				+ "direction: \n" + "Only include marbles you want to move" + "Type r for right" + "Type l for left \n"
+				+ "Type ur for upper right" + "Type ul for upper left \n" + "Type lr for lower right"
+				+ "Type ll for lower left" + "Type h for this help menu \n" + "Type q for the queue list \n"
 				+ "To get a hint type t";
 		showMessage(helpmenu);
 	}
@@ -156,7 +164,8 @@ public class AbaloneClientTUI implements Runnable {
 				e.printStackTrace();
 			}
 
-			if (ip.matches("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
+			if (ip.matches(
+					"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
 				InetAddress addr = null;
 				try {
 					addr = InetAddress.getByName(ip);

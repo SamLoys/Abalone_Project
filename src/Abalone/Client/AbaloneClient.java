@@ -28,7 +28,7 @@ public class AbaloneClient implements ClientProtocol {
 	private AbaloneClientTUI clientTui;
 	private String name;
 	private Marble color;
-	private boolean clientSupportChatting = false;
+	private boolean clientSupportChatting = true;
 	private boolean clientSupportChallenge = false;
 	private boolean clientSupportLeaderboard = false;
 	private boolean serverSupportChatting = false;
@@ -68,7 +68,16 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	public void start() {
-		clientTui.showMessage("Welcome to the Abalone Client program");
+		clientTui.showMessage("\r\n" + 
+				"\r\n" + 
+				"               _                            _                _           _                  \r\n" + 
+				" __      _____| | ___ ___  _ __ ___   ___  | |_ ___     __ _| |__   __ _| | ___  _ __   ___ \r\n" + 
+				" \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\   / _` | '_ \\ / _` | |/ _ \\| '_ \\ / _ \\\r\n" + 
+				"  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | (_| | |_) | (_| | | (_) | | | |  __/\r\n" + 
+				"   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/   \\__,_|_.__/ \\__,_|_|\\___/|_| |_|\\___|\r\n" + 
+				"                                                                                            \r\n" + 
+				"\r\n" + 
+				"");
 		name = clientTui.getUserName("Please give your wanted username");
 		isAI = clientTui.getBool("Are you an AI?");
 		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
@@ -407,6 +416,15 @@ public class AbaloneClient implements ClientProtocol {
 				closeConnection();
 				clientTui.stopThread();
 				break;
+				
+			case "b":
+				if (inputSrv.length > 3) {
+					if(inputSrv[1].contentEquals("c")) {
+						//chatting
+						clientTui.showMessage(inputSrv[2] +": "+ inputSrv[3]);
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -532,6 +550,17 @@ public class AbaloneClient implements ClientProtocol {
 	public String getHint() {
 		SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
 		return ai.getHint(clientBoard, color, moveChecker);
+	}
+	
+	public void sendChat(String message) throws ServerUnavailableException {
+		if (serverSupportChatting) {
+			sendMessage("b;c;"+name+ ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
+		}
+		else {
+			clientTui.showMessage("The client does not support chatting");
+		}
+		
+		
 	}
 
 //---------------------- protocol messages to send down below

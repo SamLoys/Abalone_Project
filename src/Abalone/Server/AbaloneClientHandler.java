@@ -20,11 +20,11 @@ public class AbaloneClientHandler implements Runnable {
 	private BufferedReader in;
 	private BufferedWriter out;
 	private Socket sock;
-
+ 
 	private Game currentGame;
 
 	private int clientSupportChatting = 0;
-	private int clientSupportChallenge = 0;
+	private int clientSupportChallenge = 0; 
 	private int clientSupportLeaderboard = 0;
 	private Marble color;
 
@@ -145,16 +145,28 @@ public class AbaloneClientHandler implements Runnable {
 			}
 
 			break;
-
+ 
 		case ProtocolMessages.QUEUE_SIZE: {
 			sendMessage(srv.handleQueueSizeQuery());
 		}
 			break;
 		case ProtocolMessages.EXIT:
 			if (currentGame != null) {
-				currentGame
+				
+				srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
 			}
 			shutdown();
+			break;
+		
+		case "b":
+			if (inputSrv[1].contentEquals("c")) {
+				if (inputSrv.length >3) {
+				String message = "b;c;" + clientName + ProtocolMessages.DELIMITER+inputSrv[3]; 
+				
+					srv.multipleSend(message, currentGame.getPlayers());
+				}
+			}
+			break;
 		default:
 			break;
 		}

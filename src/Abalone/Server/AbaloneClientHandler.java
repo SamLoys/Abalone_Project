@@ -151,6 +151,9 @@ public class AbaloneClientHandler implements Runnable {
 		}
 			break;
 		case ProtocolMessages.EXIT:
+			if (currentGame != null) {
+				currentGame
+			}
 			shutdown();
 		default:
 			break;
@@ -182,14 +185,16 @@ public class AbaloneClientHandler implements Runnable {
 
 	private void shutdown() {
 		System.out.println("> [" + clientName + "] Shutting down.");
+		srv.removeClient(clientName); 
 		try {
 			in.close();
 			out.close();
 			sock.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error during closing socket");
 		}
-		srv.removeClient(clientName);
+		
+		
 	}
 
 }

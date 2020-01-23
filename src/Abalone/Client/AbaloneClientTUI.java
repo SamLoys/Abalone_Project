@@ -19,7 +19,7 @@ public class AbaloneClientTUI implements Runnable {
 
 	AbaloneClient client;
 	private PrintWriter consoleOUT;
-	private BufferedReader consoleIN;
+	private BufferedReader consoleIN; 
 	boolean looping = true;
 
 	public AbaloneClientTUI(AbaloneClient client) {
@@ -29,6 +29,7 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void stopThread() {
+		looping = false;
 		try { 
 			consoleIN.close();
 			consoleOUT.close();
@@ -41,10 +42,11 @@ public class AbaloneClientTUI implements Runnable {
 			System.out.println("Error closing consonle IN");
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
-		looping = false;
+	
 		 
 	}
 
@@ -113,7 +115,10 @@ public class AbaloneClientTUI implements Runnable {
 			case "h":
 				printHelpMenu();
 				break;
-
+			case "t":
+				String hint = client.getHint();
+				showMessage(hint);
+				break;
 			default:
 				showMessage("Invalid command please try again");
 
@@ -123,12 +128,13 @@ public class AbaloneClientTUI implements Runnable {
 	}
 
 	public void printHelpMenu() {
-		String helpmenu = "HELP MENU"+ "\\n" + "To move a marble type <m><direction><marbles>" 
-				+ "For example, <m r 2 3>" +"\\n"
-				+"direction: " +"\\n"+"Only include marbles you want to move"
-				+ "Type r for right" + "Type l for left" +"\\n"+ "Type ur for upper right"
-				+ "Type ul for upper left" +"\\n"+ "Type lr for lower right" + "Type ll for lower left"
-				+ "Type h for this help menu" + "Type q for the queue list";
+		String helpmenu = "HELP MENU \n" + "To move a marble type <m><direction><marbles>" 
+				+ "For example, <m r 2 3> \n"
+				+"direction: \n"+"Only include marbles you want to move"
+				+ "Type r for right" + "Type l for left \n"+ "Type ur for upper right"
+				+ "Type ul for upper left \n"+ "Type lr for lower right" + "Type ll for lower left"
+				+ "Type h for this help menu \n" + "Type q for the queue list \n"
+				+ "To get a hint type t";
 		showMessage(helpmenu);
 	}
 

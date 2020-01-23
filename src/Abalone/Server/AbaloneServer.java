@@ -286,7 +286,16 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
 	public void removeClient(String name) { 
 		clientsMap.remove(name);
-		userNames.remove(name); 
+		try {
+			userNames.remove(name); 
+			queueFour.remove(name); 
+			queueThree.remove(name);
+			queueTwo.remove(name);
+		}
+		catch(Exception e) {
+			System.out.println("error removing client name");
+		}
+		
 	}
 
 	public boolean[] getSupports() {

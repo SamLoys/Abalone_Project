@@ -19,6 +19,8 @@ import Abalone.Exceptions.ProtocolException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.*;
 
+
+
 public class AbaloneClient implements ClientProtocol {
 	private Socket sock;
 	private BufferedReader networkIN;
@@ -31,7 +33,7 @@ public class AbaloneClient implements ClientProtocol {
 	private boolean clientSupportLeaderboard = false;
 	private boolean serverSupportChatting = false;
 	private boolean serverSupportChallenge = false;
-	private boolean serverSupportLeaderboard = false; 
+	private boolean serverSupportLeaderboard = false;
 	private boolean handshakeComplete = false;
 	private boolean joiningComplete = false;
 	private int gameSize = 0;
@@ -46,10 +48,12 @@ public class AbaloneClient implements ClientProtocol {
 	boolean running = true;
 
 	public static void main(String args[]) {
+		
 		AbaloneClient client = new AbaloneClient();
 		client.start();
 
 	}
+	
 
 	public String getName() {
 		return name;
@@ -340,7 +344,6 @@ public class AbaloneClient implements ClientProtocol {
 					if (isAI) {
 						AiPlayer.makeMove(true);
 					}
-					
 
 				}
 				break;
@@ -524,6 +527,11 @@ public class AbaloneClient implements ClientProtocol {
 		default:
 			break;
 		}
+	}
+
+	public String getHint() {
+		SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
+		return ai.getHint(clientBoard, color, moveChecker);
 	}
 
 //---------------------- protocol messages to send down below

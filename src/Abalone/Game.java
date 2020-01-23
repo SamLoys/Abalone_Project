@@ -11,17 +11,17 @@ import Abalone.protocol.ProtocolMessages;
 
 public class Game {
 
-	private Board board;
-	private String[] playerNames;
-	private AbaloneServer srv;
-	private static final int scoreLimit = 6;
-	boolean finished = false;
-	private int gameSize;
-	private int moves;
-	private int MaxMoves;
-	HashMap<String, MoveCheck> checkmap;
-	HashMap<String, Marble> marbleMap;
- 
+    private Board board;
+    private String[] playerNames;
+    private AbaloneServer srv;
+    private static final int scoreLimit = 6;
+    boolean finished = false;
+    private int gameSize;
+    private int moves;
+    private int maxMoves;
+    HashMap<String, MoveCheck> checkmap;
+    HashMap<String, Marble> marbleMap;
+
 	public Game(int Amountplayers, AbaloneServer srv, String player1Name, String player2Name) {
 		board = new Board(Amountplayers);
 		playerNames = new String[2];
@@ -35,7 +35,7 @@ public class Game {
 		marbleMap.put(player1Name, Marble.Black);
 		marbleMap.put(player2Name, Marble.White);
 		moves = board.getTurns();
-		MaxMoves = board.getMaxTurns();
+		maxMoves = board.getMaxTurns();
 		gameSize = 2;
 		this.srv = srv;
 	}
@@ -57,7 +57,7 @@ public class Game {
 		marbleMap.put(player2Name, Marble.Green);
 		marbleMap.put(player3Name, Marble.White);
 		moves = board.getTurns();
-		MaxMoves = board.getMaxTurns();
+		maxMoves = board.getMaxTurns();
 		gameSize = 3;
 		this.srv = srv;
 	}
@@ -83,7 +83,7 @@ public class Game {
 		marbleMap.put(player3Name, Marble.White);
 		marbleMap.put(player4Name, Marble.Red);
 		moves = board.getTurns();
-		MaxMoves = board.getMaxTurns();
+		maxMoves = board.getMaxTurns();
 		gameSize = 4;
 		this.srv = srv;
 	}
@@ -97,7 +97,7 @@ public class Game {
 		int scoreteam1;
 		int scoreteam2;
 		int scoreteam3;
-		if (moves < MaxMoves && finished == false) {
+		if (moves < maxMoves && finished == false) {
 
 			switch (gameSize) {
 
@@ -178,7 +178,7 @@ public class Game {
 			}
 		}
 
-		if (moves >= MaxMoves) {
+		if (moves >= maxMoves) {
 
 			switch (gameSize) {
 			case 2:
@@ -335,7 +335,7 @@ public class Game {
 	}
 
 	public String getNextPlayer() {
-		int tempmoves = moves; 
+		int tempmoves = moves;
 		while (tempmoves >= playerNames.length) {
 			tempmoves = tempmoves - playerNames.length;
 		}

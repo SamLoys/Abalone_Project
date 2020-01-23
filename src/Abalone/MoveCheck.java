@@ -111,7 +111,7 @@ public class MoveCheck {
 			throw new IllegalMoveException("Is not on board");
 		}
 	}
-
+	
 	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) throws IllegalMoveException {
 
 		switch (index.size()) {
@@ -355,6 +355,25 @@ public class MoveCheck {
 	 * @return
 	 */
 	public String getDirection(int i1, int i2) {
+		if (getWest(i1) == i2) {
+			return Directions.west;
+		} else if (getEast(i1) == i2) {
+			return Directions.east;
+		} else if (getNorthWest(i1) == i2) {
+			return Directions.northWest;
+		} else if (getNorthEast(i1) == i2) {
+			return Directions.northEast;
+		} else if (getSouthWest(i1) == i2) {
+			return Directions.southWest;
+		} else if (getSouthEast(i1) == i2) {
+			return Directions.southEast;
+		} else {
+			return "";
+		}
+	}
+	
+	
+	public String getCenterDirection(int i1, int i2) {
 		if (getWest(i1) == i2) {
 			return Directions.west;
 		} else if (getEast(i1) == i2) {

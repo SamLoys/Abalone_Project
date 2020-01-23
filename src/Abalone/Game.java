@@ -9,19 +9,19 @@ import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Server.AbaloneServer;
 import Abalone.protocol.ProtocolMessages;
 
-public class Game implements Runnable {
+public class Game {
 
 	private Board board;
 	private String[] playerNames;
-	private AbaloneServer srv; 
-	private static final int scoreLimit = 1;
+	private AbaloneServer srv;
+	private static final int scoreLimit = 6;
 	boolean finished = false;
 	private int gameSize;
 	private int moves;
 	private int MaxMoves;
 	HashMap<String, MoveCheck> checkmap;
 	HashMap<String, Marble> marbleMap;
- 
+
 	public Game(int Amountplayers, AbaloneServer srv, String player1Name, String player2Name) {
 		board = new Board(Amountplayers);
 		playerNames = new String[2];
@@ -88,52 +88,40 @@ public class Game implements Runnable {
 		this.srv = srv;
 	}
 
-	public void run() {
-		boolean continueGame = true;
-		while (continueGame) {
-			reset();
-			try {
-				play();
-			} catch (IOException | ClientUnavailableException e) {
-				e.printStackTrace();
-			}
-			continueGame = false;
-		}
-	}
-
 	public void reset() {
 		board.reset();
 	};
 
-	public void play() throws IOException, ClientUnavailableException {
+	public void CheckScore() throws IOException, ClientUnavailableException {
 
 		int scoreteam1;
 		int scoreteam2;
 		int scoreteam3;
-		while (moves < MaxMoves && finished == false) {
-			//System.out.println("PLaying");
-			switch (playerNames.length) {
+		if (moves < MaxMoves && finished == false) {
+
+			switch (gameSize) {
 
 			case 2:
-				
+
 				scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
 				scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
-				System.out.println("score team 1: "+scoreteam1);
-				System.out.println("score team 2: "+scoreteam2);
+				System.out.println("score team 1: " + scoreteam1);
+				System.out.println("score team 2: " + scoreteam2);
+				System.out.print("moves: " + moves);
 				if (scoreteam1 == scoreLimit) {
 					String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
 							+ ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" + ProtocolMessages.EOC;
 					finished = true;
 					srv.multipleSend(msg, playerNames);
 					srv.removeGame(this);
-					// player 1 wins
+
 				} else if (scoreteam2 == scoreLimit) {
 					String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
 							+ ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "2" + ProtocolMessages.EOC;
 					finished = true;
 					srv.multipleSend(msg, playerNames);
 					srv.removeGame(this);
-					// player 2 wins
+
 				}
 				break;
 			case 3:
@@ -147,7 +135,7 @@ public class Game implements Runnable {
 					srv.multipleSend(msg, playerNames);
 					srv.removeGame(this);
 					// player 1 wins
-				} else if (scoreteam2 ==scoreLimit) {
+				} else if (scoreteam2 == scoreLimit) {
 					String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
 							+ ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "2" + ProtocolMessages.EOC;
 					finished = true;
@@ -190,9 +178,9 @@ public class Game implements Runnable {
 			}
 		}
 
-		if (finished == false) {
+		if (moves >= MaxMoves) {
 
-			switch (playerNames.length) {
+			switch (gameSize) {
 			case 2:
 				scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
 				scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
@@ -303,7 +291,7 @@ public class Game implements Runnable {
 
 	}
 
-	public String addMove(String name, String direction, ArrayList<Integer> indexes)
+	public synchronized String addMove(String name, String direction, ArrayList<Integer> indexes)
 			throws IOException, ClientUnavailableException {
 
 		// first check if the player has the right to move
@@ -338,6 +326,7 @@ public class Game implements Runnable {
 
 			message = message + name + ProtocolMessages.DELIMITER + direction + indexesString + ProtocolMessages.EOC;
 			srv.multipleSend(message, playerNames);
+			CheckScore();
 			return "good";
 		} else {
 			return "not your turn";
@@ -346,11 +335,10 @@ public class Game implements Runnable {
 	}
 
 	public String getNextPlayer() {
-		while (moves >= playerNames.length) {
-			moves = moves - playerNames.length;
+		int tempmoves = moves; 
+		while (tempmoves >= playerNames.length) {
+			tempmoves = tempmoves - playerNames.length;
 		}
-		return playerNames[moves];
-
+		return playerNames[tempmoves];
 	}
-
 }

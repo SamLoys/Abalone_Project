@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import Abalone.Board;
 import Abalone.Marble;
 import Abalone.MoveCheck;
+import Abalone.SmartyAI;
 import Abalone.Exceptions.ExitProgram;
 import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Exceptions.ProtocolException;
@@ -36,6 +37,8 @@ public class AbaloneClient implements ClientProtocol {
 	private int gameSize = 0;
 	private boolean gameStarted = false;
 	private boolean yourTurn = false;
+	private boolean isAI;
+	private SmartyAI AiPlayer = null;
 	Board clientBoard;
 	String[] gamePlayers;
 	MoveCheck moveChecker;
@@ -45,7 +48,7 @@ public class AbaloneClient implements ClientProtocol {
 	public static void main(String args[]) {
 		AbaloneClient client = new AbaloneClient();
 		client.start();
-		
+
 	}
 
 	public String getName() {
@@ -63,6 +66,7 @@ public class AbaloneClient implements ClientProtocol {
 	public void start() {
 		clientTui.showMessage("Welcome to the Abalone Client program");
 		name = clientTui.getUserName("Please give your wanted username");
+		isAI = clientTui.getBool("Are you an AI?");
 		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
 		try {
 			createConnection();
@@ -70,7 +74,6 @@ public class AbaloneClient implements ClientProtocol {
 			getCurrentQueueSizes();
 			String serverMessage = readLineFromServer();
 			handleServerCommands(serverMessage);
-
 			gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
 			joinQueue(gameSize);
 			Thread threadTUI = new Thread(clientTui);
@@ -81,10 +84,8 @@ public class AbaloneClient implements ClientProtocol {
 			clientTui.showMessage(e.getMessage());
 			clientTui.showMessage("The connection has been lost");
 			clientTui.stopThread();
-			
+
 			closeConnection();
-			
-			
 
 		} catch (ExitProgram e) {
 			clientTui.showMessage("closing... user didnt want to try again");
@@ -241,6 +242,12 @@ public class AbaloneClient implements ClientProtocol {
 							clientBoard = new Board(2);
 							moveChecker = new MoveCheck(color, clientBoard);
 							showBoard();
+							if (isAI) {
+								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+								if (yourTurn) {
+									AiPlayer.makeMove(true);
+								}
+							}
 						}
 						if (inputSrv.length == 5) {
 							gamePlayers = new String[3];
@@ -260,6 +267,12 @@ public class AbaloneClient implements ClientProtocol {
 							clientBoard = new Board(3);
 							showBoard();
 							moveChecker = new MoveCheck(color, clientBoard);
+							if (isAI) {
+								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+								if (yourTurn) {
+									AiPlayer.makeMove(true);
+								}
+							}
 						}
 						if (inputSrv.length == 6) {
 							gamePlayers = new String[4];
@@ -279,6 +292,13 @@ public class AbaloneClient implements ClientProtocol {
 							clientBoard = new Board(4);
 							showBoard();
 							moveChecker = new MoveCheck(color, clientBoard);
+							if (isAI) {
+								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+								if (yourTurn) {
+									AiPlayer.makeMove(true);
+								}
+							}
+
 						}
 					}
 				}
@@ -317,6 +337,11 @@ public class AbaloneClient implements ClientProtocol {
 				if (inputSrv[1].equals(name)) {
 					clientTui.showMessage("it is now your turn, enter your move");
 					yourTurn = true;
+					if (isAI) {
+						AiPlayer.makeMove(true);
+					}
+					
+
 				}
 				break;
 
@@ -327,7 +352,7 @@ public class AbaloneClient implements ClientProtocol {
 					gameStarted = false;
 					gameSize = 0;
 					clientTui.showMessage("There was a draw");
-					gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+					gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
 					joinQueue(gameSize);
 				}
 				if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
@@ -336,7 +361,7 @@ public class AbaloneClient implements ClientProtocol {
 						clientTui.showMessage("the winner is: " + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
 						joiningComplete = false;
 						gameStarted = false;
-						gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+						gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
 						joinQueue(gameSize);
 					}
 
@@ -346,7 +371,7 @@ public class AbaloneClient implements ClientProtocol {
 									.showMessage("the winners are: " + gamePlayers[0] + "and player " + gamePlayers[2]);
 							joiningComplete = false;
 							gameStarted = false;
-							gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+							gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
 							joinQueue(gameSize);
 						}
 						if (Integer.parseInt(inputSrv[2]) == 2) {
@@ -354,7 +379,7 @@ public class AbaloneClient implements ClientProtocol {
 									.showMessage("the winners are: " + gamePlayers[1] + "and player " + gamePlayers[3]);
 							joiningComplete = false;
 							gameStarted = false;
-							gameSize = clientTui.getInt("what queue do you want to join?",2,4);
+							gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
 							joinQueue(gameSize);
 						}
 
@@ -553,7 +578,7 @@ public class AbaloneClient implements ClientProtocol {
 				} catch (IllegalMoveException e) {
 					clientTui.showMessage(e.getMessage() + "please try again");
 				}
- 
+
 			} else {
 				clientTui.showMessage("The game hasnt started yet");
 			}

@@ -18,10 +18,10 @@ public class Board {
 	private int scoreWhite;
 	private int scoreRed;
 	private int scoreGreen;
-	
-	private int moves = 0; 
-	private final static int MaxMoves = 96; 
- 
+
+	private int moves = 0;
+	private final static int MaxMoves = 96;
+
 	int playerCount = 0;
 	// field keeps track of the state of the field.
 	private Marble[][] fields;
@@ -56,11 +56,11 @@ public class Board {
 		}
 
 	}
-	
+
 	public int getTurns() {
-		return moves; 
-	} 
-	
+		return moves;
+	}
+
 	public int getMaxTurns() {
 		return MaxMoves;
 	}
@@ -387,20 +387,20 @@ public class Board {
 	public boolean move(ArrayList<Integer> indexes, String direction) {
 		boolean scored = false;
 		ArrayList<Marble> placeholders = new ArrayList<Marble>();
-			for (int index : indexes) {
-				placeholders.add(getMarble(index));
-				setMarble(index, Marble.Empty);
+		for (int index : indexes) {
+			placeholders.add(getMarble(index));
+			setMarble(index, Marble.Empty);
+		}
+		for (int i = 0; i < indexes.size(); i++) {
+			if (getMarble(getNeighbour(indexes.get(i), direction)) == Marble.Death) {
+				scored = true;
+			} else {
+				setMarble(getNeighbour(indexes.get(i), direction), placeholders.get(i));
 			}
-			for (int i = 0; i < indexes.size(); i ++) {
-				if (getMarble(getNeighbour(indexes.get(i), direction)) == Marble.Death) {
-					scored = true; 
-				}else {
-					setMarble(getNeighbour(indexes.get(i), direction), placeholders.get(i));
-				}
-				
-			}
-			moves++;
-			return scored; 
+
+		}
+		moves++;
+		return scored;
 
 	}
 
@@ -837,6 +837,33 @@ public class Board {
 		return getOrientation(indexes[0], indexes[1]);
 	}
 
+	public String getDirectionToCenter(int index) {
+		int row = getRow(index);
+		int col = getCol(index);
+
+		if (row == 5) {
+			if (col < 5) {
+				return Directions.east;
+			} else {
+				return Directions.west;
+			}
+		}
+		if (row < 5) {
+			if (col <= 5) {
+				return Directions.southEast;
+			} else {
+				return Directions.southWest;
+			}
+
+		} else {
+			if (col < 5) {
+				return Directions.northEast;
+			} else {
+				return Directions.northWest;
+			}
+		}
+	}
+
 	/**
 	 * resets the board to the default state according to the amount of players
 	 */
@@ -917,7 +944,6 @@ public class Board {
 			}
 			s = s + "\n\n" + "\n\n";
 		}
-	
 
 		return s;
 	}

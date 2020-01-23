@@ -209,8 +209,8 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			getClientHandler(player2Name).setColor(Marble.White);
 			games.add(game);
 
-			gameThread = new Thread(game);
-			gameThread.start();
+//			gameThread = new Thread(game);
+//			gameThread.start();
 
 			// construct an array with names to send to all the clients
 			Players = new String[2];
@@ -242,8 +242,9 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			Players[2] = player3Name;
 			handleGameStart(Players);
 
-			gameThread = new Thread(game);
-			gameThread.start();
+//			gameThread = new Thread(game);
+//			gameThread.start();
+			break;
 
 		case 4:
 			player1Name = queueFour.get(0);
@@ -266,26 +267,26 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 			games.add(game);
 
 			// construct an array with names to send to all the clients
-			Players = new String[3];
+			Players = new String[4];
 			Players[0] = player1Name;
 			Players[1] = player2Name;
 			Players[2] = player3Name;
 			Players[3] = player4Name;
 			handleGameStart(Players);
 
-			gameThread = new Thread(game);
-			gameThread.start();
+//			gameThread = new Thread(game);
+//			gameThread.start();
 			break;
 		}
 	}
 
 	public void removeGame(Game game) {
-		this.games.remove(game);
+		this.games.remove(game); 
 	}
 
 	public void removeClient(String name) {
 		clientsMap.remove(name);
-		userNames.remove(name);
+		userNames.remove(name); 
 	}
 
 	public boolean[] getSupports() {

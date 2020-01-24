@@ -287,6 +287,7 @@ class MoveCheckTest {
     		
     		
     		//Checks for three marbles to occupied space
+    		copy.setMarble(71, Marble.White);
     		try {
 				list = movecheck.moveChecker(80, 82, 81, Directions.southEast);
 			} catch (IllegalMoveException e) {

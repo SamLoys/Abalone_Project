@@ -5,6 +5,8 @@ package Abalone.Audiopack;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import javax.sound.sampled.AudioInputStream;
@@ -28,8 +30,11 @@ public class Audio implements Runnable {
     // constructor to initialize streams and clip
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // create AudioInputStream object
-        URL path = Audio.class.getResource("AbaloneMusic.aifc");
-        audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
+    	
+        String path = System.getProperty("user.dir") + "\\src\\Abalone\\Audiopack\\AbaloneMusic.aifc";
+        Path path2 = Paths.get(path);  
+        
+        audioInputStream = AudioSystem.getAudioInputStream(new File(path2.toUri().toURL().getFile()).getAbsoluteFile());
         // create clip reference
         clip = AudioSystem.getClip();
 

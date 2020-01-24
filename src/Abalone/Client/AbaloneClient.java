@@ -55,14 +55,11 @@ public class AbaloneClient implements ClientProtocol {
 		try {
 			muziek = new Audio();
 		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
 		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	
 		}
 		Thread t1 = new Thread(muziek);
 		AbaloneClient client = new AbaloneClient();

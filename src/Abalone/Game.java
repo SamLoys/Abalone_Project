@@ -68,8 +68,8 @@ public class Game {
 		board = new Board(players);
 		playerNames = new String[4];
 		playerNames[0] = player1Name;
-		playerNames[1] = player2Name;
-		playerNames[2] = player3Name;
+		playerNames[2] = player2Name;
+		playerNames[1] = player3Name;
 		playerNames[3] = player4Name;
 
 		checkmap = new HashMap<String, MoveCheck>();
@@ -343,12 +343,19 @@ public class Game {
 	}
 
 	public String getNextPlayer() {
-		int tempmoves = moves;
-		while (tempmoves >= playerNames.length) {
-			tempmoves = tempmoves - playerNames.length;
-		}
-		return playerNames[tempmoves];
+		
+			//normal order
+			int tempmoves = moves;
+			while (tempmoves >= playerNames.length) {
+				tempmoves = tempmoves - playerNames.length;
+			}
+			return playerNames[tempmoves];
+		
+		//different order with 4 players, 1 - 3 - 2 -4 , because 1 and 2 are in a team and 2 and 3 are in a team
+		
 	}
+	
+
 	
 	public String[] getPlayers() {
 		return playerNames;

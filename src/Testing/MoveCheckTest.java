@@ -17,12 +17,8 @@ import Abalone.Exceptions.IllegalMoveException;
 
 class MoveCheckTest {
 	MoveCheck movecheck;
-	Board board;
 	Board copy;
-	Player black;
-	Player white; 
-	Player green; 
-	Player red;
+
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -30,8 +26,7 @@ class MoveCheckTest {
 
 	@Test
 	void test2PlayerStraightMoves() {
-		board = new Board(2);
-		copy = board.deepCopy();
+		copy = new Board(2).deepCopy();
 		
 		movecheck = new MoveCheck(Marble.Black, copy);
 		//Checks for one marble to empty space
@@ -173,8 +168,7 @@ class MoveCheckTest {
 
 	@Test
     void test3PlayerStraightMoves() {
-    	board = new Board(3);
-    	Board copy = board.deepCopy();
+    	copy = new Board(3).deepCopy();
     	movecheck = new MoveCheck(Marble.Green, copy);
     	
 		//Checks for one marble to occupied space
@@ -220,8 +214,7 @@ class MoveCheckTest {
 
 	@Test
     void test4PlayerStraightMoves() {
-    	board = new Board(4);
-    	Board copy = board.deepCopy();
+    	copy = new Board(4).deepCopy();
     	movecheck = new MoveCheck(Marble.Red, copy);
     	
 		//Checks for three marbles not in line
@@ -269,9 +262,7 @@ class MoveCheckTest {
 
      @Test
      void test2PlayerSideMoves() {
-    		board = new Board(2);
-    		copy = board.deepCopy();
-    		
+    		copy = new Board(2).deepCopy();
     		movecheck = new MoveCheck(Marble.Black, copy);
     		
     		//Checks for valid two marbles to empty space
@@ -296,7 +287,7 @@ class MoveCheckTest {
     		
     		
     		//Checks for three marbles to occupied space
-    		board.setMarble(71, Marble.White);
+    		copy.setMarble(71, Marble.White);
     		try {
 				list = movecheck.moveChecker(80, 82, 81, Directions.southEast);
 			} catch (IllegalMoveException e) {
@@ -308,8 +299,7 @@ class MoveCheckTest {
      
      @Test
      void test3PlayerSideMoves() {
- 		board = new Board(3);
- 		copy = board.deepCopy();
+ 		copy = new Board(3).deepCopy();
  		
  		movecheck = new MoveCheck(Marble.White, copy);
  		//Checks for valid move three marbles to empty space
@@ -356,8 +346,7 @@ class MoveCheckTest {
      
      @Test
      void test4PlayersSideMoves() {
-  		board = new Board(4);
-  		copy = board.deepCopy();
+  		copy = new Board(4).deepCopy();
   		
   		movecheck = new MoveCheck(Marble.Green, copy);
   		

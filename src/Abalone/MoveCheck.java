@@ -372,24 +372,6 @@ public class MoveCheck {
 		}
 	}
 	
-	
-	public String getCenterDirection(int i1, int i2) {
-		if (getWest(i1) == i2) {
-			return Directions.west;
-		} else if (getEast(i1) == i2) {
-			return Directions.east;
-		} else if (getNorthWest(i1) == i2) {
-			return Directions.northWest;
-		} else if (getNorthEast(i1) == i2) {
-			return Directions.northEast;
-		} else if (getSouthWest(i1) == i2) {
-			return Directions.southWest;
-		} else if (getSouthEast(i1) == i2) {
-			return Directions.southEast;
-		} else {
-			return "";
-		}
-	}
 
 	public int getNeighbourIndex(int i, String direction) {
 		switch (direction) {

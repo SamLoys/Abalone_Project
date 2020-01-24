@@ -452,16 +452,11 @@ public class SmartyAI {
 										} catch (IllegalMoveException e) {
 										}
 									}
-
 								}
-
 							}
-
 						}
 					}
-
 				}
-
 			}
 		}
 

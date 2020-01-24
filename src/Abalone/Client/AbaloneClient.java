@@ -9,10 +9,14 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import Abalone.Board;
 import Abalone.Marble;
 import Abalone.MoveCheck;
 import Abalone.SmartyAI;
+import Abalone.Audiopack.Audio;
 import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.ExitProgram;
 import Abalone.Exceptions.IllegalMoveException;
@@ -47,7 +51,20 @@ public class AbaloneClient implements ClientProtocol {
 	boolean running = true;
 
 	public static void main(String args[]) {
-
+		Audio muziek = null; 
+		try {
+			muziek = new Audio();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Thread t1 = new Thread(muziek);
 		AbaloneClient client = new AbaloneClient();
 		client.start();
 
@@ -590,7 +607,7 @@ public class AbaloneClient implements ClientProtocol {
 		if (serverSupportChatting) {
 			sendMessage("b;c;" + name + ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
 		} else {
-			clientTui.showMessage("The client does not support chatting");
+			clientTui.showMessage("The Server does not support chatting");
 		}
 
 	}

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
-
+ 
 	Marble d = Marble.Death;
 	Marble w = Marble.White;
 	Marble e = Marble.Empty;

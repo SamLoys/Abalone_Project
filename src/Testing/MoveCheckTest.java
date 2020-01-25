@@ -12,7 +12,7 @@ import Abalone.Board;
 import Abalone.Directions;
 import Abalone.Marble;
 import Abalone.MoveCheck;
-import Abalone.Player;
+
 import Abalone.Exceptions.IllegalMoveException;
 
 class MoveCheckTest {

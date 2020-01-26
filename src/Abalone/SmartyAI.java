@@ -8,7 +8,6 @@ import java.util.List;
 import Abalone.Client.AbaloneClient;
 import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.IllegalMoveException;
-
 import Abalone.Exceptions.ServerUnavailableException;
 
 public class SmartyAI {

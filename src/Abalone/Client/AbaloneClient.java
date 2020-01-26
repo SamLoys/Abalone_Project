@@ -9,20 +9,17 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
 import Abalone.Board;
 import Abalone.Marble;
 import Abalone.MoveCheck;
 import Abalone.SmartyAI;
-import Abalone.Audiopack.Audio;
-import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.ExitProgram;
 import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Exceptions.ProtocolException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.*;
+
+
 
 public class AbaloneClient implements ClientProtocol {
 	private Socket sock;
@@ -51,21 +48,12 @@ public class AbaloneClient implements ClientProtocol {
 	boolean running = true;
 
 	public static void main(String args[]) {
-		Audio muziek = null; 
-		try {
-			muziek = new Audio();
-		} catch (UnsupportedAudioFileException e) {
 		
-		} catch (IOException e) {
-		
-		} catch (LineUnavailableException e) {
-	
-		}
-		Thread t1 = new Thread(muziek);
 		AbaloneClient client = new AbaloneClient();
 		client.start();
 
 	}
+	
 
 	public String getName() {
 		return name;
@@ -80,14 +68,16 @@ public class AbaloneClient implements ClientProtocol {
 	}
 
 	public void start() {
-		clientTui.showMessage("\r\n" + "\r\n"
-				+ "               _                            _                _           _                  \r\n"
-				+ " __      _____| | ___ ___  _ __ ___   ___  | |_ ___     __ _| |__   __ _| | ___  _ __   ___ \r\n"
-				+ " \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\   / _` | '_ \\ / _` | |/ _ \\| '_ \\ / _ \\\r\n"
-				+ "  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | (_| | |_) | (_| | | (_) | | | |  __/\r\n"
-				+ "   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/   \\__,_|_.__/ \\__,_|_|\\___/|_| |_|\\___|\r\n"
-				+ "                                                                                            \r\n"
-				+ "\r\n" + "");
+		clientTui.showMessage("\r\n" + 
+				"\r\n" + 
+				"               _                            _                _           _                  \r\n" + 
+				" __      _____| | ___ ___  _ __ ___   ___  | |_ ___     __ _| |__   __ _| | ___  _ __   ___ \r\n" + 
+				" \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\   / _` | '_ \\ / _` | |/ _ \\| '_ \\ / _ \\\r\n" + 
+				"  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | (_| | |_) | (_| | | (_) | | | |  __/\r\n" + 
+				"   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/   \\__,_|_.__/ \\__,_|_|\\___/|_| |_|\\___|\r\n" + 
+				"                                                                                            \r\n" + 
+				"\r\n" + 
+				"");
 		name = clientTui.getUserName("Please give your wanted username");
 		isAI = clientTui.getBool("Are you an AI?");
 		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
@@ -251,26 +241,20 @@ public class AbaloneClient implements ClientProtocol {
 							gamePlayers = new String[2];
 							gamePlayers[0] = inputSrv[1];
 							gamePlayers[1] = inputSrv[2];
-							setPropperColor();
 							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
 									+ " and " + gamePlayers[1]);
 							clientTui.showMessage("The game will be played in this order");
-							
-							clientBoard = new Board(2);
-							moveChecker = new MoveCheck(color, clientBoard);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
-
-								System.out.println(e.getMessage());
-							}
 							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
 								yourTurn = true;
 
 							}
+							setPropperColor();
+
+							clientBoard = new Board(2);
+							moveChecker = new MoveCheck(color, clientBoard);
+							showBoard();
 							if (isAI) {
 								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
 								if (yourTurn) {
@@ -286,22 +270,16 @@ public class AbaloneClient implements ClientProtocol {
 							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
 									+ " and " + gamePlayers[1] + " and " + gamePlayers[2]);
 							clientTui.showMessage("The game will be played in this order");
-							
-							setPropperColor();
-							clientBoard = new Board(3);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
-								System.out.println(e.getMessage());
-							}
-							moveChecker = new MoveCheck(color, clientBoard);
 							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
 								yourTurn = true;
 
 							}
+							setPropperColor();
+							clientBoard = new Board(3);
+							showBoard();
+							moveChecker = new MoveCheck(color, clientBoard);
 							if (isAI) {
 								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
 								if (yourTurn) {
@@ -318,21 +296,14 @@ public class AbaloneClient implements ClientProtocol {
 							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
 									+ " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
 							clientTui.showMessage("The game will be played in this order");
-							
+							if (gamePlayers[0].equals(name)) {
+								clientTui.showMessage(
+										"this is you, go enter your move, remember typing h will print the help menu");
+								yourTurn = true;
+							}
 							setPropperColor();
 							clientBoard = new Board(4);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
-								System.out.println(e.getMessage());
-							}
-							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
-								yourTurn = true;
-
-							}
+							showBoard();
 							moveChecker = new MoveCheck(color, clientBoard);
 							if (isAI) {
 								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
@@ -361,14 +332,7 @@ public class AbaloneClient implements ClientProtocol {
 						indexes.add(Integer.parseInt(inputSrv[i]));
 					}
 				}
-
-				try {
-					newIndexes = clientBoard.protocolToIndex(indexes);
-				} catch (BoardException e1) {
-					System.out.println(e1.getMessage());
-
-				}
-
+				newIndexes = clientBoard.protocolToIndex(indexes);
 				moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard);
 				try {
 					totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
@@ -378,30 +342,18 @@ public class AbaloneClient implements ClientProtocol {
 					clientTui.showMessage("We did not move the marble, discuss with the party");
 					break;
 				}
-				boolean scores = false;
-
-				try {
-					// move the board
-					// get boolean if there is scored
-					scores = clientBoard.move(totalMove, direction);
-				} catch (BoardException e) {
-					System.out.println(e.getMessage());
-				}
-
+				boolean scores = clientBoard.move(totalMove, direction);
 				if (scores) {
 					clientBoard.addScore(getPlayerMarble(inputSrv[2]));
 				}
-				try {
-					showBoard();
-				} catch (BoardException e) {
-					System.out.println(e.getMessage());
-				}
+				showBoard();
 				if (inputSrv[1].equals(name)) {
 					clientTui.showMessage("it is now your turn, enter your move");
 					yourTurn = true;
 					if (isAI) {
 						AiPlayer.makeMove(true);
 					}
+
 				}
 				break;
 
@@ -464,12 +416,12 @@ public class AbaloneClient implements ClientProtocol {
 				closeConnection();
 				clientTui.stopThread();
 				break;
-
+				
 			case "b":
 				if (inputSrv.length > 3) {
-					if (inputSrv[1].contentEquals("c")) {
-						// chatting
-						clientTui.showMessage(inputSrv[2] + ": " + inputSrv[3]);
+					if(inputSrv[1].contentEquals("c")) {
+						//chatting
+						clientTui.showMessage(inputSrv[2] +": "+ inputSrv[3]);
 					}
 				}
 				break;
@@ -477,7 +429,7 @@ public class AbaloneClient implements ClientProtocol {
 				break;
 			}
 		} else {
-			clientTui.showMessage("Received and invalid server commando");
+			clientTui.showMessage("Try again");
 		}
 	}
 
@@ -485,29 +437,29 @@ public class AbaloneClient implements ClientProtocol {
 		switch (gamePlayers.length) {
 		case 2:
 			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else {
 				color = Marble.Black;
+			} else {
+				color = Marble.White;
 			}
 			break;
 
 		case 3:
 			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
 				color = Marble.Black;
-			} else {
+			} else if (gamePlayers[1].equals(name)) {
 				color = Marble.Green;
+			} else {
+				color = Marble.White;
 			}
 			break;
 
 		case 4:
 			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
 				color = Marble.Black;
-			} else if (gamePlayers[2].equals(name)) {
+			} else if (gamePlayers[1].equals(name)) {
 				color = Marble.Green;
+			} else if (gamePlayers[2].equals(name)) {
+				color = Marble.White;
 			} else {
 				color = Marble.Red;
 			}
@@ -519,29 +471,29 @@ public class AbaloneClient implements ClientProtocol {
 		switch (gameSize) {
 		case 2:
 			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else
 				return Marble.Black;
+			} else
+				return Marble.White;
 
 		case 3:
 			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
 				return Marble.Black;
-			} else
+			} else if (gamePlayers[1].equals(name)) {
 				return Marble.Green;
+			} else
+				return Marble.White;
 
 		case 4:
 			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
 				return Marble.Black;
-			} else if (gamePlayers[2].equals(name)) {
+			} else if (gamePlayers[1].equals(name)) {
 				return Marble.Green;
+			} else if (gamePlayers[2].equals(name)) {
+				return Marble.White;
 			} else {
 				return Marble.Red;
 			}
- 
+
 		}
 		return Marble.Death;
 	}
@@ -559,7 +511,7 @@ public class AbaloneClient implements ClientProtocol {
 		}
 	}
 
-	public void showBoard() throws BoardException {
+	public void showBoard() {
 		clientTui.showMessage(clientBoard.toString());
 		switch (gameSize) {
 		case 2:
@@ -599,14 +551,16 @@ public class AbaloneClient implements ClientProtocol {
 		SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
 		return ai.getHint(clientBoard, color, moveChecker);
 	}
-
+	
 	public void sendChat(String message) throws ServerUnavailableException {
 		if (serverSupportChatting) {
-			sendMessage("b;c;" + name + ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
-		} else {
-			clientTui.showMessage("The Server does not support chatting");
+			sendMessage("b;c;"+name+ ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
 		}
-
+		else {
+			clientTui.showMessage("The client does not support chatting");
+		}
+		
+		
 	}
 
 //---------------------- protocol messages to send down below
@@ -644,14 +598,8 @@ public class AbaloneClient implements ClientProtocol {
 
 		if (yourTurn) {
 			if (gameStarted) {
-				ArrayList<Integer> convertIndexes = null;
-				try {
-					convertIndexes = clientBoard.protocolToIndex(marbleIndices);
-				} catch (BoardException e1) {
-					
-					System.out.println(e1.getMessage());
-				}
-				
+				ArrayList<Integer> convertIndexes = clientBoard.protocolToIndex(marbleIndices);
+				System.out.print("This is the convert indexes" + convertIndexes.toString());
 				ArrayList<Integer> allMoved = new ArrayList<>();
 				try {
 					allMoved = moveChecker.moveChecker(convertIndexes, direction);
@@ -666,8 +614,6 @@ public class AbaloneClient implements ClientProtocol {
 							+ ProtocolMessages.DELIMITER + direction + toSendMarbles + ProtocolMessages.EOC);
 				} catch (IllegalMoveException e) {
 					clientTui.showMessage(e.getMessage() + "please try again");
-				} catch (BoardException e) {
-					clientTui.showMessage(e.getMessage());
 				}
 
 			} else {

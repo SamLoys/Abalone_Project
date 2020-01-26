@@ -12,269 +12,374 @@ import org.junit.jupiter.api.Test;
 import Abalone.Exceptions.IllegalMoveException;
 
 public class MoveCheck {
-	static Board board;
-	ArrayList<Integer> index;
-	Marble color;
+    static Board board;
+    ArrayList<Integer> index;
+    Marble color;
 
-	public MoveCheck(Marble color, Board board) {
-		this.board = board;
+    /** Javadoc.
+     * @param color Javadoc.
+     * @param board Javadoc.
+     */
+    public MoveCheck(Marble color, Board board) {
+        this.board = board;
+        this.color = color;
+        
+    }
 
-		this.color = color;
-	}
-
-	public Marble getColor() {
-		return color;
-	}
-	/*
-	 * @requires that the indexes are already converted to own indexes insteads of
-	 * protocol indexes
-	 */
-	public ArrayList<Integer> moveChecker(int i1, String direction) throws IllegalMoveException {
-
-		index = new ArrayList<Integer>();
-		index.add(i1);
-
-		if (isOnBoard(index)) {
-
-			Collections.sort(index);
-			ArrayList<Integer> newList = completeList(index, direction);
-
-			ArrayList<Integer> returnList = returnMoves(newList, direction);
-
-			return returnList;
-		} else {
-			throw new IllegalMoveException("Is not on board");
-
-		}
-	}
-
-	public ArrayList<Integer> moveChecker(int i1, int i2, String direction) throws IllegalMoveException {
-		index = new ArrayList<Integer>();
-		index.add(i1);
-		index.add(i2);
-		if (isOnBoard(index)) {
-			Collections.sort(index);
-			ArrayList<Integer> newList = completeList(index, direction);
-			ArrayList<Integer> returnList = returnMoves(newList, direction);
-			return returnList;
-		} else {
-			throw new IllegalMoveException("Is not on board");
-		}
-	}
-
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, String direction) throws IllegalMoveException {
-		index = new ArrayList<Integer>();
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		if (isOnBoard(index)) {
-			Collections.sort(index);
-			ArrayList<Integer> newList = completeList(index, direction);
-			ArrayList<Integer> returnList = returnMoves(newList, direction);
-			return returnList;
-		} else {
-			throw new IllegalMoveException("Is not on board");
-		}
-	}
-
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, String direction)
-			throws IllegalMoveException {
-		index = new ArrayList<Integer>();
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		index.add(i4);
-		if (isOnBoard(index)) {
-			Collections.sort(index);
-			ArrayList<Integer> newList = completeList(index, direction);
-			ArrayList<Integer> returnList = returnMoves(newList, direction);
-			return returnList;
-		} else {
-			throw new IllegalMoveException("Is not on board");
-		}
-	}
-
-	public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, int i5, String direction)
-			throws IllegalMoveException {
-		index = new ArrayList<Integer>();
-		index.add(i1);
-		index.add(i2);
-		index.add(i3);
-		index.add(i4);
-		index.add(i5);
-		if (isOnBoard(index)) {
-			Collections.sort(index);
-			ArrayList<Integer> newList = completeList(index, direction);
-			ArrayList<Integer> returnList = returnMoves(newList, direction);
-			return returnList;
-		} else {
-			throw new IllegalMoveException("Is not on board");
-		}
-	}
-	
-	public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) throws IllegalMoveException {
-
-		switch (index.size()) {
-		case 1:
-			return moveChecker(index.get(0), direction);
-		case 2:
-			return moveChecker(index.get(0), index.get(1), direction);
-		case 3:
-			return moveChecker(index.get(0), index.get(1), index.get(2), direction);
-		case 4:
-			return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), direction);
-		case 5:
-			return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), index.get(4), direction);
-		default:
-			throw new IllegalMoveException("Too little or too many indexes");
-			
-		// this should not happen
-
-		}
-	}
-
-	public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) throws IllegalMoveException {
-		ArrayList<Integer> all = new ArrayList<Integer>();
-
-		// Checks if a summito
-		if (isInLine(index)) {
-
-			if (isStraightMove(index, direction)) {
-
-				if (isOwnMarble(index.get(0))) {
-
-					switch ((index.size() - 1)) {
-					case 1:
-
-						if (board.getMarble(index.get(1)) == Marble.Empty) {
-
-							all.add(index.get(0));
-
-						} else {
-							throw new IllegalMoveException("is not valid single move");
-						}
-						break;
-					case 2:
-						if (isOwnTeam(index.get(1))) {
-							if (board.getMarble(index.get(2)) == Marble.Empty) {
-								all.add(index.get(0));
-								all.add(index.get(1));
-
-							} else {
-								throw new IllegalMoveException("direction is not empty");
-							}
-						} else {
-							throw new IllegalMoveException("for two input, second marble is not own team");
-						}
-
-						break;
-					case 3:
-						if (isOwnTeam(index.get(1))) {
-							if (isOwnTeam(index.get(2))) {
-								if (board.getMarble(index.get(3)) == Marble.Empty) {
-									all.add(index.get(0));
-									all.add(index.get(1));
-									all.add(index.get(2));
-								} else {
-									throw new IllegalMoveException("push is blocked");
-								}
-							} else if (isOpponent(index.get(2))) {
-								if (board.getMarble(index.get(3)) == Marble.Empty
-										|| board.getMarble(index.get(3)) == Marble.Death) {
-									all.add(index.get(0));
-									all.add(index.get(1));
-									all.add(index.get(2));
-								} else {
-									throw new IllegalMoveException("push is blocked");
-								}
-							} else {
-								throw new IllegalMoveException("input is death or empty");
-							}
-						} else {
-							throw new IllegalMoveException("for three input, second marble is not own team");
-						}
-						break;
-					case 4:
-						if (isOwnTeam(index.get(1))) {
-							if (isOwnTeam(index.get(2))) {
-								if (isOpponent(index.get(3))) {
-									if (board.getMarble(index.get(4)) == Marble.Empty
-											|| board.getMarble(index.get(4)) == Marble.Death) {
-										all.add(index.get(0));
-										all.add(index.get(1));
-										all.add(index.get(2));
-										all.add(index.get(3));
-									} else {
-										throw new IllegalMoveException("the push is blocked");
-									}
-								} else {
-									throw new IllegalMoveException("for four input, fourth marble is not opponenet");
-								}
-							} else {
-								throw new IllegalMoveException("four four input, Third marble is not own team");
-							}
-						} else {
-							throw new IllegalMoveException("for four input, second marble is not own team");
-						}
-						break;
-					case 5:
-						if (isOwnTeam(index.get(1))) {
-							if (isOwnTeam(index.get(2))) {
-								if (isOpponent(index.get(3))) {
-									if (isOpponent(index.get(4))) {
-										if (board.getMarble(index.get(5)) == Marble.Empty
-												|| board.getMarble(index.get(5)) == Marble.Death) {
-											all.add(index.get(0));
-											all.add(index.get(1));
-											all.add(index.get(2));
-											all.add(index.get(3));
-											all.add(index.get(4));
-										} else {
-											throw new IllegalMoveException("for 5 input, the push is blocked");
-										}
-									} else {
-										throw new IllegalMoveException("for 5 input, fifth marble is not opponent");
-									}
-								} else {
-									throw new IllegalMoveException("for 5 input, fourth marble is not opponent");
-								}
-							} else {
-								throw new IllegalMoveException("for 5 input, third marble is not own team");
-							}
-						} else {
-							throw new IllegalMoveException("for 5 input, second marble is not own team");
-						}
-						break;
-					}
-				} else {
-					throw new IllegalMoveException("is not a valid straight move, the first marble is not your own");
-				}
-			} else {
-				if ((hasOwnMarble(index)) && (index.size() < 4) && (isValidSideStep(index, direction))) {
-					int marbles = 0;
-					for (int i = 0; i < index.size(); i++) {
-						if (!(isOwnTeam(index.get(i)))) {
-							throw new IllegalMoveException("Not all marbles are in your team");
-						} else {
-							marbles++;
-						}
-					}
-					if (index.size() == marbles) {
-						for (int j = 0; j < index.size(); j++) {
-							all.add(index.get(j));
-						}
-					}
-				} else {
-					throw new IllegalMoveException("is not a valid sidestep");
-				}
-			}
-		}
-		if (all.isEmpty()) {
-			throw new IllegalMoveException("is not inline");
-		}
-		return all;
-
-	}
+    /** Javadoc.
+     * @return Javadoc.
+     */
+    public Marble getColor() {
+        return color;
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(int i1, String direction) throws IllegalMoveException {
+        index = new ArrayList<Integer>();
+        index.add(i1);
+        if (isOnBoard(index)) {
+            Collections.sort(index);
+            ArrayList<Integer> newList = completeList(index, direction);
+            ArrayList<Integer> returnList = returnMoves(newList, direction);
+            return returnList;
+            
+        } else {
+            throw new IllegalMoveException("Is not on board");
+            
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param i2 Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(int i1, int i2, String direction) throws IllegalMoveException {
+        index = new ArrayList<Integer>();
+        index.add(i1);
+        index.add(i2);
+        if (isOnBoard(index)) {
+            Collections.sort(index);
+            ArrayList<Integer> newList = completeList(index, direction);
+            ArrayList<Integer> returnList = returnMoves(newList, direction);
+            return returnList;
+            
+        } else {
+            throw new IllegalMoveException("Is not on board");
+            
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param i2 Javadoc.
+     * @param i3 Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(int i1, int i2, int i3, String direction) throws IllegalMoveException {
+        index = new ArrayList<Integer>();
+        index.add(i1);
+        index.add(i2);
+        index.add(i3);
+        if (isOnBoard(index)) {
+            Collections.sort(index);
+            ArrayList<Integer> newList = completeList(index, direction);
+            ArrayList<Integer> returnList = returnMoves(newList, direction);
+            return returnList;
+            
+        } else {
+            throw new IllegalMoveException("Is not on board");
+            
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param i2 Javadoc.
+     * @param i3 Javadoc.
+     * @param i4 Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, String direction)
+            throws IllegalMoveException {
+        index = new ArrayList<Integer>();
+        index.add(i1);
+        index.add(i2);
+        index.add(i3);
+        index.add(i4);
+        if (isOnBoard(index)) {
+            Collections.sort(index);
+            ArrayList<Integer> newList = completeList(index, direction);
+            ArrayList<Integer> returnList = returnMoves(newList, direction);
+            return returnList;
+            
+        } else {
+            throw new IllegalMoveException("Is not on board");
+            
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param i2 Javadoc.
+     * @param i3 Javadoc.
+     * @param i4 Javadoc.
+     * @param i5 Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(int i1, int i2, int i3, int i4, int i5, String direction)
+            throws IllegalMoveException {
+        index = new ArrayList<Integer>();
+        index.add(i1);
+        index.add(i2);
+        index.add(i3);
+        index.add(i4);
+        index.add(i5);
+        if (isOnBoard(index)) {
+            Collections.sort(index);
+            ArrayList<Integer> newList = completeList(index, direction);
+            ArrayList<Integer> returnList = returnMoves(newList, direction);
+            return returnList;
+            
+        } else {
+            throw new IllegalMoveException("Is not on board");
+            
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param index Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> moveChecker(ArrayList<Integer> index, String direction) throws IllegalMoveException {
+        switch (index.size()) {
+            case 1:
+                return moveChecker(index.get(0), direction);
+            case 2:
+                return moveChecker(index.get(0), index.get(1), direction);
+            case 3:
+                return moveChecker(index.get(0), index.get(1), index.get(2), direction);
+            case 4:
+                return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), direction);
+            case 5:
+                return moveChecker(index.get(0), index.get(1), index.get(2), index.get(3), index.get(4), direction);
+            default:
+                throw new IllegalMoveException("Too little or too many indexes");
+                // this should not happen
+                
+        }
+        
+    }
+    
+    /** Javadoc.
+     * @param index Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     * @throws IllegalMoveException Javadoc.
+     */
+    public ArrayList<Integer> returnMoves(ArrayList<Integer> index, String direction) throws IllegalMoveException {
+        ArrayList<Integer> all = new ArrayList<Integer>();
+        // Checks if a summito
+        if (isInLine(index)) {
+            if (isStraightMove(index, direction)) {
+                if (isOwnMarble(index.get(0))) {
+                    switch ((index.size() - 1)) {
+                        case 1:
+                            if (board.getMarble(index.get(1)) == Marble.Empty) {
+                                all.add(index.get(0));
+                                
+                            } else {
+                                throw new IllegalMoveException("is not valid single move");
+                                
+                            }
+                            break;
+                        case 2:
+                            if (isOwnTeam(index.get(1))) {
+                                if (board.getMarble(index.get(2)) == Marble.Empty) {
+                                    all.add(index.get(0));
+                                    all.add(index.get(1));
+                                    
+                                } else {
+                                    throw new IllegalMoveException("direction is not empty");
+                                    
+                                }
+                                
+                            } else {
+                                throw new IllegalMoveException("for two input, second marble is not own team");
+                                
+                            }
+                            break;
+                        case 3:
+                            if (isOwnTeam(index.get(1))) {
+                                if (isOwnTeam(index.get(2))) {
+                                    if (board.getMarble(index.get(3)) == Marble.Empty) {
+                                        all.add(index.get(0));
+                                        all.add(index.get(1));
+                                        all.add(index.get(2));
+                                        
+                                    } else {
+                                        throw new IllegalMoveException("push is blocked");
+                                        
+                                    }
+                                    
+                                } else if (isOpponent(index.get(2))) {
+                                    if (board.getMarble(index.get(3)) == Marble.Empty
+                                            || board.getMarble(index.get(3)) == Marble.Death) {
+                                        all.add(index.get(0));
+                                        all.add(index.get(1));
+                                        all.add(index.get(2));
+                                        
+                                    } else {
+                                        throw new IllegalMoveException("push is blocked");
+                                        
+                                    }
+                                    
+                                } else {
+                                    throw new IllegalMoveException("input is death or empty");
+                                    
+                                }
+                                
+                            } else {
+                                throw new IllegalMoveException("for three input, second marble is not own team");
+                                
+                            }
+                            break;
+                        case 4:
+                            if (isOwnTeam(index.get(1))) {
+                                if (isOwnTeam(index.get(2))) {
+                                    if (isOpponent(index.get(3))) {
+                                        if (board.getMarble(index.get(4)) == Marble.Empty
+                                                || board.getMarble(index.get(4)) == Marble.Death) {
+                                            all.add(index.get(0));
+                                            all.add(index.get(1));
+                                            all.add(index.get(2));
+                                            all.add(index.get(3));
+                                            
+                                        } else {
+                                            throw new IllegalMoveException("the push is blocked");
+                                            
+                                        }
+                                        
+                                    } else {
+                                        throw new IllegalMoveException("for four input, "
+                                                + "fourth marble is not opponenet");
+                                        
+                                    }
+                                    
+                                } else {
+                                    throw new IllegalMoveException("four four input, Third marble is not own team");
+                                    
+                                }
+                                
+                            } else {
+                                throw new IllegalMoveException("for four input, second marble is not own team");
+                                
+                            }
+                            break;
+                        case 5:
+                            if (isOwnTeam(index.get(1))) {
+                                if (isOwnTeam(index.get(2))) {
+                                    if (isOpponent(index.get(3))) {
+                                        if (isOpponent(index.get(4))) {
+                                            if (board.getMarble(index.get(5)) == Marble.Empty
+                                                    || board.getMarble(index.get(5)) == Marble.Death) {
+                                                all.add(index.get(0));
+                                                all.add(index.get(1));
+                                                all.add(index.get(2));
+                                                all.add(index.get(3));
+                                                all.add(index.get(4));
+                                                
+                                            } else {
+                                                throw new IllegalMoveException("for 5 input, the push is blocked");
+                                                
+                                            }
+                                            
+                                        } else {
+                                            throw new IllegalMoveException("for 5 input, fifth marble is not opponent");
+                                            
+                                        }
+                                        
+                                    } else {
+                                        throw new IllegalMoveException("for 5 input, fourth marble is not opponent");
+                                        
+                                    }
+                                    
+                                } else {
+                                    throw new IllegalMoveException("for 5 input, third marble is not own team");
+                                    
+                                }
+                                
+                            } else {
+                                throw new IllegalMoveException("for 5 input, second marble is not own team");
+                                
+                            }
+                            break;
+                        default: 
+                            break;
+                    }
+                    
+                } else {
+                    throw new IllegalMoveException("is not a valid straight move, the first marble is not your own");
+                    
+                }
+                
+            } else {
+                if ((hasOwnMarble(index)) && (index.size() < 4) && (isValidSideStep(index, direction))) {
+                    int marbles = 0;
+                    for (int i = 0; i < index.size(); i++) {
+                        if (!(isOwnTeam(index.get(i)))) {
+                            throw new IllegalMoveException("Not all marbles are in your team");
+                            
+                        } else {
+                            marbles++;
+                            
+                        }
+                        
+                    }
+                    if (index.size() == marbles) {
+                        for (int j = 0; j < index.size(); j++) {
+                            all.add(index.get(j));
+                            
+                        }
+                        
+                    }
+                    
+                } else {
+                    throw new IllegalMoveException("is not a valid sidestep");
+                    
+                }
+                
+            }
+            
+        }
+        if (all.isEmpty()) {
+            throw new IllegalMoveException("is not inline");
+            
+        }
+        return all;
+        
+    }
 
 	// Checks if the given values are on the board
 	public boolean isOnBoard(ArrayList<Integer> index) {

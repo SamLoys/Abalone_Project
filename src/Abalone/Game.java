@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Server.AbaloneServer;
@@ -28,12 +29,12 @@ public class Game {
 		playerNames[0] = player1Name;
 		playerNames[1] = player2Name;
 		checkmap = new HashMap<String, MoveCheck>();
-		checkmap.put(player1Name, new MoveCheck(Marble.Black, board));
-		checkmap.put(player2Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player1Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
 
 		marbleMap = new HashMap<String, Marble>();
-		marbleMap.put(player1Name, Marble.Black);
-		marbleMap.put(player2Name, Marble.White);
+		marbleMap.put(player1Name, Marble.White);
+		marbleMap.put(player2Name, Marble.Black); 
 		moves = board.getTurns();
 		maxMoves = board.getMaxTurns();
 		gameSize = 2;
@@ -48,14 +49,14 @@ public class Game {
 		playerNames[2] = player3Name;
 
 		checkmap = new HashMap<String, MoveCheck>();
-		checkmap.put(player1Name, new MoveCheck(Marble.Black, board));
-		checkmap.put(player2Name, new MoveCheck(Marble.Green, board));
-		checkmap.put(player3Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player1Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
+		checkmap.put(player3Name, new MoveCheck(Marble.Green, board));
 
 		marbleMap = new HashMap<String, Marble>();
-		marbleMap.put(player1Name, Marble.Black);
-		marbleMap.put(player2Name, Marble.Green);
-		marbleMap.put(player3Name, Marble.White);
+		marbleMap.put(player1Name, Marble.White);
+		marbleMap.put(player2Name, Marble.Black);
+		marbleMap.put(player3Name, Marble.Green);
 		moves = board.getTurns();
 		maxMoves = board.getMaxTurns();
 		gameSize = 3;
@@ -67,20 +68,20 @@ public class Game {
 		board = new Board(players);
 		playerNames = new String[4];
 		playerNames[0] = player1Name;
-		playerNames[1] = player2Name;
-		playerNames[2] = player3Name;
+		playerNames[2] = player2Name;
+		playerNames[1] = player3Name;
 		playerNames[3] = player4Name;
 
 		checkmap = new HashMap<String, MoveCheck>();
-		checkmap.put(player1Name, new MoveCheck(Marble.Black, board));
-		checkmap.put(player2Name, new MoveCheck(Marble.Green, board));
-		checkmap.put(player3Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player1Name, new MoveCheck(Marble.White, board));
+		checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
+		checkmap.put(player3Name, new MoveCheck(Marble.Green, board));
 		checkmap.put(player4Name, new MoveCheck(Marble.Red, board));
 
 		marbleMap = new HashMap<String, Marble>();
-		marbleMap.put(player1Name, Marble.Black);
-		marbleMap.put(player2Name, Marble.Green);
-		marbleMap.put(player3Name, Marble.White);
+		marbleMap.put(player1Name, Marble.White);
+		marbleMap.put(player2Name, Marble.Black);
+		marbleMap.put(player3Name, Marble.Green);
 		marbleMap.put(player4Name, Marble.Red);
 		moves = board.getTurns();
 		maxMoves = board.getMaxTurns();
@@ -92,7 +93,7 @@ public class Game {
 		board.reset();
 	};
 
-	public void CheckScore() throws IOException, ClientUnavailableException {
+	public void CheckScore() throws BoardException, IOException, ClientUnavailableException {
 
 		int scoreteam1;
 		int scoreteam2;
@@ -102,7 +103,6 @@ public class Game {
 			switch (gameSize) {
 
 			case 2:
-
 				scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
 				scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
 				System.out.println("score team 1: " + scoreteam1);
@@ -111,7 +111,7 @@ public class Game {
 				if (scoreteam1 == scoreLimit) {
 					String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
 							+ ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" + ProtocolMessages.EOC;
-					finished = true;
+					finished = true; 
 					srv.multipleSend(msg, playerNames);
 					srv.removeGame(this);
 
@@ -292,7 +292,7 @@ public class Game {
 	}
 
 	public synchronized String addMove(String name, String direction, ArrayList<Integer> indexes)
-			throws IOException, ClientUnavailableException {
+			throws IOException, ClientUnavailableException, BoardException {
 
 		// first check if the player has the right to move
 		ArrayList<Integer> newIndexes = new ArrayList<>();
@@ -304,11 +304,19 @@ public class Game {
 
 			try {
 				totalMove = checkmap.get(name).moveChecker(newIndexes, direction);
+				//this is the return 
 			} catch (IllegalMoveException e) {
 				return e.getMessage();
 			}
-
-			boolean scores = board.move(totalMove, direction);
+		
+			boolean scores = false;
+			try {
+				scores = board.move(totalMove, direction);
+			}
+			catch(BoardException e) {
+				return e.getMessage();
+			}
+			
 			if (scores) {
 				board.addScore(marbleMap.get(name));
 			}
@@ -335,12 +343,19 @@ public class Game {
 	}
 
 	public String getNextPlayer() {
-		int tempmoves = moves;
-		while (tempmoves >= playerNames.length) {
-			tempmoves = tempmoves - playerNames.length;
-		}
-		return playerNames[tempmoves];
+		
+			//normal order
+			int tempmoves = moves;
+			while (tempmoves >= playerNames.length) {
+				tempmoves = tempmoves - playerNames.length;
+			}
+			return playerNames[tempmoves];
+		
+		//different order with 4 players, 1 - 3 - 2 -4 , because 1 and 2 are in a team and 2 and 3 are in a team
+		
 	}
+	
+
 	
 	public String[] getPlayers() {
 		return playerNames;

@@ -11,12 +11,13 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.13-javadoc.jar">
+	<classpathentry kind="lib" path="lib/commons-codec-1.13.jar">
 		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/abalone_project/lib/commons-codec-1.13-javadoc.jar!/"/>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.13.jar">
+	<classpathentry kind="lib" path="lib/commons-codec-1.13-javadoc.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import Abalone.Game;
 import Abalone.Marble;
+import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.ClientUnavailableException;
 import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.ProtocolMessages;
@@ -132,7 +133,14 @@ public class AbaloneClientHandler implements Runnable {
 						indexes.add(Integer.parseInt(inputSrv[i]));
 					}
 				}
-				String error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+				String error = null;
+				try {
+					error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes); 
+				}
+				catch (BoardException e) {
+					System.out.println(e.getMessage());
+				}
+				
 				if (error.equals("good")) {
 
 				} else {

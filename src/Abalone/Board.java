@@ -1,12 +1,14 @@
 package Abalone;
 
 import Abalone.Marble;
+import Abalone.Exceptions.BoardException;
+import Abalone.Exceptions.IllegalMoveException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
-
+ 
 	Marble d = Marble.Death;
 	Marble w = Marble.White;
 	Marble e = Marble.Empty;
@@ -74,15 +76,15 @@ public class Board {
 	 */
 	private void initBoard2() {
 		fields = new Marble[][] { { d, d, d, d, d, d, d, d, d, d, d }, // 0
-				{ d, d, d, d, d, w, w, w, w, w, d }, // 1
-				{ d, d, d, d, w, w, w, w, w, w, d }, // 2
-				{ d, d, d, e, e, w, w, w, e, e, d }, // 3
+				{ d, d, d, d, d, b, b, b, b, b, d }, // 1
+				{ d, d, d, d, b, b, b, b, b, b, d }, // 2
+				{ d, d, d, e, e, b, b, b, e, e, d }, // 3
 				{ d, d, e, e, e, e, e, e, e, e, d }, // 4
 				{ d, e, e, e, e, e, e, e, e, e, d }, // 5
 				{ d, e, e, e, e, e, e, e, e, d, d }, // 6
-				{ d, e, e, b, b, b, e, e, d, d, d }, // 7
-				{ d, b, b, b, b, b, b, d, d, d, d }, // 8
-				{ d, b, b, b, b, b, d, d, d, d, d }, // 9
+				{ d, e, e, w, w, w, e, e, d, d, d }, // 7
+				{ d, w, w, w, w, w, w, d, d, d, d }, // 8
+				{ d, w, w, w, w, w, d, d, d, d, d }, // 9
 				{ d, d, d, d, d, d, d, d, d, d, d } };// 10
 	}
 
@@ -195,20 +197,21 @@ public class Board {
 	 * @param index
 	 * @requires to give a value from 0 up and uncluding 60
 	 * @return returns the converted index
+	 * @throws BoardException 
 	 */
-	public int protocolToIndex(int index) {
+	public int protocolToIndex(int index) throws BoardException {
 		if (index < 61 && index >= 0) {
 			int indexConverter[] = new int[] { 16, 17, 18, 19, 20, 26, 27, 28, 29, 30, 31, 36, 37, 38, 39, 40, 41, 42,
 					46, 47, 48, 49, 50, 51, 52, 53, 56, 57, 58, 59, 60, 61, 62, 63, 64, 67, 68, 69, 70, 71, 72, 73, 74,
 					78, 79, 80, 81, 82, 83, 84, 89, 90, 91, 92, 93, 94, 100, 101, 102, 103, 104 };
 
 			return indexConverter[index];
-		} else
-			return 9999;
+		} 
+		throw new BoardException("The index is out of range");
 
 	}
 
-	public ArrayList<Integer> protocolToIndex(ArrayList<Integer> indexes) {
+	public ArrayList<Integer> protocolToIndex(ArrayList<Integer> indexes) throws BoardException {
 		ArrayList<Integer> toIndex = new ArrayList<Integer>();
 		for (int index : indexes) {
 			toIndex.add(protocolToIndex(index));
@@ -221,8 +224,9 @@ public class Board {
 	 * 
 	 * @param index
 	 * @return returns 9999 if the index is out of bounds
+	 * @throws BoardException 
 	 */
-	public int indexToProtocol(int index) {
+	public int indexToProtocol(int index) throws BoardException {
 		int indexConverter[] = new int[] { 16, 17, 18, 19, 20, 26, 27, 28, 29, 30, 31, 36, 37, 38, 39, 40, 41, 42, 46,
 				47, 48, 49, 50, 51, 52, 53, 56, 57, 58, 59, 60, 61, 62, 63, 64, 67, 68, 69, 70, 71, 72, 73, 74, 78, 79,
 				80, 81, 82, 83, 84, 89, 90, 91, 92, 93, 94, 100, 101, 102, 103, 104 };
@@ -234,10 +238,10 @@ public class Board {
 			}
 			looping++;
 		}
-		return 9999;
+		throw new BoardException("The index is out of range");
 	}
 
-	public ArrayList<Integer> indexToProtocol(ArrayList<Integer> indexes) {
+	public ArrayList<Integer> indexToProtocol(ArrayList<Integer> indexes) throws BoardException {
 		ArrayList<Integer> toProtocol = new ArrayList<Integer>();
 		for (int index : indexes) {
 			toProtocol.add(indexToProtocol(index));
@@ -337,7 +341,7 @@ public class Board {
 		return index + 10;
 	}
 
-	public int getNeighbour(int index, String direction) {
+	public int getNeighbour(int index, String direction) throws BoardException {
 		switch (direction) {
 		case Directions.east:
 			return getEast(index);
@@ -353,7 +357,7 @@ public class Board {
 			return getSouthWest(index);
 
 		default:
-			return 9999;
+			throw new BoardException("The given direction does not excist");
 
 		}
 
@@ -384,7 +388,7 @@ public class Board {
 		return isValidField(row, col);
 	}
 
-	public boolean move(ArrayList<Integer> indexes, String direction) {
+	public boolean move(ArrayList<Integer> indexes, String direction) throws BoardException {
 		boolean scored = false;
 		ArrayList<Marble> placeholders = new ArrayList<Marble>();
 		for (int index : indexes) {
@@ -401,338 +405,10 @@ public class Board {
 		}
 		moves++;
 		return scored;
-
 	}
 
-	/**
-	 * moving the marble in the given direction,(this is not an attack move)
-	 * 
-	 * @requires that the field is already checked and the move is valid
-	 * @param index
-	 * @param direction
-	 */
-	public void move(int index, String direction) {
-		Marble placeholder = getMarble(index);
-		switch (direction) {
-		case Directions.east:
-			setMarble(index, Marble.Empty);
-			setMarble(getEast(index), placeholder);
-			break;
-		case Directions.northEast:
-			setMarble(index, Marble.Empty);
-			setMarble(getNorthEast(index), placeholder);
-			break;
-		case Directions.northWest:
-			setMarble(index, Marble.Empty);
-			setMarble(getNorthWest(index), placeholder);
-			break;
-		case Directions.southEast:
-			setMarble(index, Marble.Empty);
-			setMarble(getSouthEast(index), placeholder);
-			break;
-		case Directions.southWest:
-			setMarble(index, Marble.Empty);
-			setMarble(getSouthWest(index), placeholder);
-			break;
-		case Directions.west:
-			setMarble(index, Marble.Empty);
-			setMarble(getWest(index), placeholder);
-			break;
-		}
+	
 
-	}
-
-	/**
-	 * given the direction and the indexes moves the marble (this is not an attack
-	 * move)
-	 * 
-	 * @requires that the field is already checked and the move is valid
-	 * @param index
-	 * @param index2
-	 * @param direction
-	 */
-
-	public void move(int index, int index2, String direction) {
-		Marble placeholder = getMarble(index);
-		switch (direction) {
-		case Directions.east:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getEast(index), placeholder);
-			setMarble(getEast(index2), placeholder);
-			break;
-		case Directions.west:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getWest(index), placeholder);
-			setMarble(getWest(index2), placeholder);
-			break;
-		case Directions.northEast:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getNorthEast(index), placeholder);
-			setMarble(getNorthEast(index2), placeholder);
-			break;
-		case Directions.northWest:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getNorthWest(index), placeholder);
-			setMarble(getNorthWest(index2), placeholder);
-			break;
-		case Directions.southEast:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getSouthEast(index), placeholder);
-			setMarble(getSouthEast(index2), placeholder);
-			break;
-		case Directions.southWest:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(getSouthWest(index), placeholder);
-			setMarble(getSouthWest(index2), placeholder);
-			break;
-
-		}
-	}
-
-	/**
-	 * given the direction and the indexes moves the marble (this is not an attack
-	 * move)
-	 * 
-	 * @requires that the field is already checked and the move is valid
-	 * @param index
-	 * @param index2
-	 * @param index3
-	 * @param direction
-	 */
-	public void move(int index, int index2, int index3, String direction) {
-		Marble placeholder = getMarble(index);
-		switch (direction) {
-		case Directions.east:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getEast(index), placeholder);
-			setMarble(getEast(index2), placeholder);
-			setMarble(getEast(index3), placeholder);
-			break;
-		case Directions.west:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getWest(index), placeholder);
-			setMarble(getWest(index2), placeholder);
-			setMarble(getWest(index3), placeholder);
-			break;
-		case Directions.northEast:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getNorthEast(index), placeholder);
-			setMarble(getNorthEast(index2), placeholder);
-			setMarble(getNorthEast(index3), placeholder);
-			break;
-		case Directions.northWest:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getNorthWest(index), placeholder);
-			setMarble(getNorthWest(index2), placeholder);
-			setMarble(getNorthWest(index3), placeholder);
-			break;
-		case Directions.southEast:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getSouthEast(index), placeholder);
-			setMarble(getSouthEast(index2), placeholder);
-			setMarble(getSouthEast(index3), placeholder);
-			break;
-		case Directions.southWest:
-			setMarble(index, Marble.Empty);
-			setMarble(index2, Marble.Empty);
-			setMarble(index3, Marble.Empty);
-			setMarble(getSouthWest(index), placeholder);
-			setMarble(getSouthWest(index2), placeholder);
-			setMarble(getSouthWest(index3), placeholder);
-			break;
-
-		}
-	}
-
-	/**
-	 * checks if the move is a summito
-	 * 
-	 * @param index
-	 * @param index2
-	 * @param direction
-	 * @return true if the move if technically a summito
-	 */
-	public boolean isSummito(int index, int index2, String direction) {
-		int orientation = getOrientation(index, index2);
-
-		if (compareOrientationDirection(orientation, direction)) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * checks if the move is technically a summito
-	 * 
-	 * @param index
-	 * @param index2
-	 * @param index3
-	 * @param direction
-	 * @return true if the move is technically a summito
-	 */
-	public boolean isSummito(int index, int index2, int index3, String direction) {
-		int orientation = getOrientation(index, index2, index3);
-		if (compareOrientationDirection(orientation, direction)) {
-			return true;
-		} else
-			return false;
-	}
-
-	public void attackMove(int index, int index2, String direction) {
-		Marble placeholderAttacker = getMarble(index);
-
-		int[] indexes = new int[2];
-		indexes[0] = index;
-		indexes[1] = index2;
-		Arrays.sort(indexes);
-
-		switch (direction) {
-		case Directions.east:
-
-			if (getMarble(getEast(getEast(indexes[1]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getEast(indexes[1]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.west:
-			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getWest(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.northEast:
-			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getNorthEast(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.northWest:
-			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getNorthWest(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.southEast:
-			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getSouthEast(indexes[1]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.southWest:
-			if (getMarble(getSouthWest(getSouthWest(indexes[1]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getSouthWest(indexes[1]), direction);
-				move(index, index2, direction);
-			}
-			break;
-
-		}
-
-	}
-
-	public void attackMove(int index, int index2, int index3, String direction) {
-		Marble placeholderAttacker = getMarble(index);
-
-		int[] indexes = new int[3];
-		indexes[0] = index;
-		indexes[1] = index2;
-		indexes[2] = index3;
-		Arrays.sort(indexes);
-
-		switch (direction) {
-		case Directions.east:
-
-			if (getMarble(getEast(getEast(indexes[2]))) == Marble.Death
-					|| getMarble(getEast(getEast(getEast(indexes[2])))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getEast(indexes[2]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.west:
-			if (getMarble(getWest(getWest(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getWest(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.northEast:
-			if (getMarble(getNorthEast(getNorthEast(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getNorthEast(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.northWest:
-			if (getMarble(getNorthWest(getNorthWest(indexes[0]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getNorthWest(indexes[0]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.southEast:
-			if (getMarble(getSouthEast(getSouthEast(indexes[1]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getSouthEast(indexes[1]), direction);
-				move(index, index2, direction);
-			}
-			break;
-		case Directions.southWest:
-			if (getMarble(getSouthWest(getSouthWest(indexes[1]))) == Marble.Death) {
-				move(index, index2, direction);
-				addScore(placeholderAttacker);
-			} else {
-				move(getSouthWest(indexes[1]), direction);
-				move(index, index2, direction);
-			}
-			break;
-
-		}
-
-	}
 
 	public void addScore(Marble marble) {
 		if (marble == Marble.Black) {
@@ -749,7 +425,7 @@ public class Board {
 		}
 	}
 
-	public int getScore(Marble marble) {
+	public int getScore(Marble marble) throws BoardException {
 		if (marble == Marble.Black) {
 			return scoreBlack;
 		}
@@ -762,80 +438,14 @@ public class Board {
 		if (marble == Marble.Green) {
 			return scoreGreen;
 		}
-		return 9999;
+		
+		//should actually never happen
+		throw new BoardException("Marble doesnt exist");
+		
+		
 	}
 
-	/**
-	 * checks if the orientation is inline with the direction
-	 * 
-	 * @param orientation
-	 * @param direction
-	 * @return true if the direction is inline with the orientation
-	 */
-	public boolean compareOrientationDirection(int orientation, String direction) {
-		if (orientation == 1) {
-			if (direction.equals(Directions.northWest) || direction.equals(Directions.southEast)) {
-				return true;
-			}
-		}
-		if (orientation == 2) {
-			if (direction.equals(Directions.northEast) || direction.equals(Directions.southWest)) {
-				return true;
-			}
-		}
-		if (orientation == 3) {
-			if (direction.equals(Directions.east) || direction.equals(Directions.west)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
-	/**
-	 * get the orrientation the the given indexes,
-	 * 
-	 * @requires that it is already checked that they are neighbours.
-	 * @param index
-	 * @param index2
-	 * @return 1 if orrientation is NW or SE 2 if orrientation is NE or SW 3 if
-	 *         orrientation is E or W if something goes wrong return 9999
-	 */
-	public int getOrientation(int index, int index2) {
-		int[] indexes = new int[2];
-		indexes[0] = index;
-		indexes[1] = index2;
-		Arrays.sort(indexes);
-
-		if (getEast(indexes[0]) == indexes[1] || getWest(indexes[0]) == indexes[1]) {
-			return 3;
-		}
-		if (getNorthEast(indexes[0]) == indexes[1] || getSouthWest(indexes[0]) == indexes[1]) {
-			return 2;
-		}
-		if (getNorthWest(indexes[0]) == indexes[1] || getSouthEast(indexes[0]) == indexes[1]) {
-			return 1;
-		}
-		return 9999;
-	}
-
-	/**
-	 * get the orrientation the the given indexes,
-	 * 
-	 * @requires that the given indexes are already on one line
-	 * @param index
-	 * @param index2
-	 * @param index3
-	 * @return 1 if orrientation is NW or SE 2 if orrientation is NE or SW 3 if
-	 *         orrientation is E or W if something goes wrong return 9999
-	 */
-	public int getOrientation(int index, int index2, int index3) {
-		int[] indexes = new int[3];
-		indexes[0] = index;
-		indexes[1] = index2;
-		indexes[2] = index3;
-		Arrays.sort(indexes);
-		return getOrientation(indexes[0], indexes[1]);
-	} 
 
 	public String getDirectionToCenter(int index) {
 		int row = getRow(index);
@@ -881,19 +491,7 @@ public class Board {
 		}
 	}
 
-	/**
-	 * loops through all the scores of the players, if one score is higher as 6, the
-	 * function will return true
-	 * 
-	 * @return
-	 */
-	public boolean GameOver() {
-		if (scoreBlack < 6 || scoreGreen < 6 || scoreRed < 6 || scoreWhite < 6) {
-			return true;
-		}
-		return false;
-	}
-
+	
 	/**
 	 * returns the representation of the board as a string;
 	 */
@@ -929,16 +527,25 @@ public class Board {
 			}
 			for (int col = 0; col < 11; col++) {
 
+				int number = 0;
+				try {
+					number = indexToProtocol(Getindex(row, col));
+				}
+				catch(BoardException e) {
+					//no need to print anything, this will happen if the number is a death state
+					// and when thats happens you dont need the number
+				}
+				
 				if (getMarble(row, col).toString().equals("Death")) {
 					s = s + "";
 				} else if (getMarble(row, col).toString().equals("Empty")) {
-					s = s + "   -" + "(" + indexToProtocol(Getindex(row, col)) + ")" + "-   ";
+					s = s + "   -" + "(" + number + ")" + "-   ";
 
 				} else if (getMarble(row, col).toString().equals("Red")) {
-					s = s + "  " + getMarble(row, col).toString() + "(" + indexToProtocol(Getindex(row, col)) + ")"
+					s = s + "  " + getMarble(row, col).toString() + "(" + number + ")"
 							+ "  ";
 				} else {
-					s = s + " " + getMarble(row, col).toString() + "(" + indexToProtocol(Getindex(row, col)) + ")"
+					s = s + " " + getMarble(row, col).toString() + "(" + number + ")"
 							+ " ";
 				}
 			}

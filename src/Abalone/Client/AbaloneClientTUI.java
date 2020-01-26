@@ -92,7 +92,7 @@ public class AbaloneClientTUI implements Runnable {
 						}
 
 					}
-					System.out.println("this is the marbles" + marbles.toString());
+					
 					client.sendMove(client.getName(), userInput[1], marbles);
 					break;
 				} else {

@@ -16,6 +16,12 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * A JUnit test for testing if the player or the client has send a valid move. Returns the list with all indexes
+ * that have to be moved if valid, if not valid specific exceptions are thrown.
+ * @author Ayla en Sam
+ * @version 1.0
+ */
 class MoveCheckTest {
     MoveCheck movecheck;
     Board copy;
@@ -27,9 +33,9 @@ class MoveCheckTest {
     
     @Test
     void test2PlayerStraightMoves() {
+        //Tests the straight moves for a 2 player game
         copy = new Board(2).deepCopy();
-        
-        movecheck = new MoveCheck(Marble.Black, copy);
+        movecheck = new MoveCheck(Marble.White, copy);
         //Checks for one marble to empty space
         ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(81));
         ArrayList<Integer> list = new ArrayList<>();
@@ -41,7 +47,7 @@ class MoveCheckTest {
         assertEquals(test, list);
         test.clear();
         list.clear();
-        
+ 
         //Checks for one wrong marble to empty space
         try {
             list = movecheck.moveChecker(38, Directions.southEast);
@@ -51,7 +57,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for valid marble 91 to empty space
+        //Checks for valid marble 91 to empty space, returns 91 and 80 as valid marbles
         copy.reset();
         test.add(91);
         test.add(80);
@@ -65,7 +71,7 @@ class MoveCheckTest {
         list.clear();
         
         
-        //Checks for three valid marbles to empty space
+        //Checks for three valid marbles to empty space, returns 103, 92 and 81
         test.add(103);
         test.add(92);
         test.add(81);
@@ -78,7 +84,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for three valid marbles to empty space in random order
+        //Checks for three valid marbles to empty space in random order, returns 103, 92, 81
         test.add(103);
         test.add(92);
         test.add(81);
@@ -91,8 +97,8 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for three valid marbles one opponent summito
-        copy.setMarble(70, Marble.White);
+        //Checks for three valid marbles one opponent summito, returns 103, 92, 81, 70
+        copy.setMarble(70, Marble.Black);
         test.add(103);
         test.add(92);
         test.add(81);
@@ -106,9 +112,9 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for invalid four own marbles one opponent summito
-        copy.setMarble(70, Marble.Black);
-        copy.setMarble(59, Marble.White);
+        //Checks for invalid four own marbles one opponent summito, returns exception
+        copy.setMarble(70, Marble.White);
+        copy.setMarble(59, Marble.Black);
         try {
             list = movecheck.moveChecker(103, Directions.northWest);
         } catch (IllegalMoveException e) {
@@ -117,9 +123,9 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for three marbles two opponent summito random order
-        copy.setMarble(59, Marble.White);
-        copy.setMarble(70, Marble.White);
+        //Checks for three marbles two opponent summito random order, returns 103, 92, 81, 70, 59
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
         test.add(103);
         test.add(92);
         test.add(81);
@@ -134,7 +140,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for three marbles two hidden opponent summito
+        //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
         test.add(103);
         test.add(92);
         test.add(81);
@@ -150,10 +156,10 @@ class MoveCheckTest {
         list.clear();
         
         
-        //Checks for wrong move for invalid summito
-        copy.setMarble(59, Marble.White);
-        copy.setMarble(70, Marble.White);
-        copy.setMarble(81, Marble.White);
+        //Checks for wrong move for invalid summito, returns exception
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(81, Marble.Black);
         try {
             list = movecheck.moveChecker(103, Directions.northWest);
         } catch (IllegalMoveException e) {
@@ -162,7 +168,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for wrong move for empty spaces in input
+        //Checks for wrong move for empty spaces in input, returns exception
         copy.setMarble(81, Marble.Empty);
         System.out.println(copy.toString());
         try {
@@ -176,6 +182,7 @@ class MoveCheckTest {
 
     @Test
       void test3PlayerStraightMoves() {
+        //tests straight move in 3 player game
         copy = new Board(3).deepCopy();
         movecheck = new MoveCheck(Marble.Green, copy);
         
@@ -191,7 +198,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for one marble to empty space
+        //Checks for one marble to empty space, returns 89
         test.add(89);
         try {
             list = movecheck.moveChecker(89, Directions.northEast);
@@ -203,7 +210,7 @@ class MoveCheckTest {
         list.clear();
         
         
-        //Tests for hidden 3-2 summito with two different opponents
+        //Tests for hidden 3-2 summito with two different opponents, returns 100, 90, 80, 70, 60
         copy.setMarble(80, Marble.Green);
         copy.setMarble(70, Marble.White);
         copy.setMarble(60, Marble.Black);
@@ -224,10 +231,11 @@ class MoveCheckTest {
 
     @Test
     void test4PlayerStraightMoves() {
+        //Tests for straight move in 4 player game
         copy = new Board(4).deepCopy();
         movecheck = new MoveCheck(Marble.Red, copy);
         
-        //Checks for three marbles not in line
+        //Checks for three marbles not in line, returns exception
         ArrayList<Integer> test = new ArrayList<Integer>();
         copy.setMarble(48, Marble.Red);
         ArrayList<Integer> list = new ArrayList<>();
@@ -239,7 +247,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks if 3-2 summito is valid with marbles from team and two opponents
+        //Checks if 3-2 summito is valid with marbles from team and two opponents, returns 16, 27, 38, 49, 60
         copy.setMarble(48, Marble.Empty);
         copy.setMarble(49, Marble.Black);
         copy.setMarble(60, Marble.White);
@@ -259,7 +267,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks if 3-2 summito is invalid if first marble is not own marble
+        //Checks if 3-2 summito is invalid if first marble is not own marble, returns exception
         copy.setMarble(16, Marble.Green);
         try {
             list = movecheck.moveChecker(16, Directions.southEast);
@@ -272,9 +280,11 @@ class MoveCheckTest {
 
     @Test
      void test2PlayerSideMoves() {
+        //Tests for side move in 2 player game
         copy = new Board(2).deepCopy();
-        movecheck = new MoveCheck(Marble.Black, copy);
-        //Checks for valid two marbles to empty space
+        movecheck = new MoveCheck(Marble.White, copy);
+        
+        //Checks for valid two marbles to empty space, returns 82, 81
         ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(82, 81));
         ArrayList<Integer> list = new ArrayList<>();
         try {
@@ -285,7 +295,8 @@ class MoveCheckTest {
         assertEquals(test, list);
         test.clear();
         list.clear();
-        //Checks for one wrong marble to empty space
+        
+        //Checks for one wrong marble to empty space, returns exception
         try {
             list = movecheck.moveChecker(38, Directions.southEast);
         } catch (IllegalMoveException e) {
@@ -294,8 +305,8 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for three marbles to occupied space
-        copy.setMarble(71, Marble.White);
+        //Checks for three marbles to occupied space, returns exception
+        copy.setMarble(71, Marble.Black);
         try {
             list = movecheck.moveChecker(80, 82, 81, Directions.southEast);
         } catch (IllegalMoveException e) {
@@ -308,9 +319,11 @@ class MoveCheckTest {
      
     @Test
      void test3PlayerSideMoves() {
+        //tests for side moves in 3 player game
         copy = new Board(3).deepCopy();
         movecheck = new MoveCheck(Marble.White, copy);
-        //Checks for valid move three marbles to empty space
+        
+        //Checks for valid move three marbles to empty space, returns 47, 57, 67
         ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(47, 57, 67));
         ArrayList<Integer> list = new ArrayList<>();
         try {
@@ -322,7 +335,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for invalid move four marbles to empty space
+        //Checks for invalid move four marbles to empty space, returns exception
         try {
             list = movecheck.moveChecker(47, 37, 57, 67, Directions.southEast);
         } catch (IllegalMoveException e) {
@@ -331,7 +344,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for invalid move three marbles to one occupied space
+        //Checks for invalid move three marbles to one occupied space, returns exception
         copy.setMarble(58, Marble.Green);
         try {
             list = movecheck.moveChecker(47, 57, 67, Directions.southEast);
@@ -342,7 +355,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
-        //Checks for invalid move three marbles of which middle opponent
+        //Checks for invalid move three marbles of which middle opponent, returns exception
         copy.setMarble(57, Marble.Black);
         try {
             list = movecheck.moveChecker(47, 57, 67, Directions.southEast);
@@ -356,11 +369,12 @@ class MoveCheckTest {
      
     @Test
      void test4PlayersSideMoves() {
+        //Tests side moves for a 4 player game
         copy = new Board(4).deepCopy();
         
         movecheck = new MoveCheck(Marble.Green, copy);
         
-        //Checks for invalid move three marbles including one opponent to empty space
+        //Checks for invalid move three marbles including one opponent to empty space, returns exception
         copy.setMarble(82, Marble.Empty);
         ArrayList<Integer> test = new ArrayList<Integer>();
         ArrayList<Integer> list = new ArrayList<>();

@@ -1,13 +1,8 @@
 package Abalone.Audiopack;
 
-//Java program to play an Audio 
-//file using Clip Object 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -15,58 +10,42 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * An audio file that runs a clip continuously once the thread is started. 
+ * @author Ayla en Sam
+ * @version 1.0
+ */
 public class Audio implements Runnable {
-
-    // to store current position
-    Long currentFrame;
     Clip clip;
-
-    // current status of clip
-    String status;
-
     AudioInputStream audioInputStream;
-    static String filePath;
 
-    /** Javadoc.
+    /** constructor that creates the URL path and opens an audio input stream in a clip that loops for an infinite time.
      * @throws UnsupportedAudioFileException Javadoc.
      * @throws IOException Javadoc.
      * @throws LineUnavailableException Javadoc.
      */
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        // create AudioInputStream object
-
+        
         URL path = Audio.class.getResource("AbaloneMusic.aifc");
         audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
-        // create clip reference
         clip = AudioSystem.getClip();
-        // open audioInputStream to the clip
         clip.open(audioInputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
-    
-    /** Javadoc.
+
+    /** The run method starts the clip in a while loop.
+     * @throws exception if the clip cannot start
      */
-    public void play() {
-        // start the clip
-        clip.start();
-
-        status = "play";
-    }
-
     @Override
     public void run() {
         try {
-            filePath = "Your path for the file";
-            Audio audioPlayer = new Audio();
             while (true) {
                 clip.start();
             }
             
-        } catch (Exception ex) {
+        } catch (Exception e) {
             System.out.println("Error with playing sound.");
-            ex.printStackTrace();
-
+            e.printStackTrace();
         }
-
     }
 }

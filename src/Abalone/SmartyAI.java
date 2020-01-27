@@ -9,7 +9,12 @@ import Abalone.Client.AbaloneClient;
 import Abalone.Exceptions.BoardException;
 import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Exceptions.ServerUnavailableException;
-
+/**
+ * The smartyAI , the AI.
+ * Created on 17-01-2019. 
+ * @author Sam Freriks and Ayla van der Wal.
+ * @version 1.0
+ */
 public class SmartyAI {
 
     static final int[] ringFive = { 16, 17, 18, 19, 20, 31, 42, 53, 64, 74, 84, 94, 104, 103, 102, 101, 100, 89, 78, 67,

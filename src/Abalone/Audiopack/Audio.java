@@ -12,7 +12,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * An audio file that runs a clip continuously once the thread is started. 
- * @author Ayla en Sam
+ * @author Sam Freriks and Ayla van der Wal.
  * @version 1.0
  */
 public class Audio implements Runnable {

@@ -30,9 +30,9 @@ public class Audio implements Runnable {
     // constructor to initialize streams and clip
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // create AudioInputStream object
-    	
-    	  URL path = Audio.class.getResource("AbaloneMusic.aifc");
-    	  audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
+
+        URL path = Audio.class.getResource("AbaloneMusic.aifc");
+        audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
         // create clip reference
         clip = AudioSystem.getClip();
         // open audioInputStream to the clip
@@ -55,7 +55,7 @@ public class Audio implements Runnable {
             Audio audioPlayer = new Audio();
             while (true) {
                 clip.start();
-        }
+            }
         }
 
         catch (Exception ex) {
@@ -63,6 +63,6 @@ public class Audio implements Runnable {
             ex.printStackTrace();
 
         }
-        
+
     }
 }

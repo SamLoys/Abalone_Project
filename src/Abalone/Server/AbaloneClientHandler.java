@@ -29,12 +29,18 @@ public class AbaloneClientHandler implements Runnable {
     private int clientSupportLeaderboard = 0;
     private Marble color;
 
-    /** The connected HotelServer */
+    
     private AbaloneServer srv;
 
-    /** Name of this ClientHandler */
+  
     private String clientName;
-
+    /**
+     * constructor of the AbaloneClientHandler, given the socket, server and name of the client. 
+     * @param sock the socket that will connect to the client. 
+     * @param srv the server 
+     * @param name name of the client
+     */
+    
     public AbaloneClientHandler(Socket sock, AbaloneServer srv, String name) {
         try {
             in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -48,18 +54,34 @@ public class AbaloneClientHandler implements Runnable {
         }
     }
 
+    /**
+     * returns the name of the client.
+     * @return returns the name of the client
+     */
     public String getClientName() {
         return clientName;
     }
 
+    /**
+     * returns the color of the client. 
+     * @return the color of the client
+     */
     public Marble getMarble() {
         return color;
     }
 
+    /**
+     * sets the color of the client. 
+     * @param color the marble the client needs to be
+     */
     public void setColor(Marble color) {
         this.color = color;
     }
 
+    /**
+     * set the game of the client.
+     * @param game the game the client needs to connect to
+     */
     public void addGame(Game game) {
         this.currentGame = game;
     }
@@ -74,11 +96,9 @@ public class AbaloneClientHandler implements Runnable {
                 try {
                     handleCommand(msg);
                 } catch (ClientUnavailableException e) {
-                    // TODO Auto-generated catch block
+                
                     e.printStackTrace();
                 }
-//				out.newLine(); 
-//				out.flush();
                 msg = in.readLine();
             }
             shutdown();
@@ -88,98 +108,107 @@ public class AbaloneClientHandler implements Runnable {
 
     }
 
+    /**
+     * will call the right method given the command from the client.
+     * @param msg a string with a command from the client
+     * @throws IOException throws an exception if the IO is not available
+     * @throws ClientUnavailableException throws an exception if the client is not available
+     */
     private void handleCommand(String msg) throws IOException, ClientUnavailableException {
         String command = msg.substring(0, 1);
         String[] inputSrv = msg.split(";");
 
         switch (command) {
-        case ProtocolMessages.HELLO:
-            clientSupportChatting = Integer.parseInt(inputSrv[1]);
-            clientSupportChallenge = Integer.parseInt(inputSrv[2]);
-            clientSupportLeaderboard = Integer.parseInt(inputSrv[3]);
-            boolean[] supports = srv.getSupports();
+            case ProtocolMessages.HELLO:
+                clientSupportChatting = Integer.parseInt(inputSrv[1]);
+                clientSupportChallenge = Integer.parseInt(inputSrv[2]);
+                clientSupportLeaderboard = Integer.parseInt(inputSrv[3]);
+                boolean[] supports = srv.getSupports();
 
-            String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
-            String[] responseSplit = response.split(";");
-            clientName = responseSplit[4];
-            srv.setClientHandlerToName(clientName, this);
-            sendMessage(response);
+                String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
+                String[] responseSplit = response.split(";");
+                clientName = responseSplit[4];
+                srv.setClientHandlerToName(clientName, this);
+                sendMessage(response);
 
-            break;
-
-        case ProtocolMessages.JOIN:
-            currentGame = null;
-            int wantedGame = Integer.parseInt(inputSrv[1]);
-            response = srv.handleJoin(clientName, wantedGame);
-            // tell all
-            srv.echo(response);
-
-            if (srv.queueFull(wantedGame)) {
-                srv.setupGame(wantedGame);
-            }
-            break;
-        case ProtocolMessages.MOVE:
-            ArrayList<Integer> indexes = new ArrayList<>();
-            if (inputSrv.length < 3) {
-                sendIllegalMoveException("not enough information");
                 break;
-            }
-            if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
+
+            case ProtocolMessages.JOIN:
+                currentGame = null;
+                int wantedGame = Integer.parseInt(inputSrv[1]);
+                response = srv.handleJoin(clientName, wantedGame);
+                srv.echo(response);
+
+                if (srv.queueFull(wantedGame)) {
+                    srv.setupGame(wantedGame);
+                }
+                break;
+            case ProtocolMessages.MOVE:
+                ArrayList<Integer> indexes = new ArrayList<>();
+                if (inputSrv.length < 3) {
+                    sendIllegalMoveException("not enough information");
+                    break;
+                }
+                if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
                     || inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
                     || inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
 
-                for (int i = 0; i < inputSrv.length; i++) {
-                    if (inputSrv[i].matches("([0-9]*)")) {
-                        indexes.add(Integer.parseInt(inputSrv[i]));
+                    for (int i = 0; i < inputSrv.length; i++) {
+                        if (inputSrv[i].matches("([0-9]*)")) {
+                            indexes.add(Integer.parseInt(inputSrv[i]));
+                        }
+                    }
+                    String error = null;
+                    try {
+                        error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+                    } catch (BoardException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    if (!error.equals("good")) {
+                        System.out.println("> [" + clientName + "] Exception: " + error);
+                        sendIllegalMoveException(error);
+                    }
+                } else {
+                    System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
+                    sendIllegalMoveException("ERROR: There is no given direction");
+                }
+
+                break;
+
+            case ProtocolMessages.QUEUE_SIZE: {
+                sendMessage(srv.handleQueueSizeQuery());
+            }
+                break;
+            case ProtocolMessages.EXIT:
+                if (currentGame != null) {
+          
+                    srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
+                }
+                shutdown();
+                break;
+          
+            case "b":
+                if (inputSrv[1].contentEquals("c")) {
+                    if (inputSrv.length > 3) {
+                        String message = "b;c;" + clientName + ProtocolMessages.DELIMITER + inputSrv[3];
+          
+                        srv.multipleSend(message, currentGame.getPlayers());
                     }
                 }
-                String error = null;
-                try {
-                    error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
-                } catch (BoardException e) {
-                    System.out.println(e.getMessage());
-                }
-
-                if (error.equals("good")) {
-
-                } else {
-                    System.out.println("> [" + clientName + "] Exception: " + error);
-                    sendIllegalMoveException(error);
-                }
-            } else {
-                System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
-                sendIllegalMoveException("ERROR: There is no given direction");
-            }
-
-            break;
-
-        case ProtocolMessages.QUEUE_SIZE: {
-            sendMessage(srv.handleQueueSizeQuery());
-        }
-            break;
-        case ProtocolMessages.EXIT:
-            if (currentGame != null) {
-
-                srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
-            }
-            shutdown();
-            break;
-
-        case "b":
-            if (inputSrv[1].contentEquals("c")) {
-                if (inputSrv.length > 3) {
-                    String message = "b;c;" + clientName + ProtocolMessages.DELIMITER + inputSrv[3];
-
-                    srv.multipleSend(message, currentGame.getPlayers());
-                }
-            }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
 
     }
-
+    /**
+     * sends the given message to the client.
+     * @param msg to send to the client 
+     * @throws IOException exception if the IO is not available
+     * @throws ClientUnavailableException exception if the client is not available
+     */
+    
     public void sendMessage(String msg) throws IOException, ClientUnavailableException {
         if (out != null) {
             try {
@@ -196,12 +225,22 @@ public class AbaloneClientHandler implements Runnable {
         }
     }
 
+    /**
+     * send an IllegalMoveException message to the connected client. 
+     * @param reason the message to send
+     * @throws IOException exception if the IO is not available
+     * @throws ClientUnavailableException exception if the client is not available
+     */
     public void sendIllegalMoveException(String reason) throws IOException, ClientUnavailableException {
         String message = ProtocolMessages.GameResult.EXCEPTION + ProtocolMessages.DELIMITER + "i"
                 + ProtocolMessages.DELIMITER + reason + ProtocolMessages.EOC;
         sendMessage(message);
     }
 
+    /**
+     * shuts down the connection.
+     * @ensures to close the socket and the in and output of the readers. 
+     */
     private void shutdown() {
         System.out.println("> [" + clientName + "] Shutting down.");
         srv.removeClient(clientName);

@@ -28,7 +28,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
     private List<String> queueFour = new ArrayList<String>();
 
     private int nextPlayerNo;
-    private AbaloneServerTUI myTUI;
+    private AbaloneServerTui myTui;
 
     private boolean serverSupportChatting = true;
     private boolean serverSupportChallenge = false;
@@ -36,17 +36,32 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     private String serverName;
 
+    /**
+     * Constructor of the Abalone server.
+     * Creates a new Abalone Server.
+     * @ensures to create a new AbaloneServerTui and set the nextPlayerNo to 1
+     * 
+     */
     public AbaloneServer() {
 
-        myTUI = new AbaloneServerTUI();
+        myTui = new AbaloneServerTui();
         nextPlayerNo = 1;
         serverName = "Aba_lonely";
     }
 
+    /**
+     * returns the server name.
+     * @return serverName String
+     */
     public String getServerName() {
         return serverName;
     }
 
+    /**
+     * returns the clientHandler connected to a given player name.
+     * @param name name of the player for which clientHandler you want
+     * @return the correct client handler, null if name is not found
+     */
     public AbaloneClientHandler getClientHandler(String name) {
         if (clientsMap.containsKey(name)) {
             return clientsMap.get(name);
@@ -55,73 +70,116 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     }
 
+    /**
+     * puts a ClientHandler to a given name in a map.
+     * @param name the name of the player. 
+     * @param handler the ClientHandler of the given name. 
+     * @ensures to set the clienthandler to the given name.
+     */
     public void setClientHandlerToName(String name, AbaloneClientHandler handler) {
         clientsMap.put(name, handler);
     }
 
+    /**
+     * add a player to a given queue.
+     * @requires that the lobby is a valid lobby number.  
+     * @param name  name of the player. 
+     * @param lobby the wanted lobby number. 
+     */
     public synchronized void addToQueue(String name, int lobby) {
         switch (lobby) {
-        case 2:
-            queueTwo.add(name);
-            break;
-        case 3:
-            queueThree.add(name);
-            break;
-        case 4:
-            queueFour.add(name);
-            break;
+            case 2:
+                queueTwo.add(name);
+                break;
+            case 3:
+                queueThree.add(name);
+                break;
+            case 4:
+                queueFour.add(name);
+                break;
+            
+            default:
+                break;
         }
-
     }
 
+    /**
+     * returns true if the lobby is full, false if empty or not recognized.  
+     * @param lobby wanted lobby.
+     * @return true if full, false if empty or not found. 
+     */
     public synchronized boolean queueFull(int lobby) {
         switch (lobby) {
-        case 2:
-            if (queueTwo.size() >= 2) {
-                return true;
-            }
-            return false;
-
-        case 3:
-            if (queueThree.size() >= 3) {
-                return true;
-            }
-            return false;
-        case 4:
-            if (queueFour.size() >= 4) {
-                return true;
-            }
-            return false;
-        default:
-            return false;
+            case 2:
+                if (queueTwo.size() >= 2) {
+                    return true;
+                }
+                return false;
+        
+            case 3:
+                if (queueThree.size() >= 3) {
+                    return true;
+                }
+                return false;
+            case 4:
+                if (queueFour.size() >= 4) {
+                    return true;
+                }
+                return false;
+            default:
+                return false;
         }
     }
 
+    /**
+     * returns the size of the queue.
+     * @requires need a valid lobby integer. 
+     * @param lobby integer of the wanted lobby
+     * @return the size of the queue, if lobby is not found returns 9999
+     */
     public int getQueueSize(int lobby) {
         switch (lobby) {
-        case 2:
-            return queueTwo.size();
-        case 3:
-            return queueThree.size();
-        case 4:
-            return queueFour.size();
-        default:
-            return 9999;
-        }
+            case 2:
+                return queueTwo.size();
+            case 3:
+                return queueThree.size();
+            case 4:
+                return queueFour.size();
+            default:
+                return 9999;
+        } 
     }
 
+    /**
+     * send a message to all the connected clients.
+     * @param msg the wanted message
+     * @throws IOException exception if the IO is not available
+     * @throws ClientUnavailableException exception if the client is not available
+     */
     public synchronized void echo(String msg) throws IOException, ClientUnavailableException {
         for (String name : clientsMap.keySet()) {
             clientsMap.get(name).sendMessage(msg);
         }
     }
 
+    /**
+     * sends a message to multiple clients .
+     * @param msg the message you want to send
+     * @param players the players you want to send the message to
+     * @throws IOException Exception if IO not available
+     * @throws ClientUnavailableException Exception if the Client is not available
+     */
     public synchronized void multipleSend(String msg, String[] players) throws IOException, ClientUnavailableException {
         for (String name : players) {
             clientsMap.get(name).sendMessage(msg);
         }
     }
 
+    /**
+     * given a wanted user name will return a valid user name and add it to the queue. 
+     * @param wantedName wanted user name. 
+     * @return a user name that will now be assigned to the client. 
+     */
     public synchronized String setUserName(String wantedName) {
         int nameCounter = 1;
         while (userNames.contains(wantedName)) {
@@ -133,10 +191,14 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     }
 
+    /**
+     * the run method of the server.
+     * sets up a server. 
+     */
     public void run() {
         // indicates if the server should connect more connection
         boolean getMoreConnections = true;
-        myTUI.showMessage("Welcome to the server program of abalone");
+        myTui.showMessage("Welcome to the server program of abalone");
         while (getMoreConnections) {
 
             try {
@@ -144,7 +206,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
                 while (true) {
                     Socket sock = ssock.accept();
                     String name = "Player " + String.format("%02d", nextPlayerNo++);
-                    myTUI.showMessage("New Player [" + name + "] connected!");
+                    myTui.showMessage("New Player [" + name + "] connected!");
                     AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
                     new Thread(handler).start();
 
@@ -155,38 +217,47 @@ public class AbaloneServer implements ServerProtocol, Runnable {
             } catch (IOException e) {
                 System.out.println("A server IO error occurred: " + e.getMessage());
 
-                if (!myTUI.getBool("Do you want to open a new socket?")) {
+                if (!myTui.getBool("Do you want to open a new socket?")) {
                     getMoreConnections = false;
                 }
             }
         }
     }
 
+    /**
+     * sets up a socket connection.
+     * @throws ExitProgram if the users does not want to try again
+     */
     public void setupSocket() throws ExitProgram {
         ssock = null;
         while (ssock == null) {
-            int port = myTUI.getInt("Please give the wanted port number");
-            InetAddress IP = null;
+            int port = myTui.getInt("Please give the wanted port number");
+            InetAddress ip = null;
             // try to open a new ServerSocket
             try {
-                IP = InetAddress.getLocalHost();
-                myTUI.showMessage("Attempting to open a socket at " + IP + "on port " + port + "...");
+                ip = InetAddress.getLocalHost();
+                myTui.showMessage("Attempting to open a socket at " + ip + "on port " + port + "...");
 
-                ssock = new ServerSocket(port, 0, IP);
+                ssock = new ServerSocket(port, 0, ip); 
 
-                myTUI.showMessage("Server started on IP " + IP);
-                myTUI.showMessage("Server started at port " + port);
-                myTUI.showMessage("Waiting for new players");
+                myTui.showMessage("Server started on IP " + ip);
+                myTui.showMessage("Server started at port " + port);
+                myTui.showMessage("Waiting for new players");
             } catch (IOException e) {
-                myTUI.showMessage("ERROR: could not create a socket on " + IP + " and port " + port + ".");
+                myTui.showMessage("ERROR: could not create a socket on " + ip + " and port " + port + ".");
 
-                if (!myTUI.getBool("Do you want to try again?")) {
+                if (!myTui.getBool("Do you want to try again?")) {
                     throw new ExitProgram("User indicated to exit the " + "program.");
                 }
             }
         }
 
     }
+    
+    /**
+     * sets up a game with the given lobby.
+     * @param lobby the parameter for the wanted lobby
+     */
 
     public void setupGame(int lobby) {
         String player1Name = "";
@@ -194,95 +265,97 @@ public class AbaloneServer implements ServerProtocol, Runnable {
         String player3Name = "";
         String player4Name = "";
         Game game;
-        Thread gameThread;
-        String[] Players;
+        String[] players;
         switch (lobby) {
-        case 2:
-            player1Name = queueTwo.get(0);
-            queueTwo.remove(0);
-            player2Name = queueTwo.get(0);
-            queueTwo.remove(0);
-            game = new Game(2, this, player1Name, player2Name);
-            getClientHandler(player1Name).addGame(game);
-            getClientHandler(player1Name).setColor(Marble.Black);
-            getClientHandler(player2Name).addGame(game);
-            getClientHandler(player2Name).setColor(Marble.White);
-            games.add(game);
-
-//			gameThread = new Thread(game);
-//			gameThread.start();
-
-            // construct an array with names to send to all the clients
-            Players = new String[2];
-            Players[0] = player1Name;
-            Players[1] = player2Name;
-            handleGameStart(Players);
-            break;
-
-        case 3:
-            player1Name = queueThree.get(0);
-            queueThree.remove(0);
-            player2Name = queueThree.get(0);
-            queueThree.remove(0);
-            player3Name = queueThree.get(0);
-            queueThree.remove(0);
-            game = new Game(3, this, player1Name, player2Name, player3Name);
-            getClientHandler(player1Name).addGame(game);
-            getClientHandler(player1Name).setColor(Marble.Black);
-            getClientHandler(player2Name).addGame(game);
-            getClientHandler(player2Name).setColor(Marble.Green);
-            getClientHandler(player3Name).addGame(game);
-            getClientHandler(player3Name).setColor(Marble.White);
-            games.add(game);
-
-            // construct an array with names to send to all the clients
-            Players = new String[3];
-            Players[0] = player1Name;
-            Players[1] = player2Name;
-            Players[2] = player3Name;
-            handleGameStart(Players);
-
-//			gameThread = new Thread(game);
-//			gameThread.start();
-            break;
-
-        case 4:
-            player1Name = queueFour.get(0);
-            queueFour.remove(0);
-            player2Name = queueFour.get(0);
-            queueFour.remove(0);
-            player3Name = queueFour.get(0);
-            queueFour.remove(0);
-            player4Name = queueFour.get(0);
-            queueFour.remove(0);
-            game = new Game(4, this, player1Name, player2Name, player3Name, player4Name);
-            getClientHandler(player1Name).addGame(game);
-            getClientHandler(player1Name).setColor(Marble.Black);
-            getClientHandler(player2Name).addGame(game);
-            getClientHandler(player2Name).setColor(Marble.Green);
-            getClientHandler(player3Name).addGame(game);
-            getClientHandler(player3Name).setColor(Marble.White);
-            getClientHandler(player4Name).addGame(game);
-            getClientHandler(player4Name).setColor(Marble.Red);
-            games.add(game);
-
-            // construct an array with names to send to all the clients
-            Players = new String[4];
-            Players[0] = player1Name;
-            Players[1] = player2Name;
-            Players[2] = player3Name;
-            Players[3] = player4Name;
-            handleGameStart(Players);
-
-//			gameThread = new Thread(game);
-//			gameThread.start();
-            break;
+            case 2:
+                player1Name = queueTwo.get(0);
+                queueTwo.remove(0);
+                player2Name = queueTwo.get(0);
+                queueTwo.remove(0);
+                game = new Game(2, this, player1Name, player2Name);
+                getClientHandler(player1Name).addGame(game);
+                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player2Name).addGame(game);
+                getClientHandler(player2Name).setColor(Marble.White);
+                games.add(game);
+          
+          
+                players = new String[2];
+                players[0] = player1Name;
+                players[1] = player2Name;
+                handleGameStart(players);
+                break;
+          
+            case 3:
+                player1Name = queueThree.get(0);
+                queueThree.remove(0);
+                player2Name = queueThree.get(0);
+                queueThree.remove(0);
+                player3Name = queueThree.get(0);
+                queueThree.remove(0);
+                game = new Game(3, this, player1Name, player2Name, player3Name);
+                getClientHandler(player1Name).addGame(game);
+                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player2Name).addGame(game);
+                getClientHandler(player2Name).setColor(Marble.Green);
+                getClientHandler(player3Name).addGame(game);
+                getClientHandler(player3Name).setColor(Marble.White);
+                games.add(game);
+          
+                // construct an array with names to send to all the clients
+                players = new String[3];
+                players[0] = player1Name;
+                players[1] = player2Name;
+                players[2] = player3Name;
+                handleGameStart(players);
+                break;
+          
+            case 4:
+                player1Name = queueFour.get(0);
+                queueFour.remove(0);
+                player2Name = queueFour.get(0);
+                queueFour.remove(0);
+                player3Name = queueFour.get(0);
+                queueFour.remove(0);
+                player4Name = queueFour.get(0);
+                queueFour.remove(0);
+                game = new Game(4, this, player1Name, player2Name, player3Name, player4Name);
+                getClientHandler(player1Name).addGame(game);
+                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player2Name).addGame(game);
+                getClientHandler(player2Name).setColor(Marble.Green);
+                getClientHandler(player3Name).addGame(game);
+                getClientHandler(player3Name).setColor(Marble.White);
+                getClientHandler(player4Name).addGame(game);
+                getClientHandler(player4Name).setColor(Marble.Red);
+                games.add(game);
+          
+                // construct an array with names to send to all the clients
+                players = new String[4];
+                players[0] = player1Name;
+                players[1] = player2Name;
+                players[2] = player3Name;
+                players[3] = player4Name;
+                handleGameStart(players);
+                break;
+            
+            default:
+                break;
         }
     }
 
+    /**
+     * removes a game from the list.
+     * @param game the game to be removed.
+     */
     public void removeGame(Game game) {
         this.games.remove(game);
     }
+    
+    /**
+     * removes the client from the server.
+     * @param name the name of the client that needs to be deleted.
+     */
 
     public void removeClient(String name) {
         clientsMap.remove(name);
@@ -297,6 +370,10 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     }
 
+    /**
+     * get an array of booleans for the supports of the chatting, challenge, and leaderboard. 
+     * @return and array of boolean.
+     */
     public boolean[] getSupports() {
         boolean[] supports = new boolean[3];
         supports[0] = serverSupportChatting;
@@ -359,7 +436,6 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     @Override
     public String handlePlayerMove(String playerName) {
-        // TODO Auto-generated method stub
         String nextplayer = playerName;
         String message = ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + nextplayer + ProtocolMessages.DELIMITER;
         return message;
@@ -371,7 +447,6 @@ public class AbaloneServer implements ServerProtocol, Runnable {
                 + ProtocolMessages.DELIMITER + getQueueSize(3) + ProtocolMessages.DELIMITER + getQueueSize(4)
                 + ProtocolMessages.EOC;
 
-        // TODO Auto-generated method stub
         return message;
     }
 

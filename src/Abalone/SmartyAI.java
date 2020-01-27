@@ -31,13 +31,13 @@ public class SmartyAI {
     String name;
 
     /**
-     * smart constructor.
-     * 
-     * @param board   ddf
-     * @param color   dd
-     * @param client  dd
-     * @param checker dd
-     * @param name    dd
+     * the constructor of the ai.
+     * Creates a new AI with the given board, color, client, checker and name.
+     * @param board the board the ai player will play on
+     * @param color  the color the ai represents
+     * @param client the client the ai is. 
+     * @param checker the checker for the move checks. 
+     * @param name the name of the ai
      */
     public SmartyAI(Board board, Marble color, AbaloneClient client, MoveCheck checker, String name) {
         this.board = board;
@@ -48,11 +48,11 @@ public class SmartyAI {
     }
 
     /**
-     * sds.
-     * @param board   ss
-     * @param color   ss
-     * @param checker ss
-     * @return
+     * returns a valid move to do , a hint.
+     * @param board the board for the hint
+     * @param color the color to use
+     * @param checker the checker
+     * @return a string that contains a marble of the color and a valid direction
      */
     public String getHint(Board board, Marble color, MoveCheck checker) {
         try {
@@ -65,9 +65,9 @@ public class SmartyAI {
     }
 
     /**
-     * ere.
-     * @param send dd
-     * @throws ServerUnavailableException dd
+     * constructs a move and send a command to the client to send it.
+     * @param send if the constructed move should be send.
+     * @throws ServerUnavailableException throws this exception is the server could not be reached.
      */
     public void makeMove(boolean send) throws ServerUnavailableException {
 
@@ -128,7 +128,7 @@ public class SmartyAI {
                         totalMarbles = checker.moveChecker(index, direction);
                         movefound = true;
                     } catch (IllegalMoveException e) {
-                        //continue to the next moe
+                        //continue to the next move
                     }
 
                     if (!movefound) {
@@ -145,6 +145,7 @@ public class SmartyAI {
                                 totalMarbles = checker.moveChecker(index, direction);
                                 movefound = true;
                             } catch (IllegalMoveException e) {
+                              //continue to the next move
                             }
                             if (!movefound) {
                                 direction = Directions.west;
@@ -152,6 +153,7 @@ public class SmartyAI {
                                     totalMarbles = checker.moveChecker(index, direction);
                                     movefound = true;
                                 } catch (IllegalMoveException e) {
+                                  //continue to the next move
                                 }
                                 if (!movefound) {
                                     direction = Directions.southWest;
@@ -159,6 +161,7 @@ public class SmartyAI {
                                         totalMarbles = checker.moveChecker(index, direction);
                                         movefound = true;
                                     } catch (IllegalMoveException e) {
+                                      //continue to the next move
                                     }
                                     if (!movefound) {
                                         direction = Directions.southEast;
@@ -166,6 +169,7 @@ public class SmartyAI {
                                             totalMarbles = checker.moveChecker(index, direction);
                                             movefound = true;
                                         } catch (IllegalMoveException e) {
+                                          //continue to the next move
                                         }
                                     }
 
@@ -188,7 +192,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
             }
         }
@@ -199,7 +203,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
                 if (!movefound) {
                     direction = Directions.east;
@@ -207,6 +211,7 @@ public class SmartyAI {
                         totalMarbles = checker.moveChecker(index, direction);
                         movefound = true;
                     } catch (IllegalMoveException e) {
+                      //continue to the next move
                     }
 
                     if (!movefound) {
@@ -215,6 +220,7 @@ public class SmartyAI {
                             totalMarbles = checker.moveChecker(index, direction);
                             movefound = true;
                         } catch (IllegalMoveException e) {
+                          //continue to the next move
                         }
                         if (!movefound) {
                             direction = Directions.northEast;
@@ -222,6 +228,7 @@ public class SmartyAI {
                                 totalMarbles = checker.moveChecker(index, direction);
                                 movefound = true;
                             } catch (IllegalMoveException e) {
+                              //continue to the next move
                             }
                             if (!movefound) {
                                 direction = Directions.northWest;
@@ -229,6 +236,7 @@ public class SmartyAI {
                                     totalMarbles = checker.moveChecker(index, direction);
                                     movefound = true;
                                 } catch (IllegalMoveException e) {
+                                  //continue to the next move
                                 }
                                 if (!movefound) {
                                     direction = Directions.southEast;
@@ -236,6 +244,7 @@ public class SmartyAI {
                                         totalMarbles = checker.moveChecker(index, direction);
                                         movefound = true;
                                     } catch (IllegalMoveException e) {
+                                      //continue to the next move
                                     }
                                     if (!movefound) {
                                         direction = Directions.southWest;
@@ -243,6 +252,7 @@ public class SmartyAI {
                                             totalMarbles = checker.moveChecker(index, direction);
                                             movefound = true;
                                         } catch (IllegalMoveException e) {
+                                          //continue to the next move
                                         }
                                     }
 
@@ -265,7 +275,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
             }
         }
@@ -276,7 +286,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
                 if (!movefound) {
                     direction = Directions.east;
@@ -284,6 +294,7 @@ public class SmartyAI {
                         totalMarbles = checker.moveChecker(index, direction);
                         movefound = true;
                     } catch (IllegalMoveException e) {
+                      //continue to the next move
                     }
 
                     if (!movefound) {
@@ -292,6 +303,7 @@ public class SmartyAI {
                             totalMarbles = checker.moveChecker(index, direction);
                             movefound = true;
                         } catch (IllegalMoveException e) {
+                          //continue to the next move
                         }
                         if (!movefound) {
                             direction = Directions.northEast;
@@ -299,6 +311,7 @@ public class SmartyAI {
                                 totalMarbles = checker.moveChecker(index, direction);
                                 movefound = true;
                             } catch (IllegalMoveException e) {
+                              //continue to the next move
                             }
                             if (!movefound) {
                                 direction = Directions.northWest;
@@ -306,6 +319,7 @@ public class SmartyAI {
                                     totalMarbles = checker.moveChecker(index, direction);
                                     movefound = true;
                                 } catch (IllegalMoveException e) {
+                                  //continue to the next move
                                 }
                                 if (!movefound) {
                                     direction = Directions.southEast;
@@ -313,6 +327,7 @@ public class SmartyAI {
                                         totalMarbles = checker.moveChecker(index, direction);
                                         movefound = true;
                                     } catch (IllegalMoveException e) {
+                                      //continue to the next move
                                     }
                                     if (!movefound) {
                                         direction = Directions.southWest;
@@ -320,6 +335,7 @@ public class SmartyAI {
                                             totalMarbles = checker.moveChecker(index, direction);
                                             movefound = true;
                                         } catch (IllegalMoveException e) {
+                                          //continue to the next move
                                         }
                                     }
 
@@ -341,6 +357,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
+                  //continue to the next move
 
                 }
             }
@@ -352,6 +369,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
+                  //continue to the next move
 
                 }
                 if (!movefound) {
@@ -360,6 +378,7 @@ public class SmartyAI {
                         totalMarbles = checker.moveChecker(index, direction);
                         movefound = true;
                     } catch (IllegalMoveException e) {
+                      //continue to the next move
                     }
 
                     if (!movefound) {
@@ -368,6 +387,7 @@ public class SmartyAI {
                             totalMarbles = checker.moveChecker(index, direction);
                             movefound = true;
                         } catch (IllegalMoveException e) {
+                          //continue to the next move
                         }
                         if (!movefound) {
                             direction = Directions.northEast;
@@ -375,6 +395,7 @@ public class SmartyAI {
                                 totalMarbles = checker.moveChecker(index, direction);
                                 movefound = true;
                             } catch (IllegalMoveException e) {
+                              //continue to the next move
                             }
                             if (!movefound) {
                                 direction = Directions.northWest;
@@ -382,6 +403,7 @@ public class SmartyAI {
                                     totalMarbles = checker.moveChecker(index, direction);
                                     movefound = true;
                                 } catch (IllegalMoveException e) {
+                                  //continue to the next move
                                 }
                                 if (!movefound) {
                                     direction = Directions.southEast;
@@ -389,6 +411,7 @@ public class SmartyAI {
                                         totalMarbles = checker.moveChecker(index, direction);
                                         movefound = true;
                                     } catch (IllegalMoveException e) {
+                                      //continue to the next move
                                     }
                                     if (!movefound) {
                                         direction = Directions.southWest;
@@ -396,6 +419,7 @@ public class SmartyAI {
                                             totalMarbles = checker.moveChecker(index, direction);
                                             movefound = true;
                                         } catch (IllegalMoveException e) {
+                                          //continue to the next move
                                         }
                                     }
 
@@ -417,7 +441,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
             }
         }
@@ -428,7 +452,7 @@ public class SmartyAI {
                     totalMarbles = checker.moveChecker(index, direction);
                     movefound = true;
                 } catch (IllegalMoveException e) {
-
+                  //continue to the next move
                 }
                 if (!movefound) {
                     direction = Directions.east;
@@ -436,6 +460,7 @@ public class SmartyAI {
                         totalMarbles = checker.moveChecker(index, direction);
                         movefound = true;
                     } catch (IllegalMoveException e) {
+                      //continue to the next move
                     }
 
                     if (!movefound) {
@@ -444,6 +469,7 @@ public class SmartyAI {
                             totalMarbles = checker.moveChecker(index, direction);
                             movefound = true;
                         } catch (IllegalMoveException e) {
+                          //continue to the next move
                         }
                         if (!movefound) {
                             direction = Directions.northEast;
@@ -451,6 +477,7 @@ public class SmartyAI {
                                 totalMarbles = checker.moveChecker(index, direction);
                                 movefound = true;
                             } catch (IllegalMoveException e) {
+                              //continue to the next move
                             }
                             if (!movefound) {
                                 direction = Directions.northWest;
@@ -458,6 +485,7 @@ public class SmartyAI {
                                     totalMarbles = checker.moveChecker(index, direction);
                                     movefound = true;
                                 } catch (IllegalMoveException e) {
+                                  //continue to the next move
                                 }
                                 if (!movefound) {
                                     direction = Directions.southEast;
@@ -465,6 +493,7 @@ public class SmartyAI {
                                         totalMarbles = checker.moveChecker(index, direction);
                                         movefound = true;
                                     } catch (IllegalMoveException e) {
+                                      //continue to the next move
                                     }
                                     if (!movefound) {
                                         direction = Directions.southWest;
@@ -472,6 +501,7 @@ public class SmartyAI {
                                             totalMarbles = checker.moveChecker(index, direction);
                                             movefound = true;
                                         } catch (IllegalMoveException e) {
+                                          //continue to the next move
                                         }
                                     }
                                 }

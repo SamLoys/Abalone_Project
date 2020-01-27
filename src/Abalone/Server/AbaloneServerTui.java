@@ -5,14 +5,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-public class AbaloneServerTUI {
+public class AbaloneServerTui {
 
     private PrintWriter console;
 
-    AbaloneServerTUI() {
+    AbaloneServerTui() {
         console = new PrintWriter(System.out, true);
     }
 
+    /**
+     * given a question return a integer.
+     * @param question the wanted question
+     * @return a integer for the answer
+     * @ensures to return a valid integer, otherwise asks again
+     */
     public int getInt(String question) {
         showMessage(question);
         showMessage("use an integer to reply");
@@ -34,6 +40,12 @@ public class AbaloneServerTUI {
         return answerInt;
     }
 
+    /**
+     * returns a string as answer to the given question. 
+     * @param question the question
+     * @return a string as answer
+     * @ensures to return a string as answer
+     */
     public String getString(String question) {
         // To be implemented
         showMessage(question);
@@ -48,6 +60,12 @@ public class AbaloneServerTUI {
         return answer;
     }
 
+    /**
+     * returns a boolean for the given question.
+     * @param question the wanted question
+     * @return a boolean for the answer
+     * @ensures to keep asking until a valid boolean is typed in.
+     */
     public boolean getBool(String question) {
         showMessage(question);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -70,6 +88,10 @@ public class AbaloneServerTUI {
         }
     }
 
+    /**
+     * prints the message in the console.
+     * @param message the message
+     */
     public void showMessage(String message) {
         console.println(message);
     }

@@ -1,11 +1,12 @@
 module abalone_project {
-	exports abalone.exceptions;
-	exports abalone;
-	exports abalone.server;
-	exports abalone.client;
-	exports abalone.protocol;
-	exports Testing;
+    exports abalone.protocol;
+    exports abalone.server;
+    exports abalone.audiopack;
+    exports testing;
+    exports abalone.client;
+    exports abalone;
+    exports abalone.exceptions;
 
-	requires java.desktop;
-	requires org.junit.jupiter.api;
+    requires java.desktop;
+    requires org.junit.jupiter.api;
 }

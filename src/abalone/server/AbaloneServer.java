@@ -16,9 +16,9 @@ import java.util.List;
 
 public class AbaloneServer implements ServerProtocol, Runnable {
 
-    private ServerSocket ssock;
+    private ServerSocket ssock; 
 
-    private List<Game> games = new ArrayList<Game>();
+    private List<Game> games = new ArrayList<Game>(); 
     private List<String> userNames = new ArrayList<String>();
 
     HashMap<String, AbaloneClientHandler> clientsMap = new HashMap<>();
@@ -47,6 +47,27 @@ public class AbaloneServer implements ServerProtocol, Runnable {
         myTui = new AbaloneServerTui();
         nextPlayerNo = 1;
         serverName = "Aba_lonely";
+    }
+    
+    
+    /**
+     * a special constructor only used in the system test.
+     * @throws IOException exception
+     */
+    public AbaloneServer(int port) throws IOException {
+
+        myTui = new AbaloneServerTui();
+        System.out.println("Sarting server");
+        nextPlayerNo = 1;
+        serverName = "Aba_lonely";
+        
+        InetAddress ip = InetAddress.getLocalHost();
+        ssock = new ServerSocket(port, 0, ip);
+        Socket sock = ssock.accept(); 
+        String name = "Player " + String.format("%02d", nextPlayerNo++);
+        myTui.showMessage("New Player [" + name + "] connected!");
+        AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
+        new Thread(handler).start();
     }
 
     /**

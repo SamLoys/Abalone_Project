@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  * @author Ayla en Sam
  * @version 1.0
  */
-class MoveCheckTest {
+class MoveCheckTest { 
     MoveCheck movecheck;
     Board copy;
     

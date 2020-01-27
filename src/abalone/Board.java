@@ -15,7 +15,7 @@ public class Board {
     Marble death = Marble.Death;
     Marble white = Marble.White;
     Marble empty = Marble.Empty;
-    Marble black = Marble.Black;
+    Marble black = Marble.Black; 
     Marble green = Marble.Green;
     Marble red = Marble.Red; 
 
@@ -248,7 +248,7 @@ public class Board {
         for (int index : indexes) {
             toIndex.add(protocolToIndex(index));
         }
-        return toIndex;
+        return toIndex; 
     }
 
     /** given board model index, returns the index according the protocol.
@@ -499,7 +499,7 @@ public class Board {
         if (marble == Marble.Green) {
             scoreGreen++;
         }
-    }
+    } 
 
     /** 
      * Get the score of the given marble.

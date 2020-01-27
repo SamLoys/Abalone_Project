@@ -23,7 +23,7 @@ public class Audio implements Runnable {
      * @throws IOException Javadoc.
      * @throws LineUnavailableException Javadoc.
      */
-    public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException { 
         
         URL path = Audio.class.getResource("AbaloneMusic.aifc");
         audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());

@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -28,13 +29,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @author Sam Freriks and Ayla van der Wal.
  * @version 1.0
  */ 
-public class AbaloneClient implements ClientProtocol {
+public class AbaloneClient implements ClientProtocol { 
     private Socket sock;
     private BufferedReader networkIN;
     private BufferedWriter networkOut;
     private AbaloneClientTui clientTui;
     private String name;
-    private Marble color;
+    private Marble color; 
     private boolean clientSupportChatting = true;
     private boolean clientSupportChallenge = false;
     private boolean clientSupportLeaderboard = false;
@@ -96,6 +97,35 @@ public class AbaloneClient implements ClientProtocol {
 
     }
     
+    /** 
+     * a constructor of the abaloneclient specificly made for the system test.
+     * @param systemTest name of the client
+     * @param ip the ip
+     * @param port the wanted port
+     * @param isAi is ai
+     * @throws IOException  e
+     * @throws ServerUnavailableException  e
+     */ 
+    public AbaloneClient(String systemTest, String ip, int port, boolean isAi) throws IOException, 
+              ServerUnavailableException {
+        name = systemTest;
+        this.clientTui = new AbaloneClientTui(this);
+        Thread threadTui = new Thread(clientTui);
+        threadTui.start();
+        System.out.println("Attempting to connect to " + ip + ":" + port + "...");
+        InetAddress addr = null; 
+        try {
+            addr = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            System.out.println("Invalid try again");
+        }
+        sock = new Socket(addr, port); 
+        //open in and output
+        networkIN = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+        networkOut = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+        
+    }
+    
     /**
      * start method of the Abalone client.
      * follows startup sequence
@@ -142,7 +172,7 @@ public class AbaloneClient implements ClientProtocol {
             //catch exception, if server connection lost.
             clientTui.showMessage(e.getMessage());
             clientTui.showMessage("The connection has been lost");
-            //stop the Tui
+            //stop the Tui 
             clientTui.stopThread();
             //close the connection
             closeConnection();
@@ -819,7 +849,7 @@ public class AbaloneClient implements ClientProtocol {
         int challengeInt = challenge ? 1 : 0;
         int leaderboardInt = leaderboard ? 1 : 0;
         sendMessage(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt + ProtocolMessages.DELIMITER
-                + challengeInt + ProtocolMessages.DELIMITER + leaderboardInt + ProtocolMessages.DELIMITER + name
+                + challengeInt + ProtocolMessages.DELIMITER + leaderboardInt + ProtocolMessages.DELIMITER + playerName
                 + ProtocolMessages.EOC);
         //read line until a handshake is confirmed
         while (!handshakeComplete) {

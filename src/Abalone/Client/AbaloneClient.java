@@ -303,7 +303,7 @@ public class AbaloneClient implements ClientProtocol {
                     }
                     break;
                 case ProtocolMessages.HELLO:
-                    if (inputSrv.length < 3) {
+                    if (inputSrv.length > 3) {
                         //hello message from server
                         serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
                         serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
@@ -320,7 +320,7 @@ public class AbaloneClient implements ClientProtocol {
                     break; 
                   
                 case ProtocolMessages.JOIN:
-                    if (inputSrv.length < 3) {
+                    if (inputSrv.length > 2) {
                         if (Integer.parseInt(inputSrv[1]) == gameSize) {
                             // this message is for you
                             if (joiningComplete == false) {

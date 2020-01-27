@@ -27,7 +27,11 @@ public class Audio implements Runnable {
     AudioInputStream audioInputStream;
     static String filePath;
 
-    // constructor to initialize streams and clip
+    /** Javadoc.
+     * @throws UnsupportedAudioFileException Javadoc.
+     * @throws IOException Javadoc.
+     * @throws LineUnavailableException Javadoc.
+     */
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // create AudioInputStream object
 
@@ -39,8 +43,9 @@ public class Audio implements Runnable {
         clip.open(audioInputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
-
-    // Method to play the audio
+    
+    /** Javadoc.
+     */
     public void play() {
         // start the clip
         clip.start();
@@ -56,9 +61,8 @@ public class Audio implements Runnable {
             while (true) {
                 clip.start();
             }
-        }
-
-        catch (Exception ex) {
+            
+        } catch (Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
 

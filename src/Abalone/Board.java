@@ -12,7 +12,7 @@ public class Board {
     Marble empty = Marble.Empty;
     Marble black = Marble.Black;
     Marble green = Marble.Green;
-    Marble red = Marble.Red;
+    Marble red = Marble.Red; 
 
     private int scoreBlack;
     private int scoreWhite;

@@ -31,10 +31,8 @@ public class Audio implements Runnable {
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // create AudioInputStream object
     	
-        String path = System.getProperty("user.dir") + "\\src\\Abalone\\Audiopack\\AbaloneMusic.aifc";
-        Path path2 = Paths.get(path);  
-        
-        audioInputStream = AudioSystem.getAudioInputStream(new File(path2.toUri().toURL().getFile()).getAbsoluteFile());
+    	  URL path = Audio.class.getResource("AbaloneMusic.aifc");
+    	  audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
         // create clip reference
         clip = AudioSystem.getClip();
         // open audioInputStream to the clip

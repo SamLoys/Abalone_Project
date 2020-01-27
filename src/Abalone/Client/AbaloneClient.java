@@ -25,672 +25,672 @@ import Abalone.Exceptions.ServerUnavailableException;
 import Abalone.protocol.*;
 
 public class AbaloneClient implements ClientProtocol {
-	private Socket sock;
-	private BufferedReader networkIN;
-	private BufferedWriter networkOUT;
-	private AbaloneClientTUI clientTui;
-	private String name;
-	private Marble color;
-	private boolean clientSupportChatting = true;
-	private boolean clientSupportChallenge = false;
-	private boolean clientSupportLeaderboard = false;
-	private boolean serverSupportChatting = false;
-	private boolean serverSupportChallenge = false;
-	private boolean serverSupportLeaderboard = false;
-	private boolean handshakeComplete = false;
-	private boolean joiningComplete = false;
-	private int gameSize = 0;
-	private boolean gameStarted = false;
-	private boolean yourTurn = false;
-	private boolean isAI;
-	private SmartyAI AiPlayer = null;
-	Board clientBoard;
-	String[] gamePlayers;
-	MoveCheck moveChecker;
-	MoveCheck moveEnemyCheck;
-	boolean running = true;
+    private Socket sock;
+    private BufferedReader networkIN;
+    private BufferedWriter networkOUT;
+    private AbaloneClientTUI clientTui;
+    private String name;
+    private Marble color;
+    private boolean clientSupportChatting = true;
+    private boolean clientSupportChallenge = false;
+    private boolean clientSupportLeaderboard = false;
+    private boolean serverSupportChatting = false;
+    private boolean serverSupportChallenge = false;
+    private boolean serverSupportLeaderboard = false;
+    private boolean handshakeComplete = false;
+    private boolean joiningComplete = false;
+    private int gameSize = 0;
+    private boolean gameStarted = false;
+    private boolean yourTurn = false;
+    private boolean isAI;
+    private SmartyAI AiPlayer = null;
+    Board clientBoard;
+    String[] gamePlayers;
+    MoveCheck moveChecker;
+    MoveCheck moveEnemyCheck;
+    boolean running = true;
 
-	public static void main(String args[]) {
-		Audio muziek = null; 
-		try {
-			muziek = new Audio();
-		} catch (UnsupportedAudioFileException e) {
-		
-		} catch (IOException e) {
-		
-		} catch (LineUnavailableException e) {
-	
-		}
-		Thread t1 = new Thread(muziek);
-		t1.start();
-		AbaloneClient client = new AbaloneClient();
-		client.start();
+    public static void main(String args[]) {
+        Audio muziek = null;
+        try {
+            muziek = new Audio();
+        } catch (UnsupportedAudioFileException e) {
 
-	}
+        } catch (IOException e) {
 
-	public String getName() {
-		return name;
-	}
+        } catch (LineUnavailableException e) {
 
-	public AbaloneClient() {
-		this.clientTui = new AbaloneClientTUI(this);
-		handshakeComplete = false;
-		joiningComplete = false;
-		gameSize = 0;
+        }
+        Thread t1 = new Thread(muziek);
+        t1.start();
+        AbaloneClient client = new AbaloneClient();
+        client.start();
 
-	}
+    }
 
-	public void start() {
-		clientTui.showMessage("\r\n" + "\r\n"
-				+ "               _                            _                _           _                  \r\n"
-				+ " __      _____| | ___ ___  _ __ ___   ___  | |_ ___     __ _| |__   __ _| | ___  _ __   ___ \r\n"
-				+ " \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\   / _` | '_ \\ / _` | |/ _ \\| '_ \\ / _ \\\r\n"
-				+ "  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | (_| | |_) | (_| | | (_) | | | |  __/\r\n"
-				+ "   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/   \\__,_|_.__/ \\__,_|_|\\___/|_| |_|\\___|\r\n"
-				+ "                                                                                            \r\n"
-				+ "\r\n" + "");
-		name = clientTui.getUserName("Please give your wanted username");
-		isAI = clientTui.getBool("Are you an AI?");
-		clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
-		try {
-			createConnection();
-			handleHandshake(clientSupportChatting, clientSupportChallenge, clientSupportLeaderboard, name);
-			getCurrentQueueSizes();
-			String serverMessage = readLineFromServer();
-			handleServerCommands(serverMessage);
-			gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
-			joinQueue(gameSize);
-			Thread threadTUI = new Thread(clientTui);
-			threadTUI.start();
-			readServer();
+    public String getName() {
+        return name;
+    }
 
-		} catch (ServerUnavailableException e) {
-			clientTui.showMessage(e.getMessage());
-			clientTui.showMessage("The connection has been lost");
-			clientTui.stopThread();
+    public AbaloneClient() {
+        this.clientTui = new AbaloneClientTUI(this);
+        handshakeComplete = false;
+        joiningComplete = false;
+        gameSize = 0;
 
-			closeConnection();
+    }
 
-		} catch (ExitProgram e) {
-			clientTui.showMessage("closing... user didnt want to try again");
-			closeConnection();
-		}
-	}
+    public void start() {
+        clientTui.showMessage("\r\n" + "\r\n"
+                + "               _                            _                _           _                  \r\n"
+                + " __      _____| | ___ ___  _ __ ___   ___  | |_ ___     __ _| |__   __ _| | ___  _ __   ___ \r\n"
+                + " \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\   / _` | '_ \\ / _` | |/ _ \\| '_ \\ / _ \\\r\n"
+                + "  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | (_| | |_) | (_| | | (_) | | | |  __/\r\n"
+                + "   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/   \\__,_|_.__/ \\__,_|_|\\___/|_| |_|\\___|\r\n"
+                + "                                                                                            \r\n"
+                + "\r\n" + "");
+        name = clientTui.getUserName("Please give your wanted username");
+        isAI = clientTui.getBool("Are you an AI?");
+        clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
+        try {
+            createConnection();
+            handleHandshake(clientSupportChatting, clientSupportChallenge, clientSupportLeaderboard, name);
+            getCurrentQueueSizes();
+            String serverMessage = readLineFromServer();
+            handleServerCommands(serverMessage);
+            gameSize = clientTui.getInt("How many player game would you like to join?", 2, 4);
+            joinQueue(gameSize);
+            Thread threadTUI = new Thread(clientTui);
+            threadTUI.start();
+            readServer();
 
-	public void createConnection() throws ExitProgram {
-		clearConnection();
-		while (sock == null) {
-			InetAddress host = null;
-			int port = clientTui.getInt("Please enter port number", 0, 65535);
-			host = clientTui.getIp();
-			// try to open a Socket to the server
-			try {
-				// InetAddress addr = InetAddress.getByName(host);
-				System.out.println("Attempting to connect to " + host + ":" + port + "...");
-				sock = new Socket(host, port);
-				networkIN = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-				networkOUT = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			} catch (IOException e) {
-				System.out.println("ERROR: could not create a socket on " + host + " and port " + port + ".");
+        } catch (ServerUnavailableException e) {
+            clientTui.showMessage(e.getMessage());
+            clientTui.showMessage("The connection has been lost");
+            clientTui.stopThread();
 
-				// Do you want to try again? (ask user, to be implemented)
-				if (!clientTui.getBool("Do you want to try again")) {
-					throw new ExitProgram("User indicated to exit.");
-				}
-			}
-		}
-	}
+            closeConnection();
 
-	public synchronized void sendMessage(String message) throws ServerUnavailableException {
-		if (networkOUT != null) {
-			try {
-				networkOUT.write(message);
-				networkOUT.newLine();
-				networkOUT.flush();
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-				throw new ServerUnavailableException("Could not write to server");
-			}
-		} else {
-			throw new ServerUnavailableException("Server not yet made");
-		}
+        } catch (ExitProgram e) {
+            clientTui.showMessage("closing... user didnt want to try again");
+            closeConnection();
+        }
+    }
 
-	}
+    public void createConnection() throws ExitProgram {
+        clearConnection();
+        while (sock == null) {
+            InetAddress host = null;
+            int port = clientTui.getInt("Please enter port number", 0, 65535);
+            host = clientTui.getIp();
+            // try to open a Socket to the server
+            try {
+                // InetAddress addr = InetAddress.getByName(host);
+                System.out.println("Attempting to connect to " + host + ":" + port + "...");
+                sock = new Socket(host, port);
+                networkIN = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                networkOUT = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            } catch (IOException e) {
+                System.out.println("ERROR: could not create a socket on " + host + " and port " + port + ".");
 
-	public String readLineFromServer() throws ServerUnavailableException {
-		if (networkIN != null) {
-			try {
-				// Read and return answer from Server
-				String answer = networkIN.readLine();
-				if (answer == null) {
-					throw new ServerUnavailableException("Could not read " + "from server.");
-				}
+                // Do you want to try again? (ask user, to be implemented)
+                if (!clientTui.getBool("Do you want to try again")) {
+                    throw new ExitProgram("User indicated to exit.");
+                }
+            }
+        }
+    }
 
-				return answer;
-			} catch (IOException e) {
-				throw new ServerUnavailableException("Could not read " + "from server.");
-			}
-		} else {
-			throw new ServerUnavailableException("Could not read " + "from server.");
-		}
-	}
+    public synchronized void sendMessage(String message) throws ServerUnavailableException {
+        if (networkOUT != null) {
+            try {
+                networkOUT.write(message);
+                networkOUT.newLine();
+                networkOUT.flush();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                throw new ServerUnavailableException("Could not write to server");
+            }
+        } else {
+            throw new ServerUnavailableException("Server not yet made");
+        }
 
-	public void closeConnection() {
-		System.out.println("Closing the connection...");
-		try {
-			running = false;
-			networkIN.close();
-			System.out.println("NetworkIN closed...");
-			networkOUT.close();
-			System.out.println("NetworkOUT closed...");
-			sock.close();
-			System.out.println("Socked Closed...");
+    }
 
-		} catch (IOException e) {
-			clientTui.showMessage("Error during closing the connection");
-		}
-	}
+    public String readLineFromServer() throws ServerUnavailableException {
+        if (networkIN != null) {
+            try {
+                // Read and return answer from Server
+                String answer = networkIN.readLine();
+                if (answer == null) {
+                    throw new ServerUnavailableException("Could not read " + "from server.");
+                }
 
-	public void clearConnection() {
-		sock = null;
-		networkIN = null;
-		networkOUT = null;
-	}
+                return answer;
+            } catch (IOException e) {
+                throw new ServerUnavailableException("Could not read " + "from server.");
+            }
+        } else {
+            throw new ServerUnavailableException("Could not read " + "from server.");
+        }
+    }
 
-	public void handleServerCommands(String msg) throws ServerUnavailableException {
-		if (!msg.equals("")) {
+    public void closeConnection() {
+        System.out.println("Closing the connection...");
+        try {
+            running = false;
+            networkIN.close();
+            System.out.println("NetworkIN closed...");
+            networkOUT.close();
+            System.out.println("NetworkOUT closed...");
+            sock.close();
+            System.out.println("Socked Closed...");
 
-			String command = msg.substring(0, 1);
-			String[] inputSrv = msg.split(";");
-			// getting commands from the server
-			switch (command) {
+        } catch (IOException e) {
+            clientTui.showMessage("Error during closing the connection");
+        }
+    }
 
-			case ProtocolMessages.GameResult.EXCEPTION:
-				clientTui.showMessage("The server send an exception");
-				if (inputSrv.length > 2) {
-					if (inputSrv[1].equals("i")) {
-						clientTui.showMessage("IllegalMoveException: " + inputSrv[2]);
-					}
-					if (inputSrv[1].equals("i")) {
-						clientTui.showMessage("JoinException: " + inputSrv[2]);
-					}
+    public void clearConnection() {
+        sock = null;
+        networkIN = null;
+        networkOUT = null;
+    }
 
-				} else {
-					clientTui.showMessage("exception not complete");
-				}
-				break;
-			case ProtocolMessages.HELLO:
+    public void handleServerCommands(String msg) throws ServerUnavailableException {
+        if (!msg.equals("")) {
 
-				serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
-				serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
-				serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
-				this.name = inputSrv[4];
-				clientTui.showMessage("The server has assigned you as the following name: " + name);
-				handshakeComplete = true;
-				break;
+            String command = msg.substring(0, 1);
+            String[] inputSrv = msg.split(";");
+            // getting commands from the server
+            switch (command) {
 
-			case ProtocolMessages.JOIN:
-				if (Integer.parseInt(inputSrv[1]) == gameSize) {
-					// this message is for you
-					if (joiningComplete == false) {
-						clientTui.showMessage("You succesfully joined");
-						clientTui.showMessage("there are " + inputSrv[2] + "out of " + inputSrv[1] + " joined");
-						joiningComplete = true;
-					} else {
-						clientTui.showMessage("new Player joined queue , now " + inputSrv[2] + "out of " + inputSrv[1]);
-					}
+            case ProtocolMessages.GameResult.EXCEPTION:
+                clientTui.showMessage("The server send an exception");
+                if (inputSrv.length > 2) {
+                    if (inputSrv[1].equals("i")) {
+                        clientTui.showMessage("IllegalMoveException: " + inputSrv[2]);
+                    }
+                    if (inputSrv[1].equals("i")) {
+                        clientTui.showMessage("JoinException: " + inputSrv[2]);
+                    }
 
-				}
-				break;
+                } else {
+                    clientTui.showMessage("exception not complete");
+                }
+                break;
+            case ProtocolMessages.HELLO:
 
-			case ProtocolMessages.GAME_START:
-				gameStarted = true;
-				// only gets this message if the server sends it to me
-				for (int i = 0; i < inputSrv.length; i++) {
-					if (inputSrv[i].equals(name)) {
-						if (inputSrv.length == 4) {
-							gamePlayers = new String[2];
-							gamePlayers[0] = inputSrv[1];
-							gamePlayers[1] = inputSrv[2];
-							setPropperColor();
-							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-									+ " and " + gamePlayers[1]);
-							clientTui.showMessage("The game will be played in this order");
-							
-							clientBoard = new Board(2);
-							moveChecker = new MoveCheck(color, clientBoard);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
+                serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
+                serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
+                serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
+                this.name = inputSrv[4];
+                clientTui.showMessage("The server has assigned you as the following name: " + name);
+                handshakeComplete = true;
+                break;
 
-								System.out.println(e.getMessage());
-							}
-							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
-								yourTurn = true;
+            case ProtocolMessages.JOIN:
+                if (Integer.parseInt(inputSrv[1]) == gameSize) {
+                    // this message is for you
+                    if (joiningComplete == false) {
+                        clientTui.showMessage("You succesfully joined");
+                        clientTui.showMessage("there are " + inputSrv[2] + "out of " + inputSrv[1] + " joined");
+                        joiningComplete = true;
+                    } else {
+                        clientTui.showMessage("new Player joined queue , now " + inputSrv[2] + "out of " + inputSrv[1]);
+                    }
 
-							}
-							if (isAI) {
-								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
-								if (yourTurn) {
-									AiPlayer.makeMove(true);
-								}
-							}
-						}
-						if (inputSrv.length == 5) {
-							gamePlayers = new String[3];
-							gamePlayers[0] = inputSrv[1];
-							gamePlayers[1] = inputSrv[2];
-							gamePlayers[2] = inputSrv[3];
-							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-									+ " and " + gamePlayers[1] + " and " + gamePlayers[2]);
-							clientTui.showMessage("The game will be played in this order");
-							
-							setPropperColor();
-							clientBoard = new Board(3);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
-								System.out.println(e.getMessage());
-							}
-							moveChecker = new MoveCheck(color, clientBoard);
-							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
-								yourTurn = true;
+                }
+                break;
 
-							}
-							if (isAI) {
-								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
-								if (yourTurn) {
-									AiPlayer.makeMove(true);
-								}
-							}
-						}
-						if (inputSrv.length == 6) {
-							gamePlayers = new String[4];
-							gamePlayers[0] = inputSrv[1];
-							gamePlayers[1] = inputSrv[2];
-							gamePlayers[2] = inputSrv[3];
-							gamePlayers[3] = inputSrv[4];
-							clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
-									+ " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
-							clientTui.showMessage("The game will be played in this order");
-							
-							setPropperColor();
-							clientBoard = new Board(4);
-							try {
-								showBoard();
-								clientTui.printHelpMenu();
-							} catch (BoardException e) {
-								System.out.println(e.getMessage());
-							}
-							if (gamePlayers[0].equals(name)) {
-								clientTui.showMessage("it is your turn ," + color.toString()
-										+ " go enter your move, /n  remember typing h will print the help menu");
-								yourTurn = true;
+            case ProtocolMessages.GAME_START:
+                gameStarted = true;
+                // only gets this message if the server sends it to me
+                for (int i = 0; i < inputSrv.length; i++) {
+                    if (inputSrv[i].equals(name)) {
+                        if (inputSrv.length == 4) {
+                            gamePlayers = new String[2];
+                            gamePlayers[0] = inputSrv[1];
+                            gamePlayers[1] = inputSrv[2];
+                            setPropperColor();
+                            clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+                                    + " and " + gamePlayers[1]);
+                            clientTui.showMessage("The game will be played in this order");
 
-							}
-							moveChecker = new MoveCheck(color, clientBoard);
-							if (isAI) {
-								AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
-								if (yourTurn) {
-									AiPlayer.makeMove(true);
-								}
-							}
+                            clientBoard = new Board(2);
+                            moveChecker = new MoveCheck(color, clientBoard);
+                            try {
+                                showBoard();
+                                clientTui.printHelpMenu();
+                            } catch (BoardException e) {
 
-						}
-					}
-				}
+                                System.out.println(e.getMessage());
+                            }
+                            if (gamePlayers[0].equals(name)) {
+                                clientTui.showMessage("it is your turn ," + color.toString()
+                                        + " go enter your move, /n  remember typing h will print the help menu");
+                                yourTurn = true;
 
-				break;
+                            }
+                            if (isAI) {
+                                AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+                                if (yourTurn) {
+                                    AiPlayer.makeMove(true);
+                                }
+                            }
+                        }
+                        if (inputSrv.length == 5) {
+                            gamePlayers = new String[3];
+                            gamePlayers[0] = inputSrv[1];
+                            gamePlayers[1] = inputSrv[2];
+                            gamePlayers[2] = inputSrv[3];
+                            clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+                                    + " and " + gamePlayers[1] + " and " + gamePlayers[2]);
+                            clientTui.showMessage("The game will be played in this order");
 
-			case ProtocolMessages.MOVE:
-				ArrayList<Integer> newIndexes = new ArrayList<>();
-				ArrayList<Integer> totalMove = new ArrayList<>();
-				ArrayList<Integer> indexes = new ArrayList<>();
-				yourTurn = false;
-				clientTui.showMessage(
-						"Player " + inputSrv[2] + "has moved " + "\n it is now the turn of player: " + inputSrv[1]);
-				String direction = inputSrv[3];
+                            setPropperColor();
+                            clientBoard = new Board(3);
+                            try {
+                                showBoard();
+                                clientTui.printHelpMenu();
+                            } catch (BoardException e) {
+                                System.out.println(e.getMessage());
+                            }
+                            moveChecker = new MoveCheck(color, clientBoard);
+                            if (gamePlayers[0].equals(name)) {
+                                clientTui.showMessage("it is your turn ," + color.toString()
+                                        + " go enter your move, /n  remember typing h will print the help menu");
+                                yourTurn = true;
 
-				for (int i = 0; i < inputSrv.length; i++) {
-					if (inputSrv[i].matches("([0-9]*)")) {
-						indexes.add(Integer.parseInt(inputSrv[i]));
-					}
-				}
+                            }
+                            if (isAI) {
+                                AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+                                if (yourTurn) {
+                                    AiPlayer.makeMove(true);
+                                }
+                            }
+                        }
+                        if (inputSrv.length == 6) {
+                            gamePlayers = new String[4];
+                            gamePlayers[0] = inputSrv[1];
+                            gamePlayers[1] = inputSrv[2];
+                            gamePlayers[2] = inputSrv[3];
+                            gamePlayers[3] = inputSrv[4];
+                            clientTui.showMessage("The game has started with the following players: " + gamePlayers[0]
+                                    + " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " + gamePlayers[3]);
+                            clientTui.showMessage("The game will be played in this order");
 
-				try {
-					newIndexes = clientBoard.protocolToIndex(indexes);
-				} catch (BoardException e1) {
-					System.out.println(e1.getMessage());
+                            setPropperColor();
+                            clientBoard = new Board(4);
+                            try {
+                                showBoard();
+                                clientTui.printHelpMenu();
+                            } catch (BoardException e) {
+                                System.out.println(e.getMessage());
+                            }
+                            if (gamePlayers[0].equals(name)) {
+                                clientTui.showMessage("it is your turn ," + color.toString()
+                                        + " go enter your move, /n  remember typing h will print the help menu");
+                                yourTurn = true;
 
-				}
+                            }
+                            moveChecker = new MoveCheck(color, clientBoard);
+                            if (isAI) {
+                                AiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
+                                if (yourTurn) {
+                                    AiPlayer.makeMove(true);
+                                }
+                            }
 
-				moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard);
-				try {
-					totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
-				} catch (IllegalMoveException e) {
-					clientTui.showMessage("player " + inputSrv[2] + "Tried a move that is not valid according to us");
-					clientTui.showMessage("the error is: " + e.getMessage());
-					clientTui.showMessage("We did not move the marble, discuss with the party");
-					break;
-				}
-				boolean scores = false;
+                        }
+                    }
+                }
 
-				try {
-					// move the board
-					// get boolean if there is scored
-					scores = clientBoard.move(totalMove, direction);
-				} catch (BoardException e) {
-					System.out.println(e.getMessage());
-				}
+                break;
 
-				if (scores) {
-					clientBoard.addScore(getPlayerMarble(inputSrv[2]));
-				}
-				try {
-					showBoard();
-				} catch (BoardException e) {
-					System.out.println(e.getMessage());
-				}
-				if (inputSrv[1].equals(name)) {
-					clientTui.showMessage("it is now your turn, enter your move");
-					yourTurn = true;
-					if (isAI) {
-						AiPlayer.makeMove(true);
-					}
-				}
-				break;
+            case ProtocolMessages.MOVE:
+                ArrayList<Integer> newIndexes = new ArrayList<>();
+                ArrayList<Integer> totalMove = new ArrayList<>();
+                ArrayList<Integer> indexes = new ArrayList<>();
+                yourTurn = false;
+                clientTui.showMessage(
+                        "Player " + inputSrv[2] + "has moved " + "\n it is now the turn of player: " + inputSrv[1]);
+                String direction = inputSrv[3];
 
-			case ProtocolMessages.GAME_FINISHED:
-				clientTui.showMessage("The game has finished");
-				if (inputSrv[1].equals(ProtocolMessages.GameResult.DRAW)) {
-					joiningComplete = false;
-					gameStarted = false;
-					gameSize = 0;
-					clientTui.showMessage("There was a draw");
-					gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-					joinQueue(gameSize);
-				}
-				if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
-					clientTui.showMessage("There is a winner");
-					if (gameSize == 2 || gameSize == 3) {
-						clientTui.showMessage("the winner is: " + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
-						joiningComplete = false;
-						gameStarted = false;
-						gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-						joinQueue(gameSize);
-					}
+                for (int i = 0; i < inputSrv.length; i++) {
+                    if (inputSrv[i].matches("([0-9]*)")) {
+                        indexes.add(Integer.parseInt(inputSrv[i]));
+                    }
+                }
 
-					if (gameSize == 4) {
-						if (Integer.parseInt(inputSrv[2]) == 1) {
-							clientTui
-									.showMessage("the winners are: " + gamePlayers[0] + "and player " + gamePlayers[2]);
-							joiningComplete = false;
-							gameStarted = false;
-							gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-							joinQueue(gameSize);
-						}
-						if (Integer.parseInt(inputSrv[2]) == 2) {
-							clientTui
-									.showMessage("the winners are: " + gamePlayers[1] + "and player " + gamePlayers[3]);
-							joiningComplete = false;
-							gameStarted = false;
-							gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-							joinQueue(gameSize);
-						}
+                try {
+                    newIndexes = clientBoard.protocolToIndex(indexes);
+                } catch (BoardException e1) {
+                    System.out.println(e1.getMessage());
 
-					}
-				}
-				if (inputSrv[1].equals(ProtocolMessages.GameResult.EXCEPTION)) {
-					clientTui.showMessage("There was an error, the game has now ended");
-					joiningComplete = false;
-					gameStarted = false;
-					gameSize = 0;
-					joinQueue(clientTui.getInt("what queue do you want to join?"));
-				}
+                }
 
-				break;
-			case ProtocolMessages.QUEUE_SIZE:
-				clientTui.showMessage(
-						"the queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
-								+ inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
-				break;
-			case ProtocolMessages.EXIT:
-				clientTui.showMessage("The server gives the command to exit");
-				closeConnection();
-				clientTui.stopThread();
-				break;
+                moveEnemyCheck = new MoveCheck(getPlayerMarble(inputSrv[2]), clientBoard);
+                try {
+                    totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
+                } catch (IllegalMoveException e) {
+                    clientTui.showMessage("player " + inputSrv[2] + "Tried a move that is not valid according to us");
+                    clientTui.showMessage("the error is: " + e.getMessage());
+                    clientTui.showMessage("We did not move the marble, discuss with the party");
+                    break;
+                }
+                boolean scores = false;
 
-			case "b":
-				if (inputSrv.length > 3) {
-					if (inputSrv[1].contentEquals("c")) {
-						// chatting
-						clientTui.showMessage(inputSrv[2] + ": " + inputSrv[3]);
-					}
-				}
-				break;
-			default:
-				break;
-			}
-		} else {
-			clientTui.showMessage("Received and invalid server commando");
-		}
-	}
+                try {
+                    // move the board
+                    // get boolean if there is scored
+                    scores = clientBoard.move(totalMove, direction);
+                } catch (BoardException e) {
+                    System.out.println(e.getMessage());
+                }
 
-	public void setPropperColor() {
-		switch (gamePlayers.length) {
-		case 2:
-			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else {
-				color = Marble.Black;
-			}
-			break;
+                if (scores) {
+                    clientBoard.addScore(getPlayerMarble(inputSrv[2]));
+                }
+                try {
+                    showBoard();
+                } catch (BoardException e) {
+                    System.out.println(e.getMessage());
+                }
+                if (inputSrv[1].equals(name)) {
+                    clientTui.showMessage("it is now your turn, enter your move");
+                    yourTurn = true;
+                    if (isAI) {
+                        AiPlayer.makeMove(true);
+                    }
+                }
+                break;
 
-		case 3:
-			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
-				color = Marble.Black;
-			} else {
-				color = Marble.Green;
-			}
-			break;
+            case ProtocolMessages.GAME_FINISHED:
+                clientTui.showMessage("The game has finished");
+                if (inputSrv[1].equals(ProtocolMessages.GameResult.DRAW)) {
+                    joiningComplete = false;
+                    gameStarted = false;
+                    gameSize = 0;
+                    clientTui.showMessage("There was a draw");
+                    gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                    joinQueue(gameSize);
+                }
+                if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
+                    clientTui.showMessage("There is a winner");
+                    if (gameSize == 2 || gameSize == 3) {
+                        clientTui.showMessage("the winner is: " + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
+                        joiningComplete = false;
+                        gameStarted = false;
+                        gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                        joinQueue(gameSize);
+                    }
 
-		case 4:
-			if (gamePlayers[0].equals(name)) {
-				color = Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
-				color = Marble.Black;
-			} else if (gamePlayers[2].equals(name)) {
-				color = Marble.Green;
-			} else {
-				color = Marble.Red;
-			}
-			break;
-		}
-	}
+                    if (gameSize == 4) {
+                        if (Integer.parseInt(inputSrv[2]) == 1) {
+                            clientTui
+                                    .showMessage("the winners are: " + gamePlayers[0] + "and player " + gamePlayers[2]);
+                            joiningComplete = false;
+                            gameStarted = false;
+                            gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                            joinQueue(gameSize);
+                        }
+                        if (Integer.parseInt(inputSrv[2]) == 2) {
+                            clientTui
+                                    .showMessage("the winners are: " + gamePlayers[1] + "and player " + gamePlayers[3]);
+                            joiningComplete = false;
+                            gameStarted = false;
+                            gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                            joinQueue(gameSize);
+                        }
 
-	public Marble getPlayerMarble(String name) {
-		switch (gameSize) {
-		case 2:
-			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else
-				return Marble.Black;
+                    }
+                }
+                if (inputSrv[1].equals(ProtocolMessages.GameResult.EXCEPTION)) {
+                    clientTui.showMessage("There was an error, the game has now ended");
+                    joiningComplete = false;
+                    gameStarted = false;
+                    gameSize = 0;
+                    joinQueue(clientTui.getInt("what queue do you want to join?"));
+                }
 
-		case 3:
-			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
-				return Marble.Black;
-			} else
-				return Marble.Green;
+                break;
+            case ProtocolMessages.QUEUE_SIZE:
+                clientTui.showMessage(
+                        "the queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
+                                + inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
+                break;
+            case ProtocolMessages.EXIT:
+                clientTui.showMessage("The server gives the command to exit");
+                closeConnection();
+                clientTui.stopThread();
+                break;
 
-		case 4:
-			if (gamePlayers[0].equals(name)) {
-				return Marble.White;
-			} else if (gamePlayers[1].equals(name)) {
-				return Marble.Black;
-			} else if (gamePlayers[2].equals(name)) {
-				return Marble.Green;
-			} else {
-				return Marble.Red;
-			}
- 
-		}
-		return Marble.Death;
-	}
+            case "b":
+                if (inputSrv.length > 3) {
+                    if (inputSrv[1].contentEquals("c")) {
+                        // chatting
+                        clientTui.showMessage(inputSrv[2] + ": " + inputSrv[3]);
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        } else {
+            clientTui.showMessage("Received and invalid server commando");
+        }
+    }
 
-	public void readServer() throws ServerUnavailableException {
-		while (running) {
+    public void setPropperColor() {
+        switch (gamePlayers.length) {
+        case 2:
+            if (gamePlayers[0].equals(name)) {
+                color = Marble.White;
+            } else {
+                color = Marble.Black;
+            }
+            break;
 
-			String serverMessage = readLineFromServer();
-			if (serverMessage.startsWith("x")) {
-				running = false;
-			}
+        case 3:
+            if (gamePlayers[0].equals(name)) {
+                color = Marble.White;
+            } else if (gamePlayers[1].equals(name)) {
+                color = Marble.Black;
+            } else {
+                color = Marble.Green;
+            }
+            break;
 
-			handleServerCommands(serverMessage);
-			// needs to keep reading the server messages
-		}
-	}
+        case 4:
+            if (gamePlayers[0].equals(name)) {
+                color = Marble.White;
+            } else if (gamePlayers[1].equals(name)) {
+                color = Marble.Black;
+            } else if (gamePlayers[2].equals(name)) {
+                color = Marble.Green;
+            } else {
+                color = Marble.Red;
+            }
+            break;
+        }
+    }
 
-	public void showBoard() throws BoardException {
-		clientTui.showMessage(clientBoard.toString());
-		switch (gameSize) {
-		case 2:
-			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
-			break;
-		case 3:
-			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
-			break;
-		case 4:
-			clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
-			clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
-			clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
-			clientTui.showMessage("The score for: " + gamePlayers[3] + "(" + getPlayerMarble(gamePlayers[3]).toString()
-					+ ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
-			clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
-			break;
+    public Marble getPlayerMarble(String name) {
+        switch (gameSize) {
+        case 2:
+            if (gamePlayers[0].equals(name)) {
+                return Marble.White;
+            } else
+                return Marble.Black;
 
-		default:
-			break;
-		}
-	}
+        case 3:
+            if (gamePlayers[0].equals(name)) {
+                return Marble.White;
+            } else if (gamePlayers[1].equals(name)) {
+                return Marble.Black;
+            } else
+                return Marble.Green;
 
-	public String getHint() {
-		SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
-		return ai.getHint(clientBoard, color, moveChecker);
-	}
+        case 4:
+            if (gamePlayers[0].equals(name)) {
+                return Marble.White;
+            } else if (gamePlayers[1].equals(name)) {
+                return Marble.Black;
+            } else if (gamePlayers[2].equals(name)) {
+                return Marble.Green;
+            } else {
+                return Marble.Red;
+            }
 
-	public void sendChat(String message) throws ServerUnavailableException {
-		if (serverSupportChatting) {
-			sendMessage("b;c;" + name + ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
-		} else {
-			clientTui.showMessage("The Server does not support chatting");
-		}
+        }
+        return Marble.Death;
+    }
 
-	}
+    public void readServer() throws ServerUnavailableException {
+        while (running) {
+
+            String serverMessage = readLineFromServer();
+            if (serverMessage.startsWith("x")) {
+                running = false;
+            }
+
+            handleServerCommands(serverMessage);
+            // needs to keep reading the server messages
+        }
+    }
+
+    public void showBoard() throws BoardException {
+        clientTui.showMessage(clientBoard.toString());
+        switch (gameSize) {
+        case 2:
+            clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+            clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+            clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+            break;
+        case 3:
+            clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+            clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+            clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+            clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+            break;
+        case 4:
+            clientTui.showMessage("The score for: " + gamePlayers[0] + "(" + getPlayerMarble(gamePlayers[0]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+            clientTui.showMessage("The score for: " + gamePlayers[1] + "(" + getPlayerMarble(gamePlayers[1]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+            clientTui.showMessage("The score for: " + gamePlayers[2] + "(" + getPlayerMarble(gamePlayers[2]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+            clientTui.showMessage("The score for: " + gamePlayers[3] + "(" + getPlayerMarble(gamePlayers[3]).toString()
+                    + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
+            clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    public String getHint() {
+        SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
+        return ai.getHint(clientBoard, color, moveChecker);
+    }
+
+    public void sendChat(String message) throws ServerUnavailableException {
+        if (serverSupportChatting) {
+            sendMessage("b;c;" + name + ProtocolMessages.DELIMITER + message + ProtocolMessages.EOC);
+        } else {
+            clientTui.showMessage("The Server does not support chatting");
+        }
+
+    }
 
 //---------------------- protocol messages to send down below
-	@Override
-	public void handleHandshake(boolean chat, boolean challenge, boolean leaderboard, String playerName)
-			throws ServerUnavailableException {
-		// TODO Auto-generated method stub
-		int chatInt = chat ? 1 : 0;
-		int challengeInt = challenge ? 1 : 0;
-		int leaderboardInt = leaderboard ? 1 : 0;
-		sendMessage(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt + ProtocolMessages.DELIMITER
-				+ challengeInt + ProtocolMessages.DELIMITER + leaderboardInt + ProtocolMessages.DELIMITER + name
-				+ ProtocolMessages.EOC);
-		while (!handshakeComplete) {
-			String serverMessage = readLineFromServer();
-			handleServerCommands(serverMessage);
-		}
-	}
+    @Override
+    public void handleHandshake(boolean chat, boolean challenge, boolean leaderboard, String playerName)
+            throws ServerUnavailableException {
+        // TODO Auto-generated method stub
+        int chatInt = chat ? 1 : 0;
+        int challengeInt = challenge ? 1 : 0;
+        int leaderboardInt = leaderboard ? 1 : 0;
+        sendMessage(ProtocolMessages.HELLO + ProtocolMessages.DELIMITER + chatInt + ProtocolMessages.DELIMITER
+                + challengeInt + ProtocolMessages.DELIMITER + leaderboardInt + ProtocolMessages.DELIMITER + name
+                + ProtocolMessages.EOC);
+        while (!handshakeComplete) {
+            String serverMessage = readLineFromServer();
+            handleServerCommands(serverMessage);
+        }
+    }
 
-	@Override
-	public void joinQueue(int gamesize) throws ServerUnavailableException {
-		// TODO Auto-generated method stub
+    @Override
+    public void joinQueue(int gamesize) throws ServerUnavailableException {
+        // TODO Auto-generated method stub
 
-		sendMessage(ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize + ProtocolMessages.EOC);
-		while (!joiningComplete) {
-			clientTui.showMessage("Waiting for join conformaton");
-			String serverMessage = readLineFromServer();
-			handleServerCommands(serverMessage);
-		}
-	}
+        sendMessage(ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize + ProtocolMessages.EOC);
+        while (!joiningComplete) {
+            clientTui.showMessage("Waiting for join conformaton");
+            String serverMessage = readLineFromServer();
+            handleServerCommands(serverMessage);
+        }
+    }
 
-	@Override
-	public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices)
-			throws ServerUnavailableException {
+    @Override
+    public void sendMove(String playerName, String direction, ArrayList<Integer> marbleIndices)
+            throws ServerUnavailableException {
 
-		if (yourTurn) {
-			if (gameStarted) {
-				ArrayList<Integer> convertIndexes = null;
-				try {
-					convertIndexes = clientBoard.protocolToIndex(marbleIndices);
-				} catch (BoardException e1) {
-					
-					System.out.println(e1.getMessage());
-				}
-				
-				ArrayList<Integer> allMoved = new ArrayList<>();
-				try {
-					allMoved = moveChecker.moveChecker(convertIndexes, direction);
-					ArrayList<Integer> protocolAll = new ArrayList<>();
-					protocolAll = clientBoard.indexToProtocol(allMoved);
-					String toSendMarbles = "";
-					for (int i = 0; i < protocolAll.size(); i++) {
-						toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
-						toSendMarbles = toSendMarbles + protocolAll.get(i);
-					}
-					sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName
-							+ ProtocolMessages.DELIMITER + direction + toSendMarbles + ProtocolMessages.EOC);
-				} catch (IllegalMoveException e) {
-					clientTui.showMessage(e.getMessage() + "please try again");
-				} catch (BoardException e) {
-					clientTui.showMessage(e.getMessage());
-				}
+        if (yourTurn) {
+            if (gameStarted) {
+                ArrayList<Integer> convertIndexes = null;
+                try {
+                    convertIndexes = clientBoard.protocolToIndex(marbleIndices);
+                } catch (BoardException e1) {
 
-			} else {
-				clientTui.showMessage("The game hasnt started yet");
-			}
+                    System.out.println(e1.getMessage());
+                }
 
-		} else {
-			clientTui.showMessage("It is not your turn, please wait");
-		}
+                ArrayList<Integer> allMoved = new ArrayList<>();
+                try {
+                    allMoved = moveChecker.moveChecker(convertIndexes, direction);
+                    ArrayList<Integer> protocolAll = new ArrayList<>();
+                    protocolAll = clientBoard.indexToProtocol(allMoved);
+                    String toSendMarbles = "";
+                    for (int i = 0; i < protocolAll.size(); i++) {
+                        toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
+                        toSendMarbles = toSendMarbles + protocolAll.get(i);
+                    }
+                    sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName
+                            + ProtocolMessages.DELIMITER + direction + toSendMarbles + ProtocolMessages.EOC);
+                } catch (IllegalMoveException e) {
+                    clientTui.showMessage(e.getMessage() + "please try again");
+                } catch (BoardException e) {
+                    clientTui.showMessage(e.getMessage());
+                }
 
-	}
+            } else {
+                clientTui.showMessage("The game hasnt started yet");
+            }
 
-	@Override
-	public void getCurrentQueueSizes() throws ServerUnavailableException {
+        } else {
+            clientTui.showMessage("It is not your turn, please wait");
+        }
 
-		sendMessage(ProtocolMessages.QUEUE_SIZE + ProtocolMessages.EOC);
-	}
+    }
 
-	@Override
-	public void sendExit() throws ServerUnavailableException {
-		sendMessage(ProtocolMessages.EXIT + ProtocolMessages.EOC);
+    @Override
+    public void getCurrentQueueSizes() throws ServerUnavailableException {
 
-	}
+        sendMessage(ProtocolMessages.QUEUE_SIZE + ProtocolMessages.EOC);
+    }
+
+    @Override
+    public void sendExit() throws ServerUnavailableException {
+        sendMessage(ProtocolMessages.EXIT + ProtocolMessages.EOC);
+
+    }
 
 }

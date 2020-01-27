@@ -25,7 +25,7 @@ public class Board {
     private Marble[][] fields;
 
     /**
-     * Little summary.
+     * The constructor of the board
      * 
      * @param players the amount of players
      */

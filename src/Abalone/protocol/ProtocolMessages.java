@@ -22,6 +22,11 @@ public class ProtocolMessages {
     public static final String GAME_FINISHED = "f";
     public static final String QUEUE_SIZE = "q";
     public static final String EXIT = "x";
+    public static final String BONUS = "b";
+    public static final String CHAT = "c";
+    
+    public static final String HELP = "h";
+    public static final String TIP = "t";
 
     /**
      * Used when indicating the direction of a move.

@@ -1,12 +1,17 @@
 package Abalone;
 
 import Abalone.Exceptions.BoardException;
-import Abalone.Exceptions.IllegalMoveException;
 import Abalone.Marble;
 import java.util.ArrayList;
-import java.util.Arrays;
+/**
+ * the board class of the Abalone project. Contains the board and can set moves. 
+ * Created on 17-01-2019. 
+ * @author Sam Freriks and Ayla van der Wal.
+ * @version 1.0
+ */
 
 public class Board {
+    //Initializes all the different marbles
     Marble death = Marble.Death;
     Marble white = Marble.White;
     Marble empty = Marble.Empty;
@@ -14,10 +19,12 @@ public class Board {
     Marble green = Marble.Green;
     Marble red = Marble.Red; 
 
+    //integers to keep the scores
     private int scoreBlack;
     private int scoreWhite;
     private int scoreRed;
     private int scoreGreen;
+    //amount of moves
     private int moves = 0;
     private static final int MaxMoves = 96;
     int playerCount = 0;
@@ -25,23 +32,27 @@ public class Board {
     private Marble[][] fields;
 
     /**
-     * The constructor of the board
-     * 
+     * The constructor of the board.
+     * Given the number of players the board will be constructed in the proper way. 
      * @param players the amount of players
+     * @requires the number of players to be 2, 3 or 4
      */
     public Board(int players) {
         if (players == 2) {
+            //A 2 player board will be created 
             initBoard2();
             this.playerCount = 2;
             this.scoreBlack = 0;
             this.scoreWhite = 0;
         } else if (players == 3) {
+            // a three player board will be created. 
             initBoard3();
             this.playerCount = 3;
             this.scoreBlack = 0;
             this.scoreWhite = 0;
             this.scoreRed = 0;
         } else if (players == 4) {
+            // a four player board will be created. 
             initBoard4();
             this.playerCount = 4;
             this.scoreBlack = 0;
@@ -49,25 +60,40 @@ public class Board {
             this.scoreRed = 0;
             this.scoreGreen = 0;
         } else {
+            //there is no board available for this amount of players
             System.out.println("NotValid the board cannot be initialized");
         }
 
     }
 
+    /**
+     * returns the amount of moves made.
+     * @return the moves as in Integer. 
+     * @ensures moves>= 0 
+     */
     public int getTurns() {
         return moves;
     }
 
+    /**
+     * returns the amount of maximum moves possible.
+     * @return the predefined maximum moves
+     */
     public int getMaxTurns() {
         return MaxMoves;
     }
 
+    /**
+     * get the number of players that are assigned to the board. 
+     * @return number of players
+     * @ensures  2 <= playerCount <= 4 
+     */
     public int getPlayerCount() {
         return playerCount;
     }
 
-    /** Initializes the board for a two player game, white on top and black on bottom.
-     * 
+    /** Initializes the board for a two player game, black on top and white on bottom.
+     * @ensures to set the fields in a proper way. 
      */
     private void initBoard2() {
         fields = new Marble[][] { { death, death, death, death, death, death, death, death, death, death, death }, // 0
@@ -85,7 +111,7 @@ public class Board {
 
     /** Initializes the board for a 3 player game, White on the left, black on the
      * right, and green at the bottom.
-     * 
+     * @ensures to set the fields in a proper way. 
      */
 
     private void initBoard3() {
@@ -105,7 +131,7 @@ public class Board {
 
     /**Initializes the board for a 4 player game, red top left, black top right,
      * white left bottom, green right bottom.
-     * 
+     * @ensures to set the field in a proper way. 
      */
     private void initBoard4() {
         fields = new Marble[][] { { death, death, death, death, death, death, death, death, death, death, death }, // 0
@@ -122,8 +148,9 @@ public class Board {
 
     }
 
-    /** Copies the board needs to be implemented.
-     * 
+    /** 
+     * copies the board. 
+     * @returns a new board with the same fields as this board. 
      */
     public Board deepCopy() {
         Board copy = new Board(playerCount);
@@ -134,10 +161,10 @@ public class Board {
         return copy;
     }
 
-    /** Given the row and the col, the index of the marble is returned.
+    /** Given the row and the column, the board model index of the marble is returned.
      * @param row of the board
      * @param col of the board
-     * @return
+     * @return the index according to the board model. 
      */
     public int getindex(int row, int col) {
         int place = 0;
@@ -147,9 +174,9 @@ public class Board {
     }
 
     /**
-     * given the index of the marble. the col is returned.
-     * @param index index of the board
-     * @return
+     * given the index of the marble according to the board model. the column is returned.
+     * @param index index of the board according to the board model 
+     * @return the number of the column. 
      */
     public int getCol(int index) {
         while (index >= 11) {
@@ -158,9 +185,9 @@ public class Board {
         return index;
     }
 
-    /** given the index of the marble, the row is returned.
+    /** given the index of the marble according to the board model, the row is returned.
      * @param index of the board
-     * @return
+     * @return the number of the row
      */
     public int getRow(int index) {
         int row = 0;
@@ -172,8 +199,9 @@ public class Board {
     }
 
     /** Places the given marble on the given index.
-     * @param index > 15 && index < 105
-     * @param marble != null
+     * @requires index > 15 && index < 105
+     * @param index the index according the board model 
+     * @param marble the color you want to set the index
      */
     public void setMarble(int index, Marble marble) {
         int row = getRow(index);
@@ -181,14 +209,21 @@ public class Board {
         setMarble(row, col, marble);
     }
 
+    /**
+     * sets the marble according the row and column and the marble. 
+     * @param row the wanted row
+     * @param col the wanted column
+     * @param marble the wanted marble. 
+     * @requires the row and column to be valid according to the board model. 
+     */
     public void setMarble(int row, int col, Marble marble) {
         fields[row][col] = marble;
     }
 
-    /** Converts the index to our own index system.
-     * @param index >= 0 && index < 61
-     * @requires to give a value from 0 up and uncluding 60
-     * @return returns the converted index
+    /** Converts the protocol index to our own index board model index.
+     * @param index of the protocol index
+     * @requires to give a value from 0 up and including 60
+     * @return returns the converted index 
      * @throws BoardException if index < 0 || index > 60
      */
     public int protocolToIndex(int index) throws BoardException {
@@ -203,9 +238,9 @@ public class Board {
 
     }
 
-    /** Returns an arraylist with the numbers from protocol to index.
-     * @param indexes of the protocol
-     * @return the arraylist of indexes of the game
+    /** Returns an ArrayList with the numbers from protocol indexes converted to the board model indexes.
+     * @param indexes according to the protocol. 
+     * @return the ArrayList of indexes of the board model
      * @throws BoardException when index is out of range
      */
     public ArrayList<Integer> protocolToIndex(ArrayList<Integer> indexes) throws BoardException {
@@ -216,9 +251,10 @@ public class Board {
         return toIndex;
     }
 
-    /** given the own coordinate index, returns the index given in the protocol.
-     * @param index > 15 && index < 105
-     * @throws BoardException if index is out of ranges
+    /** given board model index, returns the index according the protocol.
+     * @param index of the board model index
+     * @throws BoardException if index is not a valid board model index
+     * @requires the index to be a valid board model index.
      */
     public int indexToProtocol(int index) throws BoardException {
         int[] indexConverter = new int[] { 16, 17, 18, 19, 20, 26, 27, 28, 29, 30, 31, 36, 37, 38, 39, 40, 41, 42, 46,
@@ -235,10 +271,11 @@ public class Board {
         throw new BoardException("The index is out of range");
     }
 
-    /** given the own coordinate index, returns the index given in the protocol.
+    /** given board model index, returns the index given in the protocol.
      * @param indexes of the protocol
      * @return the indexes in the protocol that correspond with the indexes of the game
      * @throws BoardException when index is out of range
+     * @requires the indexes to be a valid board model index
      */
     public ArrayList<Integer> indexToProtocol(ArrayList<Integer> indexes) throws BoardException {
         ArrayList<Integer> toProtocol = new ArrayList<Integer>();
@@ -248,10 +285,12 @@ public class Board {
         return toProtocol;
     }
 
-    /** given the index of the marble, the state of the marble is returned The index.
-     * is our own index, not the protocol index
-     * @param index > 15 && index < 105
-     * @return
+    /** 
+     * given the index of the marble, the state of the marble is returned.
+     * The index needed is the board model index system
+     * @param index of the wanted marble
+     * @return the marble currently on this spot
+     * @requires the index to be a valid board model index
      */
     public Marble getMarble(int index) {
         int row = getRow(index);
@@ -262,10 +301,12 @@ public class Board {
         return null;
     }
 
-    /** given the row and the col, the state of the marble is returned.
+    /** 
+     * given the row and the column, the state of the marble is returned.
      * @param row on the board
      * @param col on the board
-     * @return
+     * @return the marble currently on this spot if row or column not on the board, the 
+     * @requires the column and row to be on the board
      */
     public Marble getMarble(int row, int col) {
         if (isValidField(row, col)) {
@@ -274,11 +315,11 @@ public class Board {
         return null;
     }
 
-    /** given two indexes, it checks whether the second index is the neighbour of the
-     * first index.
+    /** 
+     * given two indexes, it checks whether the second index is the neighbor of the first index.
      * @param index1 the first index
      * @param index2 the index to be checked
-     * @return true is the indexes are neighbours, else false
+     * @return true is the indexes are neighbors, else false 
      */
     public boolean isNeighbour(int index1, int index2) {
         int[] neighbours = getNeighbours(index1);
@@ -290,11 +331,11 @@ public class Board {
         return false;
     }
 
-    /** Given the index from our own index table, it will return an array with all
-     * the neighbouring indexes.
-     * @requires that the index given is between 16 and 104
+    /** 
+     * Given the index from our own index table, it will return an array with all the neighboring indexes.
+     * @requires that the index given is a valid board model index
      * @param index of the game
-     * @return
+     * @return an array with all the indexes of the neighbors of the parameter. 
      */
     public int[] getNeighbours(int index) {
         int[] neighbours = new int[6];
@@ -307,35 +348,66 @@ public class Board {
         return neighbours;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction east.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getEast(int index) {
         return index + 1;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction west.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getWest(int index) {
         index = index - 1;
         return index;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction NorthEast.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getNorthEast(int index) {
         return index - 10;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction NorthWest.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getNorthWest(int index) {
         return index - 11;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction SouthEast.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getSouthEast(int index) {
         return index + 11;
     }
 
+    /**
+     * Given the index, returns the index of the marble in direction SouthWest.
+     * @param index of the marble according to the board model. 
+     * @return the index of the neighbor.
+     */
     public int getSouthWest(int index) {
         return index + 10;
     }
 
-    /** Given the index and direction, returns the neighbour index in that direction.
-     * @param index on the board
-     * @param direction != null
+    /** Given the index and direction, returns the neighbor index in that direction.
+     * @param index of the board model index
+     * @param direction the direction you want
      * @throws BoardException when the direction does not exist
+     * @requires the direction to be a valid direction and the index to be a valid board model index
      */
     public int getNeighbour(int index, String direction) throws BoardException {
         switch (direction) {
@@ -358,33 +430,38 @@ public class Board {
 
     }
 
-    /** Checks if the field exists given the row and the col.
+    /** 
+     * Checks if the field exists given the row and the column.
      * @param row on the board
      * @param col on the board
-     * @return true if row < 11 && col < 11
+     * @return true if 0 >=row < 11 && 0>=col < 11
      */
     public boolean isValidField(int row, int col) {
-        if ((row < 11) && (col < 11)) {
-            return true;
+        if ((row >= 0 && row < 11) && (col >= 0 && col < 11)) {
+            return true;   
         }
         return false;
     }
 
-    /** checks if the given index has a valid field a field is valid if it exists on
+    /** 
+     * checks if the given index has a valid field a field is valid if it exists on
      * the board, this includes death states. the index used is our index index, not
      * the protocol index.
-     * @param index on the board
+     * @param index on the board according to the board model index
      */
-    public boolean isValidField(int index) {
+    public boolean isValidField(int index) { 
         int col = getCol(index);
         int row = getRow(index);
-        return isValidField(row, col);
+        return isValidField(row, col); 
     }
 
-    /** moves all indexes in the list to the given direction. true when the last neighbour == Death
+    /** 
+     * moves all indexes in the list to the given direction. 
      * @param indexes of the game
-     * @param direction != null
+     * @param direction the wanted direction
      * @throws BoardException when it is off the board 
+     * @returns true if a marble is pushed of the board, false if not
+     * @requires the index to be between 1 and 6 length.
      */
     public boolean move(ArrayList<Integer> indexes, String direction) throws BoardException {
         boolean scored = false;
@@ -399,14 +476,15 @@ public class Board {
             } else {
                 setMarble(getNeighbour(indexes.get(i), direction), placeholders.get(i));
             }
-
         }
         moves++;
         return scored;
     }
 
-    /** adds a +1 to the score of the given marble.
+    /** 
+     * adds a +1 to the score of the given marble.
      * @param marble that gets a score
+     * @requires a valid marble color
      */
     public void addScore(Marble marble) {
         if (marble == Marble.Black) {
@@ -423,10 +501,12 @@ public class Board {
         }
     }
 
-    /** Get the score of the given marble.
+    /** 
+     * Get the score of the given marble.
      * @param marble of which the score is needed
      * @return the score of the given marble
      * @throws BoardException if the marble doesn't exist
+     * @requires the Marble to be a valid color
      */
     public int getScore(Marble marble) throws BoardException {
         if (marble == Marble.Black) {
@@ -447,9 +527,11 @@ public class Board {
 
     }
 
-    /** Calculates the direction of the given marble to the centre.
-     * @param index on the board
-     * @return the direction towards the centre
+    /** Calculates the direction of the given marble to the center.
+     * @param index on the board according to the board model index
+     * @return the direction towards the center
+     * @requires the index to be a valid board model index
+     * @ensures to return the direction to the center
      */
     public String getDirectionToCenter(int index) {
         int row = getRow(index);
@@ -478,7 +560,9 @@ public class Board {
         }
     }
 
-    /** resets the board to the default state according to the amount of players.
+    /**
+     *  resets the board to the default state according to the amount of players.
+     *  @ensrues to reset the board to the default setting
      */
     public void reset() {
         switch (playerCount) {
@@ -496,7 +580,9 @@ public class Board {
         }
     }
 
-    /** returns the representation of the board as a string.
+    /** 
+     * returns the representation of the board as a string.
+     * @return A string with the board representation of the up to date board
      */
     public String toString() {
         String s = "";

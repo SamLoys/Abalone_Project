@@ -9,6 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The game class, keeps track of the game and can move marble
+ * Created on 17-01-2019. 
+ * @author Sam Freriks and Ayla van der Wal.
+ * @version 1.0
+ */
 public class Game {
 
     private Board board;
@@ -22,11 +28,13 @@ public class Game {
     HashMap<String, MoveCheck> checkmap;
     HashMap<String, Marble> marbleMap;
 
-    /** Javadoc. what is going on.
-     * @param amountplayers Javadoc.
-     * @param srv Javadoc.
-     * @param player1Name Javadoc.
-     * @param player2Name Javadoc.
+    /** 
+     * Constructor of the game, make a new game with the number of players, server, names of the players.
+     * @param amountplayers the amount of players
+     * @param srv the server connected to this game
+     * @param player1Name name of the first player
+     * @param player2Name name of the second player
+     * @ensures the set the parameter accordingly
      */
     public Game(int amountplayers, AbaloneServer srv, String player1Name, String player2Name) {
         board = new Board(amountplayers);
@@ -46,15 +54,17 @@ public class Game {
         
     }
 
-    /** Javadoc.
-     * @param players Javadoc.
-     * @param srv Javadoc.
-     * @param player1Name Javadoc.
-     * @param player2Name Javadoc.
-     * @param player3Name Javadoc.
+    /** 
+     * Constructor of the game, make a new game with the number of players, server, names of the players.
+     * @param amountplayers the amount of players
+     * @param srv the server connected to this game
+     * @param player1Name name of the first player
+     * @param player2Name name of the second player
+     * @param player3Name name of the third player
+     * @ensures the set the parameter accordingly
      */
-    public Game(int players, AbaloneServer srv, String player1Name, String player2Name, String player3Name) {
-        board = new Board(players);
+    public Game(int amountplayers, AbaloneServer srv, String player1Name, String player2Name, String player3Name) {
+        board = new Board(amountplayers);
         playerNames = new String[3];
         playerNames[0] = player1Name;
         playerNames[1] = player2Name;
@@ -74,17 +84,19 @@ public class Game {
         
     }
 
-    /** Javadoc.
-     * @param players Javadoc.
-     * @param srv Javadoc.
-     * @param player1Name Javadoc.
-     * @param player2Name Javadoc.
-     * @param player3Name Javadoc.
-     * @param player4Name Javadoc.
+    /** 
+     * Constructor of the game, make a new game with the number of players, server, names of the players.
+     * @param amountplayers the amount of players
+     * @param srv the server connected to this game
+     * @param player1Name name of the first player
+     * @param player2Name name of the second player
+     * @param player3Name name of the third player
+     * @param player4Name name of the fourth player
+     * @ensures the set the parameter accordingly
      */
-    public Game(int players, AbaloneServer srv, String player1Name, String player2Name, String player3Name,
-            String player4Name) {
-        board = new Board(players);
+    public Game(int amountplayers, AbaloneServer srv, String player1Name, String player2Name, String player3Name,
+            String player4Name) { 
+        board = new Board(amountplayers); 
         playerNames = new String[4];
         playerNames[0] = player1Name;
         playerNames[2] = player2Name;
@@ -107,24 +119,29 @@ public class Game {
         
     }
     
-    /** Javadoc.
+    /**
+     * calls the reset method on the board object.
      */
     public void reset() {
         board.reset();
         
     }
 
-    /** Javadoc.
-     * @throws BoardException Javadoc.
-     * @throws IOException Javadoc.
-     * @throws ClientUnavailableException Javadoc.
+    /**
+     * checks if a player /team has reached the score limit, if it is reached, the game finished message will be send.
+     * to all the player. 
+     * @throws BoardException exception if the board encounters an error
+     * @throws IOException exception if the IO encounters an error
+     * @throws ClientUnavailableException Exception if the client is not available
      */
     public void checkScore() throws BoardException, IOException, ClientUnavailableException {
         int scoreteam1;
         int scoreteam2;
         int scoreteam3;
         if (moves < maxMoves && finished == false) {
+            //first check if the maximumMoves is reached
             switch (gameSize) {
+                //is the game consists of two players
                 case 2:
                     scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
                     scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
@@ -132,89 +149,113 @@ public class Game {
                     System.out.println("score team 2: " + scoreteam2);
                     System.out.print("moves: " + moves);
                     if (scoreteam1 == scoreLimit) {
+                        //limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
-                                + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" 
-                                + ProtocolMessages.EOC;
+                                + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
+                                + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished to the players
                         srv.multipleSend(msg, playerNames);
+                        //remove the game
                         srv.removeGame(this);
                         
                     } else if (scoreteam2 == scoreLimit) {
+                        //score limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished to the players
                         srv.multipleSend(msg, playerNames);
+                        //remove the game
                         srv.removeGame(this);
                         
                     }
                     break;
+                //if the game consist of three players    
                 case 3:
                     scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
                     scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
                     scoreteam3 = board.getScore(marbleMap.get(playerNames[2]));
                     if (scoreteam1 == scoreLimit) {
+                        //limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove the game
                         srv.removeGame(this);
                         // player 1 wins
                         
                     } else if (scoreteam2 == scoreLimit) {
+                        //score limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove the game
                         srv.removeGame(this);
                         // player 2 wins
                         
                     } else if (scoreteam3 == scoreLimit) {
+                        //limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
-                                + "2" + ProtocolMessages.EOC;
+                                + "3" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove the game
                         srv.removeGame(this);
                         // player 2 wins
                         
                     }
                     break;
+                //if the game consist of four players
                 case 4:
                     scoreteam1 = board.getScore(marbleMap.get(playerNames[0]))
                         + board.getScore(marbleMap.get(playerNames[2]));
                     scoreteam2 = board.getScore(marbleMap.get(playerNames[1]))
                             + board.getScore(marbleMap.get(playerNames[3]));
                     if (scoreteam1 == scoreLimit) {
+                        //score limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove this game
                         srv.removeGame(this);
-                        // player 1 wins
+                        // team 1 wins
                         
                     } else if (scoreteam2 == scoreLimit) {
+                        //limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove this game
                         srv.removeGame(this);
                         // player 2 wins
                         
                     }
                     break;
                 default:
+                    //should never happen, game is always a size of 2 , 3 or 4.
                     break;
                     
             }
             
         }
-        
-        if (moves >= maxMoves) {
+        // if the moves made is bigger or equal as the max moves, and the finished is not yet true.
+        if (moves >= maxMoves && finished == false) {
             switch (gameSize) {
                 case 2:
                     scoreteam1 = board.getScore(marbleMap.get(playerNames[0]));
@@ -224,23 +265,31 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.DRAW + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     } else if (scoreteam1 > scoreteam2) {
+                        //team one won
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         // player 1 wins
                         
                     } else if (scoreteam1 < scoreteam2) {
+                        //team 2 wins
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER 
                                 + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         // player 2 wins
                         
@@ -255,14 +304,18 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.DRAW + ProtocolMessages.EOC;
                         finished = true;
+                        //send message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     } else if (scoreteam1 > scoreteam2 && scoreteam1 > scoreteam3) {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         // player 1 wins
                         
@@ -270,7 +323,9 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         // player 2 wins
                         
@@ -278,14 +333,18 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "3" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     } else {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.DRAW + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     }
@@ -299,7 +358,9 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                                 + ProtocolMessages.GameResult.DRAW + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     }
@@ -308,7 +369,9 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "1" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     }
@@ -316,7 +379,9 @@ public class Game {
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER
                             + ProtocolMessages.GameResult.WIN + ProtocolMessages.DELIMITER + "2" + ProtocolMessages.EOC;
                         finished = true;
+                        //send finished message
                         srv.multipleSend(msg, playerNames);
+                        //remove game
                         srv.removeGame(this);
                         
                     }
@@ -330,14 +395,15 @@ public class Game {
         
     }
 
-    /** Javadoc.
-     * @param name Javadoc.
-     * @param direction Javadoc.
-     * @param indexes Javadoc.
-     * @return Javadoc.
-     * @throws IOException Javadoc.
-     * @throws ClientUnavailableException Javadoc.
-     * @throws BoardException Javadoc.
+    /**
+     * Will check if the player is on turn and check if the move is valid, will move if both true. 
+     * @param name of the players
+     * @param direction direction of the wanted move
+     * @param indexes of all the marbles moving
+     * @return returns "move accepted" if the move is valid otherwise return exception
+     * @throws IOException exception if the IO gets an error.
+     * @throws ClientUnavailableException exception if the client is not available
+     * @throws BoardException exception is there is an error on the board
      */
     public synchronized String addMove(String name, String direction, ArrayList<Integer> indexes)
             throws IOException, ClientUnavailableException, BoardException {
@@ -345,41 +411,60 @@ public class Game {
         ArrayList<Integer> newIndexes = new ArrayList<>();
         ArrayList<Integer> totalMove = new ArrayList<>();
         ArrayList<Integer> totalMoveToProtocol = new ArrayList<Integer>();
+        //check if it is the turn of the player and the game is not yet finished
         if (name.equals(getNextPlayer()) && finished == false) {
+            //convert the protocol indexes to the board model indexes
             newIndexes = board.protocolToIndex(indexes);
             try {
+                //check if the indexes pass the moveCheck, it will return all the marble with the move if valid
                 totalMove = checkmap.get(name).moveChecker(newIndexes, direction);
-                //this is the return 
+                //get a return if the move is invalid
             } catch (IllegalMoveException e) {
                 return e.getMessage();
+                //return the exception of the move check, this will be send back to the client. 
                 
             }
             boolean scores = false;
             try {
+                //actually move the marbles on the board, move is checked above
                 scores = board.move(totalMove, direction);
+                //scores will become true if the move pushed a marble off. 
         
             } catch (BoardException e) {
+                //because the move is already check this should not happen but just in case this will be send 
+                //back to the client
                 return e.getMessage();
                 
             }
             if (scores) {
+                //increase the score in the board if a player has pushed a marble off. 
                 board.addScore(marbleMap.get(name));
                 
             }
+            //update the amount of moves by getting the amount of turn from the board.
             moves = board.getTurns();
+            //convert the board index model back to protocol indexes
             totalMoveToProtocol = board.indexToProtocol(totalMove);
+            //get the next player
             String nextplayer = getNextPlayer();
+            //construct a message with the next player
             String message = srv.handlePlayerMove(nextplayer);
             String indexesString = "";
+            //convert the ArrayList of indexes to a string in the proper way
             for (int i : totalMoveToProtocol) {
                 indexesString = indexesString + ProtocolMessages.DELIMITER;
                 indexesString = indexesString + i;
                 
             }
+            //append the indexes to the constructed message
             message = message + name + ProtocolMessages.DELIMITER + direction + indexesString + ProtocolMessages.EOC;
+            //send the message to all the players inside this game
             srv.multipleSend(message, playerNames);
+            //check if the game should end
             checkScore();
-            return "good";
+            //return that the move is accepted and moved, in this game the clientHandler knows the move
+            //did not had an exception
+            return "move accepted"; 
         } else {
             return "not your turn";
             
@@ -387,8 +472,9 @@ public class Game {
         
     }
 
-    /** Javadoc.
-     * @return Javadoc.
+    /**
+     * return next player, the order made in the constructor is kept.
+     * @return the name of the players that is next in turn.
      */
     public String getNextPlayer() {
         //normal order
@@ -398,12 +484,12 @@ public class Game {
             
         }
         return playerNames[tempmoves];
-        //different order with 4 players, 1 - 3 - 2 -4 , because 1 and 2 are in a team and 2 and 3 are in a team
-        
+        //it goes like [0]  - [1] - [2] - [3] repeat
     }
     
-    /** Javadoc.
-     * * @return Javadoc.
+    /**
+     * get all players in this game.
+     * @return an array with all the players connected to this game
      */
     public String[] getPlayers() {
         return playerNames;

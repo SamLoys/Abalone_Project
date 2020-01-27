@@ -165,7 +165,7 @@ public class AbaloneClientHandler implements Runnable {
                         System.out.println(e.getMessage());
                     }
 
-                    if (!error.equals("good")) {
+                    if (!error.equals("move accepted")) {
                         System.out.println("> [" + clientName + "] Exception: " + error);
                         sendIllegalMoveException(error);
                     }

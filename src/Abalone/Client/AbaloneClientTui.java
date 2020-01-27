@@ -1,5 +1,9 @@
 package Abalone.Client;
 
+import Abalone.Directions;
+import Abalone.Exceptions.ExitProgram;
+import Abalone.Exceptions.ServerUnavailableException;
+import Abalone.protocol.ProtocolMessages;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -11,9 +15,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import Abalone.Directions;
-import Abalone.Exceptions.*;
-import Abalone.protocol.ProtocolMessages;
+/**
+ * The Abalone Client Tui, this will read the user console input
+ * Created on 17-01-2019. 
+ * @author Sam Freriks and Ayla van der Wal.
+ * @version 1.0
+ */
 
 public class AbaloneClientTui implements Runnable {
     AbaloneClient client;
@@ -21,8 +28,9 @@ public class AbaloneClientTui implements Runnable {
     private BufferedReader consoleIN;
     boolean looping = true;
     
-    /** Javadoc.
-     * @param client Javadoc.
+    /**
+     * constructor of the Tui, will set the client and create and input and output stream.
+     * @param client the Tui needs to be connected to
      */
     public AbaloneClientTui(AbaloneClient client) {
         this.client = client;
@@ -30,7 +38,8 @@ public class AbaloneClientTui implements Runnable {
         consoleIN = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    /** Javadoc.
+    /**
+     * Stop the Tui thread, needs to be called when the client will stop.
      */
     public void stopThread() {
         looping = false;
@@ -40,16 +49,18 @@ public class AbaloneClientTui implements Runnable {
             Robot robot = new Robot();
             robot.keyPress(KeyEvent.VK_ENTER);
             robot.keyRelease(KeyEvent.VK_ENTER);
+            //the robot will press enter to get the 
             System.out.println("The TUI has teminated");
         } catch (IOException e) {
-            System.out.println("Error closing consonle IN");
+            System.out.println("Error closing in or out");
         } catch (AWTException e) {
-            e.printStackTrace();
-        }
+            System.out.println(e.getMessage());
+        } 
 
     }
     
-    /** Javadoc.
+    /**
+     * keeps reading the client Tui. 
      */
     public void run() {
         boolean looping = true;
@@ -58,18 +69,30 @@ public class AbaloneClientTui implements Runnable {
             try {
                 input = consoleIN.readLine();
                 handleUserInput(input);
-            } catch (Exception e) {
+            } catch (ServerUnavailableException e) {
+                System.out.println(e.getMessage());
                 looping = false;
-                // client.sendExit();
-                System.out.println("Closed");
+                stopThread();
+                
+            } catch (IOException e) {
+                System.out.println("IO exception, stopping TUI");
+                System.out.println(e.getMessage());
+                looping = false;
+                stopThread();
+                
+            } catch (ExitProgram e) {
+                System.out.println("Exit program, stopping TUI");
+                looping = false;
+                stopThread();
             }
         }
     }
     
-    /** Javadoc.
-     * @param input Javadoc.
-     * @throws ExitProgram Javadoc.
-     * @throws ServerUnavailableException Javadoc.
+    /**
+     * handles the command of the user.
+     * @param input command of the user
+     * @throws ExitProgram exception if the 
+     * @throws ServerUnavailableException if the server cannot be reached
      */
     public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
         if (!input.equals("")) {
@@ -78,9 +101,10 @@ public class AbaloneClientTui implements Runnable {
 
             ArrayList<Integer> marbles = new ArrayList<>();
             switch (command) {
-
+                //move 
                 case ProtocolMessages.MOVE:
                     if (userInput.length < 3) {
+                        //check if the move is valid
                         showMessage("Invalid command please try again");
                         printHelpMenu();
                         break;
@@ -95,7 +119,7 @@ public class AbaloneClientTui implements Runnable {
                             }
      
                         }
-     
+                        //send the move to the server
                         client.sendMove(client.getName(), userInput[1], marbles);
                         break;
                     } else {
@@ -108,8 +132,8 @@ public class AbaloneClientTui implements Runnable {
                     client.getCurrentQueueSizes();
                     break;
      
-                case "c":
-     
+                case ProtocolMessages.CHAT:
+                    //send chat
                     if (userInput.length > 1) {
                         String fullmessage = "";
                         for (int i = 1; i < userInput.length; i++) {
@@ -125,10 +149,10 @@ public class AbaloneClientTui implements Runnable {
                     client.closeConnection();
                     stopThread();
                     break;
-                case "h":
+                case ProtocolMessages.HELP:
                     printHelpMenu();
                     break;
-                case "t":
+                case ProtocolMessages.TIP:
                     String hint = client.getHint();
                     showMessage(hint);
                     break;
@@ -140,7 +164,8 @@ public class AbaloneClientTui implements Runnable {
         }
     }
     
-    /** Javadoc.
+    /**
+     * prints the helpmenu. 
      */
     public void printHelpMenu() {
         String helpmenu = "HELP MENU \n" + "To move a marble type <m><direction><marbles>" + "For example, <m r 2 3> \n"
@@ -151,9 +176,11 @@ public class AbaloneClientTui implements Runnable {
         showMessage(helpmenu);
     }
     
-    /** Ask the user to input a valid IP. If it is not valid, show a message and ask
+    /** 
+     * Ask the user to input a valid IP. If it is not valid, show a message and ask
      * again.
-     * @return Javadoc.
+     * @return A valid ip adress
+     * @ensures to keep asking until a valid ip is filled in
      */
     public InetAddress getIp() {
         BufferedReader inputIn = new BufferedReader(new InputStreamReader(System.in));
@@ -163,10 +190,9 @@ public class AbaloneClientTui implements Runnable {
             try {
                 ip = inputIn.readLine();
             } catch (IOException e) {
-
                 e.printStackTrace();
             }
-
+            //should match this REGEX otherwise it is not an ip. 
             if (ip.matches(
                     "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|"
                     + "1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
@@ -183,9 +209,11 @@ public class AbaloneClientTui implements Runnable {
 
     }
     
-    /** Javadoc.
-     * @param question Javadoc.
-     * @return Javadoc.
+    /**
+     * given a question return a integer.
+     * @param question the wanted question
+     * @return a integer for the answer
+     * @ensures to return a valid integer, otherwise asks again
      */
     public int getInt(String question) {
         showMessage(question);
@@ -208,11 +236,13 @@ public class AbaloneClientTui implements Runnable {
         return answerInt;
     }
     
-    /** Javadoc.
-     * @param question Javadoc.
-     * @param lowend Javadoc.
-     * @param highend Javadoc.
-     * @return
+    /**
+     * given a question return a integer.
+     * @param question the wanted question
+     * @param lowend the low end of the range
+     * @param highend the high end of the range
+     * @return a integer for the answer
+     * @ensures to return a valid integer, otherwise asks again
      */
     public int getInt(String question, int lowend, int highend) {
         showMessage(question);
@@ -241,9 +271,11 @@ public class AbaloneClientTui implements Runnable {
 
     }
     
-    /** Javadoc.
-     * @param question Javadoc.
-     * @return Javadoc.
+    /**
+     * returns a string as answer to the given question. 
+     * @param question the question
+     * @return a string as answer
+     * @ensures to return a string as answer
      */
     public String getString(String question) {
         while (true) {
@@ -265,9 +297,11 @@ public class AbaloneClientTui implements Runnable {
 
     }
     
-    /** Javadoc.
-     * @param question Javadoc.
-     * @return Javadoc.
+    /**
+     * asks the user name the clients want.
+     * @param question to ask
+     * @return a valid username
+     * @ensures to keep asking 
      */
     public String getUserName(String question) {
         while (true) {
@@ -290,9 +324,11 @@ public class AbaloneClientTui implements Runnable {
 
     }
     
-    /** Javadoc.
-     * @param question Javadoc.
-     * @return Javadoc.
+    /**
+     * returns a boolean for the given question.
+     * @param question the wanted question
+     * @return a boolean for the answer
+     * @ensures to keep asking until a valid boolean is typed in.
      */
     public boolean getBool(String question) {
         showMessage(question);
@@ -316,6 +352,10 @@ public class AbaloneClientTui implements Runnable {
         }
     }
 
+    /**
+     * prints the message in the console.
+     * @param message the message
+     */
     public void showMessage(String message) {
         consoleOut.println(message);
     }

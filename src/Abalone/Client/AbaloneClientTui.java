@@ -15,7 +15,7 @@ import Abalone.Directions;
 import Abalone.Exceptions.*;
 import Abalone.protocol.ProtocolMessages;
 
-public class AbaloneClientTUI implements Runnable {
+public class AbaloneClientTui implements Runnable {
     AbaloneClient client;
     private PrintWriter consoleOut;
     private BufferedReader consoleIN;
@@ -24,7 +24,7 @@ public class AbaloneClientTUI implements Runnable {
     /** Javadoc.
      * @param client Javadoc.
      */
-    public AbaloneClientTUI(AbaloneClient client) {
+    public AbaloneClientTui(AbaloneClient client) {
         this.client = client;
         consoleOut = new PrintWriter(System.out, true);
         consoleIN = new BufferedReader(new InputStreamReader(System.in));

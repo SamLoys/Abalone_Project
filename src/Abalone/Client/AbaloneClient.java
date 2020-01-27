@@ -32,7 +32,7 @@ public class AbaloneClient implements ClientProtocol {
     private Socket sock;
     private BufferedReader networkIN;
     private BufferedWriter networkOut;
-    private AbaloneClientTUI clientTui;
+    private AbaloneClientTui clientTui;
     private String name;
     private Marble color;
     private boolean clientSupportChatting = true;
@@ -82,7 +82,7 @@ public class AbaloneClient implements ClientProtocol {
     /** Javadoc.
      */
     public AbaloneClient() {
-        this.clientTui = new AbaloneClientTUI(this);
+        this.clientTui = new AbaloneClientTui(this);
         handshakeComplete = false;
         joiningComplete = false;
         gameSize = 0;

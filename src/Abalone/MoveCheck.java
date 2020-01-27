@@ -381,115 +381,143 @@ public class MoveCheck {
         
     }
 
-	// Checks if the given values are on the board
-	public boolean isOnBoard(ArrayList<Integer> index) {
-		for (int i : index) {
-			if (!(15 < i && i < 105)) {
-				return false;
-			}
-		}
-		return true;
-	}
 
-	/**
-	 * Checks if the given 2 or 3 indexes make a straight move. If not, it is a side
-	 * move.
-	 * 
-	 * @requires array length to be at least 2
-	 * @param index
-	 * @param direction
-	 * @return
-	 */
-	public boolean isStraightMove(ArrayList<Integer> index, String direction) {
-		int givenOrientation = getOrientation(direction);
-		int indexOrientation = getOrientation(getDirection(index.get(0), index.get(1)));
-		if (givenOrientation == indexOrientation) {
-			return true;
-		}
-		return false;
-	}
+    /** Javadoc.
+     * @param index Javadoc.
+     * @return Javadoc.
+     */
+    public boolean isOnBoard(ArrayList<Integer> index) {
+        for (int i : index) {
+            if (!(15 < i && i < 105)) {
+                return false;
+                
+            }
+            
+        }
+        return true;
+        
+    }
 
-	// Reverses the list to get the front marble on index 0 for the direction west,
-	// northwest or northeast
-	public ArrayList<Integer> flipList(ArrayList<Integer> index, String direction) {
-		if (direction.equals(Directions.west) || direction.equals(Directions.northWest)
-				|| direction.equals(Directions.northEast)) {
-			Collections.sort(index, Collections.reverseOrder());
-		}
-		return index;
-	}
+    /** Checks if the given 2 or 3 indexes make a straight move. If not, it is a side
+     * move.
+     * @param index Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     */
+    public boolean isStraightMove(ArrayList<Integer> index, String direction) {
+        int givenOrientation = getOrientation(direction);
+        int indexOrientation = getOrientation(getDirection(index.get(0), index.get(1)));
+        if (givenOrientation == indexOrientation) {
+            return true;
+            
+        }
+        return false;
+        
+    }
 
-	/**
-	 * get the orientation of the given direction
-	 * 
-	 * @return 1 if orientation is NW or SE 2 if orientation is NE or SW 3 if
-	 *         orientation is E or W if something goes wrong return 9999
-	 */
-	public int getOrientation(String direction) {
-		if (direction.equals(Directions.west) || direction.equals(Directions.east)) {
-			return 3;
-		}
-		if (direction.equals(Directions.northEast) || direction.equals(Directions.southWest)) {
-			return 2;
-		}
-		if (direction.equals(Directions.southEast) || direction.equals(Directions.northWest)) {
-			return 1;
-		}
-		return 9999;
-	}
+    /** Reverses the list to get the front marble on index 0 for the direction west, northwest or northeast. 
+     * @param index Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     */
+    public ArrayList<Integer> flipList(ArrayList<Integer> index, String direction) {
+        if (direction.equals(Directions.west) || direction.equals(Directions.northWest)
+                || direction.equals(Directions.northEast)) {
+            Collections.sort(index, Collections.reverseOrder());
+            
+        }
+        return index;
+        
+    }
 
-	public boolean isValidSideStep(ArrayList<Integer> index, String direction) {
-		Marble[] marble = new Marble[index.size()];
-		int number = 0;
-		for (int i : index) {
-			marble[number] = board.getMarble(getNeighbourIndex(i, direction));
-			number++;
-		}
-		for (Marble m : marble) {
-			if (!(m == Marble.Empty)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @requires the two indexes to be neighbours
-	 * @param i1
-	 * @param i2
-	 * @return
-	 */
-	public String getDirection(int i1, int i2) {
-		if (getWest(i1) == i2) {
-			return Directions.west;
-		} else if (getEast(i1) == i2) {
-			return Directions.east;
-		} else if (getNorthWest(i1) == i2) {
-			return Directions.northWest;
-		} else if (getNorthEast(i1) == i2) {
-			return Directions.northEast;
-		} else if (getSouthWest(i1) == i2) {
-			return Directions.southWest;
-		} else if (getSouthEast(i1) == i2) {
-			return Directions.southEast;
-		} else {
-			return "";
-		}
-	}
+    /** 1 if orientation is NW or SE 2 if orientation is NE or SW 3 if
+     * orientation is E or W if something goes wrong return 9999.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     */
+    public int getOrientation(String direction) {
+        if (direction.equals(Directions.west) || direction.equals(Directions.east)) {
+            return 3;
+            
+        }
+        if (direction.equals(Directions.northEast) || direction.equals(Directions.southWest)) {
+            return 2;
+            
+        }
+        if (direction.equals(Directions.southEast) || direction.equals(Directions.northWest)) {
+            return 1;
+            
+        }
+        return 9999;
+        
+    }
+    
+    /** Javadoc.
+     * @param index Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     */
+    public boolean isValidSideStep(ArrayList<Integer> index, String direction) {
+        Marble[] marble = new Marble[index.size()];
+        int number = 0;
+        for (int i : index) {
+            marble[number] = board.getMarble(getNeighbourIndex(i, direction));
+            number++;
+            
+        }
+        for (Marble m : marble) {
+            if (!(m == Marble.Empty)) {
+                return false;
+                
+            }
+          
+        }
+        return true;
+        
+    }
+    
+    /** Javadoc.
+     * @param i1 Javadoc.
+     * @param i2 Javadoc.
+     * @return Javadoc.
+     */
+    public String getDirection(int i1, int i2) {
+        if (getWest(i1) == i2) {
+            return Directions.west;
+        } else if (getEast(i1) == i2) {
+            return Directions.east;
+        } else if (getNorthWest(i1) == i2) {
+            return Directions.northWest;
+        } else if (getNorthEast(i1) == i2) {
+            return Directions.northEast;
+        } else if (getSouthWest(i1) == i2) {
+            return Directions.southWest;
+        } else if (getSouthEast(i1) == i2) {
+            return Directions.southEast;
+        } else {
+            return "";
+            
+        }
+        
+    }
 	
-
-	public int getNeighbourIndex(int i, String direction) {
-		switch (direction) {
-		case Directions.west:
-			i = i - 1;
-			return i;
-		case Directions.east:
-			i = i + 1;
-			return i;
-		case Directions.northWest:
-			i = i - 11;
-			return i;
-		case Directions.northEast:
+    /** Javadoc.
+     * @param i Javadoc.
+     * @param direction Javadoc.
+     * @return Javadoc.
+     */
+    public int getNeighbourIndex(int i, String direction) {
+        switch (direction) {
+            case Directions.west:
+                i = i - 1;
+                return i;
+            case Directions.east:
+                i = i + 1;
+                return i;
+            case Directions.northWest:
+                i = i - 11;
+                return i;
+            case Directions.northEast:
 			i = i - 10;
 			return i;
 		case Directions.southWest:
@@ -498,6 +526,8 @@ public class MoveCheck {
 		case Directions.southEast:
 			i = i + 11;
 			return i;
+		default: 
+		    break;
 		}
 		return 9999;
 

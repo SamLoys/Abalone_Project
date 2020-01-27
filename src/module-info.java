@@ -1,9 +1,9 @@
 module abalone_project {
-	exports Abalone.Exceptions;
-	exports Abalone;
-	exports Abalone.Server;
-	exports Abalone.Client;
-	exports Abalone.protocol;
+	exports abalone.exceptions;
+	exports abalone;
+	exports abalone.server;
+	exports abalone.client;
+	exports abalone.protocol;
 	exports Testing;
 
 	requires java.desktop;

@@ -1,5 +1,11 @@
-package Abalone.Server;
+package abalone.server;
 
+import abalone.Game;
+import abalone.Marble;
+import abalone.exceptions.ClientUnavailableException;
+import abalone.exceptions.ExitProgram;
+import abalone.protocol.ProtocolMessages;
+import abalone.protocol.ServerProtocol;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -7,12 +13,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import Abalone.*;
-import Abalone.Exceptions.ClientUnavailableException;
-import Abalone.Exceptions.ExitProgram;
-import Abalone.protocol.ProtocolMessages;
-import Abalone.protocol.ServerProtocol;
 
 public class AbaloneServer implements ServerProtocol, Runnable {
 

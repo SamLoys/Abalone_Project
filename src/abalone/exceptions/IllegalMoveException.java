@@ -1,4 +1,4 @@
-package Abalone.Exceptions;
+package abalone.exceptions;
 
 public class IllegalMoveException extends Exception {
 

@@ -1,19 +1,16 @@
-package Abalone.Client;
+package abalone.client;
 
-import Abalone.Audiopack.Audio;
-import Abalone.Board;
-import Abalone.Exceptions.BoardException;
-import Abalone.Exceptions.ExitProgram;
-import Abalone.Exceptions.IllegalMoveException;
-import Abalone.Exceptions.ServerUnavailableException;
-import Abalone.Marble;
-import Abalone.MoveCheck;
-import Abalone.SmartyAI;
-import Abalone.protocol.ClientProtocol;
-import Abalone.protocol.ProtocolMessages;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
+import abalone.Board;
+import abalone.Marble;
+import abalone.MoveCheck;
+import abalone.SmartyAI;
+import abalone.audiopack.Audio;
+import abalone.exceptions.BoardException;
+import abalone.exceptions.ExitProgram;
+import abalone.exceptions.IllegalMoveException;
+import abalone.exceptions.ServerUnavailableException;
+import abalone.protocol.ClientProtocol;
+import abalone.protocol.ProtocolMessages;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,8 +39,8 @@ public class AbaloneClient implements ClientProtocol {
     private boolean clientSupportChallenge = false;
     private boolean clientSupportLeaderboard = false;
     private boolean serverSupportChatting = false;
-    private boolean serverSupportChallenge = false;
-    private boolean serverSupportLeaderboard = false; 
+    //    private boolean serverSupportChallenge = false;
+    //    private boolean serverSupportLeaderboard = false; 
     private boolean handshakeComplete = false;
     private boolean joiningComplete = false;
     private int gameSize = 0;
@@ -306,8 +303,8 @@ public class AbaloneClient implements ClientProtocol {
                     if (inputSrv.length > 3) {
                         //hello message from server
                         serverSupportChatting = Integer.parseInt(inputSrv[1]) == 1 ? true : false;
-                        serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
-                        serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
+                        //serverSupportChallenge = Integer.parseInt(inputSrv[2]) == 1 ? true : false;
+                        //serverSupportLeaderboard = Integer.parseInt(inputSrv[3]) == 1 ? true : false;
                         //set the name to the name the server assigns to the user
                         this.name = inputSrv[4];
                         clientTui.showMessage("The server has assigned you as the following name: " + name);

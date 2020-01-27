@@ -1,5 +1,12 @@
-package Abalone.Server;
+package abalone.server;
 
+
+import abalone.Game;
+import abalone.Marble;
+import abalone.exceptions.BoardException;
+import abalone.exceptions.ClientUnavailableException;
+import abalone.protocol.ProtocolMessages;
+import abalone.protocol.ProtocolMessages.Directions;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -7,14 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import Abalone.Game;
-import Abalone.Marble;
-import Abalone.Exceptions.BoardException;
-import Abalone.Exceptions.ClientUnavailableException;
-import Abalone.Exceptions.ServerUnavailableException;
-import Abalone.protocol.ProtocolMessages;
-import Abalone.protocol.ProtocolMessages.Directions;
 
 public class AbaloneClientHandler implements Runnable {
 
@@ -24,9 +23,9 @@ public class AbaloneClientHandler implements Runnable {
 
     private Game currentGame;
 
-    private int clientSupportChatting = 0;
-    private int clientSupportChallenge = 0;
-    private int clientSupportLeaderboard = 0;
+    //    private int clientSupportChatting = 0;
+    //    private int clientSupportChallenge = 0;
+    //    private int clientSupportLeaderboard = 0;
     private Marble color;
 
     
@@ -120,9 +119,9 @@ public class AbaloneClientHandler implements Runnable {
 
         switch (command) {
             case ProtocolMessages.HELLO:
-                clientSupportChatting = Integer.parseInt(inputSrv[1]);
-                clientSupportChallenge = Integer.parseInt(inputSrv[2]);
-                clientSupportLeaderboard = Integer.parseInt(inputSrv[3]);
+                //clientSupportChatting = Integer.parseInt(inputSrv[1]);
+                //clientSupportChallenge = Integer.parseInt(inputSrv[2]);
+                //clientSupportLeaderboard = Integer.parseInt(inputSrv[3]);
                 boolean[] supports = srv.getSupports();
 
                 String response = srv.handleHello(inputSrv[4], supports[0], supports[1], supports[2]);
@@ -188,11 +187,10 @@ public class AbaloneClientHandler implements Runnable {
                 shutdown();
                 break;
           
-            case "b":
-                if (inputSrv[1].contentEquals("c")) {
+            case ProtocolMessages.BONUS:
+                if (inputSrv[1].contentEquals(ProtocolMessages.CHAT)) {
                     if (inputSrv.length > 3) {
                         String message = "b;c;" + clientName + ProtocolMessages.DELIMITER + inputSrv[3];
-          
                         srv.multipleSend(message, currentGame.getPlayers());
                     }
                 }

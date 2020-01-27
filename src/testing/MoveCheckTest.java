@@ -1,18 +1,14 @@
-package Testing;
+package testing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import Abalone.Board;
-import Abalone.Directions;
-
-import Abalone.Exceptions.IllegalMoveException;
-
-import Abalone.Marble;
-import Abalone.MoveCheck;
-
+import abalone.Board;
+import abalone.Directions;
+import abalone.Marble;
+import abalone.MoveCheck;
+import abalone.exceptions.IllegalMoveException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

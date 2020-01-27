@@ -1,7 +1,7 @@
-package Abalone;
+package abalone;
 
-import Abalone.Exceptions.BoardException;
-import Abalone.Marble;
+import abalone.Marble;
+import abalone.exceptions.BoardException;
 import java.util.ArrayList;
 /**
  * the board class of the Abalone project. Contains the board and can set moves. 

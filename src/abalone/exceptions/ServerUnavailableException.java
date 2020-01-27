@@ -1,4 +1,4 @@
-package Abalone.Exceptions;
+package abalone.exceptions;
 
 public class ServerUnavailableException extends Exception {
 

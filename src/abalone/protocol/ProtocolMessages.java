@@ -1,4 +1,4 @@
-package Abalone.protocol;
+package abalone.protocol;
 
 public class ProtocolMessages {
 

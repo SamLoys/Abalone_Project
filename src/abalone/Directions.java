@@ -1,4 +1,4 @@
-package Abalone;
+package abalone;
 
 /**
  * All the possible direction the marble can make.

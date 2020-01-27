@@ -1,14 +1,12 @@
-package Abalone;
+package abalone;
 
+import abalone.client.AbaloneClient;
+import abalone.exceptions.BoardException;
+import abalone.exceptions.IllegalMoveException;
+import abalone.exceptions.ServerUnavailableException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
-import Abalone.Client.AbaloneClient;
-import Abalone.Exceptions.BoardException;
-import Abalone.Exceptions.IllegalMoveException;
-import Abalone.Exceptions.ServerUnavailableException;
 /**
  * The smartyAI , the AI.
  * Created on 17-01-2019. 

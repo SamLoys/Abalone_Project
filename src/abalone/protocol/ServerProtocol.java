@@ -1,4 +1,4 @@
-package Abalone.protocol;
+package abalone.protocol;
 
 /**
  * Functions that every server should support. These methods are used to
@@ -14,9 +14,8 @@ public interface ServerProtocol {
      * should be chosen (the given one if available). While the server now knows
      * which functionality the client supports the same is not true the other way
      * around, so this information has to be included in the returned message:
-     *
      * HELLO + DELIMITER + chat support + DELIMITER + challenge support +
-     * DELIMITER + <leaderboard support> + DELIMITER + <actual player name> + EOC
+     * DELIMITER + leaderboard support + DELIMITER + actual player name + EOC
      * 
      * @param playerName  The preferred name of the client
      * @param chat        If the client supports chat functionality

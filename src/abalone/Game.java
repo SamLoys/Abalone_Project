@@ -1,10 +1,10 @@
-package Abalone;
+package abalone;
 
-import Abalone.Exceptions.BoardException;
-import Abalone.Exceptions.ClientUnavailableException;
-import Abalone.Exceptions.IllegalMoveException;
-import Abalone.Server.AbaloneServer;
-import Abalone.protocol.ProtocolMessages;
+import abalone.exceptions.BoardException;
+import abalone.exceptions.ClientUnavailableException;
+import abalone.exceptions.IllegalMoveException;
+import abalone.protocol.ProtocolMessages;
+import abalone.server.AbaloneServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

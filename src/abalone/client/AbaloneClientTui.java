@@ -1,9 +1,9 @@
-package Abalone.Client;
+package abalone.client;
 
-import Abalone.Directions;
-import Abalone.Exceptions.ExitProgram;
-import Abalone.Exceptions.ServerUnavailableException;
-import Abalone.protocol.ProtocolMessages;
+import abalone.Directions;
+import abalone.exceptions.ExitProgram;
+import abalone.exceptions.ServerUnavailableException;
+import abalone.protocol.ProtocolMessages;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;

@@ -1,7 +1,6 @@
-package Abalone;
+package abalone;
 
-import Abalone.Exceptions.IllegalMoveException;
-
+import abalone.exceptions.IllegalMoveException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -582,7 +581,7 @@ public class MoveCheck {
      * @return true if all indexes are in line, else false
      */
     public boolean isInLine(ArrayList<Integer> index) {
-        boolean valid = false;
+        boolean valid = true;
         if (index.size() == 1) {
             // If index.size() == 1, always return true
             return true;
@@ -593,7 +592,6 @@ public class MoveCheck {
             for (int i = 0; i < neighbours.length; i++) {
                 if (index.get(1) == neighbours[i]) {
                     valid = true;
-                    
                 }
                 
             }
@@ -604,13 +602,9 @@ public class MoveCheck {
                 String direction1 = getDirection(index.get(i), index.get(i + 1));
                 String direction2 = getDirection(index.get(i + 1), index.get(i + 2));
                 if (!(direction1 == direction2)) {
-                    return false;
-                    
-                } else {
-                    return true;
-                    
-                }
-                
+                    return false; 
+                } 
+               
             }
             
         }

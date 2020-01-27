@@ -1,6 +1,6 @@
-package Abalone.protocol;
+package abalone.protocol;
 
-import Abalone.Exceptions.ServerUnavailableException;
+import abalone.exceptions.ServerUnavailableException;
 import java.util.ArrayList;
 
 

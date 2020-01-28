@@ -56,10 +56,9 @@ public class MoveCheck {
             return returnList;
             
         } else {
-            throw new IllegalMoveException("Is not on board");
-            
+            throw new IllegalMoveException("Is not on board");           
         }
-        
+       
     }
     
     /** adds the given indexs to an arraylist, sorts them and finalizes the list by adding hidden summito marbles 
@@ -284,7 +283,7 @@ public class MoveCheck {
                                     }
                                     
                                 } else {
-                                    throw new IllegalMoveException("input is death or empty");
+                                    throw new IllegalMoveException("third input is death or empty");
                                     
                                 }
                                 
@@ -346,27 +345,27 @@ public class MoveCheck {
                                                 all.add(index.get(4));
                                                 
                                             } else {
-                                                throw new IllegalMoveException("for 5 input, the push is blocked");
+                                                throw new IllegalMoveException("the push is blocked");
                                                 
                                             }
                                             
                                         } else {
-                                            throw new IllegalMoveException("for 5 input, fifth marble is not opponent");
+                                            throw new IllegalMoveException("fifth marble is not opponent");
                                             
                                         }
                                         
                                     } else {
-                                        throw new IllegalMoveException("for 5 input, fourth marble is not opponent");
+                                        throw new IllegalMoveException("fourth marble is not opponent");
                                         
                                     }
                                     
                                 } else {
-                                    throw new IllegalMoveException("for 5 input, third marble is not own team");
+                                    throw new IllegalMoveException("third marble is not own team");
                                     
                                 }
                                 
                             } else {
-                                throw new IllegalMoveException("for 5 input, second marble is not own team");
+                                throw new IllegalMoveException("second marble is not own team");
                                 
                             }
                             break;

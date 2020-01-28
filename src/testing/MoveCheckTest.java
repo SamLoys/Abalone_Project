@@ -21,11 +21,109 @@ import org.junit.jupiter.api.Test;
 class MoveCheckTest { 
     MoveCheck movecheck;
     Board copy;
+    ArrayList<Integer> test;
+    ArrayList<Integer> list;
+    ArrayList<Integer> index;
     
     
     @BeforeEach
     void setUp() throws Exception {
+        test = new ArrayList<Integer>();
+        list = new ArrayList<>();
+        index = new ArrayList<>();
     }
+    
+    @Test
+    void testGetColor() {
+        copy = new Board(2).deepCopy();
+        movecheck = new MoveCheck(Marble.White, copy);
+        assertEquals(Marble.White, movecheck.getColor());
+        
+    }
+    
+    @Test
+    void testNotOnBoardException() {
+        copy = new Board(3).deepCopy();
+        movecheck = new MoveCheck(Marble.Green, copy);
+        //Checks for one invalid marbles not on board
+        index.add(15);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Is not on board");
+        }
+        index.clear();
+        
+        //Checks for two invalid marbles not on board
+        index.add(15);
+        index.add(105);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Is not on board");
+        }
+        index.clear();
+        
+        //Checks for three invalid marbles not on board
+        index.add(-20);
+        index.add(0);
+        index.add(1000);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Is not on board");
+        }
+        index.clear();
+        
+        //Checks for four invalid marbles not on board
+        index.add(-20);
+        index.add(0);
+        index.add(1000);
+        index.add(40);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Is not on board");
+        }
+        index.clear();
+        
+        //Checks for five invalid marbles not on board
+        index.add(-20);
+        index.add(0);
+        index.add(1000);
+        index.add(40);
+        index.add(60);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Is not on board");
+        }
+        index.clear();
+        
+        //Checks for zero invalid marbles not on board
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Too little or too many indexes");
+        }
+        index.clear();
+        
+        //Checks for six invalid marbles not on board
+        index.add(-20);
+        index.add(0);
+        index.add(1000);
+        index.add(40);
+        index.add(60);
+        index.add(100);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "Too little or too many indexes");
+        }
+        
+        
+    }
+    
     
     @Test
     void test2PlayerStraightMoves() {
@@ -33,16 +131,13 @@ class MoveCheckTest {
         copy = new Board(2).deepCopy();
         movecheck = new MoveCheck(Marble.White, copy);
         //Checks for one marble to empty space
-        ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(81));
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(81, Directions.northWest);
         } catch (IllegalMoveException e1) {
             //Not needed to print
         }
+        test.add(81);
         assertEquals(test, list);
-        test.clear();
-        list.clear();
  
         //Checks for one wrong marble to empty space
         try {
@@ -57,41 +152,67 @@ class MoveCheckTest {
         copy.reset();
         test.add(91);
         test.add(80);
+        index.add(91);
         try {
-            list = movecheck.moveChecker(91, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
         assertEquals(test, list);
         test.clear();
         list.clear();
+        index.clear();
+        
+        //Checks for three valid marbles to empty space, returns 103, 92 and 81
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        index.add(103);
+        index.add(92);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //Not needed to print
+        }
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
+        index.clear();
         
         
         //Checks for three valid marbles to empty space, returns 103, 92 and 81
         test.add(103);
         test.add(92);
         test.add(81);
+        index.add(103);
+        index.add(92);
+        index.add(81);
         try {
-            list = movecheck.moveChecker(103, 92, 81, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
         assertEquals(test, list);
         test.clear();
         list.clear();
+        index.clear();
         
         //Checks for three valid marbles to empty space in random order, returns 103, 92, 81
         test.add(103);
         test.add(92);
         test.add(81);
+        index.add(92);
+        index.add(103);
+        index.add(81);
         try {
-            list = movecheck.moveChecker(92, 103, 81, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
         assertEquals(test, list);
         test.clear();
         list.clear();
+        index.clear();
         
         //Checks for three valid marbles one opponent summito, returns 103, 92, 81, 70
         copy.setMarble(70, Marble.Black);
@@ -99,25 +220,32 @@ class MoveCheckTest {
         test.add(92);
         test.add(81);
         test.add(70);
+        index.add(92);
+        index.add(103);
+        index.add(81);
+        index.add(70);
         try {
-            list = movecheck.moveChecker(103, 92, 81, 70, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
         assertEquals(test, list);
         test.clear();
         list.clear();
+        index.clear();
         
         //Checks for invalid four own marbles one opponent summito, returns exception
         copy.setMarble(70, Marble.White);
         copy.setMarble(59, Marble.Black);
+        index.add(103);
         try {
-            list = movecheck.moveChecker(103, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             assertEquals(e.getMessage(), "push is blocked");
         }
         test.clear();
         list.clear();
+        index.clear();
         
         //Checks for three marbles two opponent summito random order, returns 103, 92, 81, 70, 59
         copy.setMarble(59, Marble.Black);
@@ -127,14 +255,20 @@ class MoveCheckTest {
         test.add(81);
         test.add(70);
         test.add(59);
+        index.add(70);
+        index.add(103);
+        index.add(81);
+        index.add(59);
+        index.add(92);
         try {
-            list = movecheck.moveChecker(70, 103, 59, 81, 92, Directions.northWest);
+            list = movecheck.moveChecker(index, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
         assertEquals(test, list);
         test.clear();
         list.clear();
+        index.clear();
         
         //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
         test.add(103);
@@ -163,6 +297,7 @@ class MoveCheckTest {
         }
         test.clear();
         list.clear();
+        copy.reset();
         
         //Checks for wrong move for empty spaces in input, returns exception
         copy.setMarble(81, Marble.Empty);
@@ -174,6 +309,59 @@ class MoveCheckTest {
         }
         test.clear();
         list.clear();
+        copy.reset();
+        
+        //Checks for valid 2-1 summito, with empty space
+        copy.setMarble(81, Marble.Black);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //not needed to print
+        }
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Checks for valid 3-1 summito, with death space in end
+        copy.setMarble(81, Marble.White);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(59, Marble.Death);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //not needed to print
+        }
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        test.add(70);
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Checks for valid 3-2 summito, with death space in end
+        copy.setMarble(81, Marble.White);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(48, Marble.Death);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //not needed to print
+        }
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        test.add(70);
+        test.add(59);
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
     }
 
     @Test
@@ -183,8 +371,6 @@ class MoveCheckTest {
         movecheck = new MoveCheck(Marble.Green, copy);
         
         //Checks for one marble to occupied space
-        ArrayList<Integer> test = new ArrayList<Integer>();
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(103, Directions.east);
         } catch (IllegalMoveException e) {
@@ -232,9 +418,7 @@ class MoveCheckTest {
         movecheck = new MoveCheck(Marble.Red, copy);
         
         //Checks for three marbles not in line, returns exception
-        ArrayList<Integer> test = new ArrayList<Integer>();
         copy.setMarble(48, Marble.Red);
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(48, 28, 18, Directions.southWest);
         } catch (IllegalMoveException e) {
@@ -281,13 +465,13 @@ class MoveCheckTest {
         movecheck = new MoveCheck(Marble.White, copy);
         
         //Checks for valid two marbles to empty space, returns 82, 81
-        ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(82, 81));
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(81, 82, Directions.northWest);
         } catch (IllegalMoveException e) {
                   //Not needed to print
         }
+        test.add(82);
+        test.add(81);
         assertEquals(test, list);
         test.clear();
         list.clear();
@@ -320,13 +504,14 @@ class MoveCheckTest {
         movecheck = new MoveCheck(Marble.White, copy);
         
         //Checks for valid move three marbles to empty space, returns 47, 57, 67
-        ArrayList<Integer> test = new ArrayList<Integer>(Arrays.asList(47, 57, 67));
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(67, 57, 47, Directions.southEast);
         } catch (IllegalMoveException e) {
                 //Not needed to print
         }
+        test.add(47);
+        test.add(57);
+        test.add(67);
         assertEquals(test, list);
         test.clear();
         list.clear();
@@ -372,8 +557,6 @@ class MoveCheckTest {
         
         //Checks for invalid move three marbles including one opponent to empty space, returns exception
         copy.setMarble(82, Marble.Empty);
-        ArrayList<Integer> test = new ArrayList<Integer>();
-        ArrayList<Integer> list = new ArrayList<>();
         try {
             list = movecheck.moveChecker(93, 81, 69, Directions.northEast);
         } catch (IllegalMoveException e) {
@@ -382,6 +565,177 @@ class MoveCheckTest {
         
         test.clear();
         list.clear();
+        
+    }
+    
+    @Test
+    void testAllExceptions() {
+        copy = new Board(2).deepCopy();
+        movecheck = new MoveCheck(Marble.White, copy);
+        
+        //Tests IllegalMoveException "is not valid single move"
+        copy.setMarble(82, Marble.Black);
+        index.add(81);
+        try {
+            list = movecheck.moveChecker(index, Directions.east);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "is not valid single move");
+        }
+        index.clear();
+        
+        
+        //Tests IllegalMoveException "second marble is not own team"
+        copy.setMarble(82, Marble.Black);
+        index.add(81);
+        index.add(82);
+        try {
+            list = movecheck.moveChecker(index, Directions.east);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "second marble is not own team");
+        }
+        index.clear();
+        
+        
+        //Tests IllegalMoveException "third input is death or empty"
+        copy.setMarble(81, Marble.Empty);
+        index.add(103);
+        index.add(92);
+        index.add(81);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "third input is death or empty");
+        }
+        index.clear();
+        copy.reset();
+        
+        //Tests IllegalMoveException "for three input, second is not own team"
+        copy.setMarble(81, Marble.Empty);
+        copy.setMarble(92, Marble.Black);
+        index.add(103);
+        index.add(92);
+        index.add(81);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "for three input, second marble is not own team");
+        }
+        index.clear();
+        copy.reset();
+        
+        //Tests IllegalMoveException "for three input, second is not own team"
+        copy.setMarble(81, Marble.White);
+        copy.setMarble(70, Marble.White);
+        index.add(103);
+        index.add(92);
+        index.add(81);
+        index.add(70);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "for four input, fourth marble is not opponenet");
+        }
+        index.clear();
+        copy.reset();
+        
+        //Tests IllegalMoveException "for three input, second is not own team"
+        copy.setMarble(81, Marble.White);
+        copy.setMarble(70, Marble.White);
+        copy.setMarble(92, Marble.Death);
+        index.add(103);
+        index.add(92);
+        index.add(81);
+        index.add(70);
+        try {
+            list = movecheck.moveChecker(index, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "for four input, second marble is not own team");
+        }
+        index.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 4 input, "the push is blocked"
+        copy.setMarble(81, Marble.White);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(59, Marble.White);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "the push is blocked");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 5 input, "the push is blocked"
+        copy.setMarble(48, Marble.White);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(59, Marble.Black);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "the push is blocked");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 5 input, "fifth marble is not opponent"
+        copy.setMarble(48, Marble.White);
+        copy.setMarble(70, Marble.Black);
+        copy.setMarble(59, Marble.White);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "fifth marble is not opponent");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 5 input, "fourth marble is not opponent"
+        copy.setMarble(48, Marble.White);
+        copy.setMarble(70, Marble.White);
+        copy.setMarble(59, Marble.White);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "fourth marble is not opponent");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 5 input, "third marble is not own team"
+        copy.setMarble(48, Marble.White);
+        copy.setMarble(70, Marble.White);
+        copy.setMarble(59, Marble.White);
+        copy.setMarble(81, Marble.Black);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "third marble is not own team");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        //Tests for IllegalMoveException 5 input, "second marble is not own team"
+        copy.setMarble(48, Marble.White);
+        copy.setMarble(70, Marble.White);
+        copy.setMarble(59, Marble.White);
+        copy.setMarble(81, Marble.Black);
+        copy.setMarble(92, Marble.Black);
+        try {
+            list = movecheck.moveChecker(92, 81, 103, 70, 59, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            assertEquals(e.getMessage(), "second marble is not own team");
+        }
+        test.clear();
+        list.clear();
+        copy.reset();
+        
+        
         
     }
           

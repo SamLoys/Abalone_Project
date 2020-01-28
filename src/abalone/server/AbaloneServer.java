@@ -32,9 +32,9 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
     private boolean serverSupportChatting = true;
     private boolean serverSupportChallenge = false;
-    private boolean serverSupportLeaderboard = false;
+    private boolean serverSupportLeaderboard = false; 
 
-    private String serverName;
+    private String serverName; 
 
     /**
      * Constructor of the Abalone server.
@@ -51,23 +51,27 @@ public class AbaloneServer implements ServerProtocol, Runnable {
     
     
     /**
-     * a special constructor only used in the system test.
+     * a special constructor only used in the system test. will create a server that runs indefinitely 
      * @throws IOException exception
      */
     public AbaloneServer(int port) throws IOException {
-
+        //Create a server TUI
         myTui = new AbaloneServerTui();
         System.out.println("Sarting server");
         nextPlayerNo = 1;
         serverName = "Aba_lonely";
-        
+        //create socket with localhost
         InetAddress ip = InetAddress.getLocalHost();
         ssock = new ServerSocket(port, 0, ip);
-        Socket sock = ssock.accept(); 
-        String name = "Player " + String.format("%02d", nextPlayerNo++);
-        myTui.showMessage("New Player [" + name + "] connected!");
-        AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
-        new Thread(handler).start();
+        //loop to keep opening connections
+        while (true) {
+            Socket sock = ssock.accept(); 
+            String name = "Player " + String.format("%02d", nextPlayerNo++);
+            myTui.showMessage("New Player [" + name + "] connected!");
+            AbaloneClientHandler handler = new AbaloneClientHandler(sock, this, name);
+            new Thread(handler).start();
+        }
+        
     }
 
     /**
@@ -295,9 +299,9 @@ public class AbaloneServer implements ServerProtocol, Runnable {
                 queueTwo.remove(0);
                 game = new Game(2, this, player1Name, player2Name);
                 getClientHandler(player1Name).addGame(game);
-                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player1Name).setColor(Marble.White);
                 getClientHandler(player2Name).addGame(game);
-                getClientHandler(player2Name).setColor(Marble.White);
+                getClientHandler(player2Name).setColor(Marble.Black);
                 games.add(game);
           
           
@@ -316,11 +320,11 @@ public class AbaloneServer implements ServerProtocol, Runnable {
                 queueThree.remove(0);
                 game = new Game(3, this, player1Name, player2Name, player3Name);
                 getClientHandler(player1Name).addGame(game);
-                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player1Name).setColor(Marble.White);
                 getClientHandler(player2Name).addGame(game);
-                getClientHandler(player2Name).setColor(Marble.Green);
+                getClientHandler(player2Name).setColor(Marble.Black);
                 getClientHandler(player3Name).addGame(game);
-                getClientHandler(player3Name).setColor(Marble.White);
+                getClientHandler(player3Name).setColor(Marble.Green);
                 games.add(game);
           
                 // construct an array with names to send to all the clients
@@ -342,11 +346,11 @@ public class AbaloneServer implements ServerProtocol, Runnable {
                 queueFour.remove(0);
                 game = new Game(4, this, player1Name, player2Name, player3Name, player4Name);
                 getClientHandler(player1Name).addGame(game);
-                getClientHandler(player1Name).setColor(Marble.Black);
+                getClientHandler(player1Name).setColor(Marble.White);
                 getClientHandler(player2Name).addGame(game);
-                getClientHandler(player2Name).setColor(Marble.Green);
+                getClientHandler(player2Name).setColor(Marble.Black);
                 getClientHandler(player3Name).addGame(game);
-                getClientHandler(player3Name).setColor(Marble.White);
+                getClientHandler(player3Name).setColor(Marble.Green);
                 getClientHandler(player4Name).addGame(game);
                 getClientHandler(player4Name).setColor(Marble.Red);
                 games.add(game);
@@ -435,7 +439,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
     @Override
     public String handleGameStart(String[] playerNames) {
 
-        String names = null;
+        String names = "";
 
         for (int i = 0; i < playerNames.length; i++) {
             names = names + ProtocolMessages.DELIMITER;

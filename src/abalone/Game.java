@@ -21,7 +21,7 @@ public class Game {
     private String[] playerNames;
     private AbaloneServer srv;
     private static final int scoreLimit = 6;
-    boolean finished = false;
+    boolean finished = false; 
     private int gameSize;
     private int moves;
     private int maxMoves;
@@ -96,7 +96,7 @@ public class Game {
      */
     public Game(int amountplayers, AbaloneServer srv, String player1Name, String player2Name, String player3Name,
             String player4Name) { 
-        board = new Board(amountplayers); 
+        board = new Board(amountplayers);  
         playerNames = new String[4];
         playerNames[0] = player1Name;
         playerNames[2] = player2Name;
@@ -112,7 +112,7 @@ public class Game {
         marbleMap.put(player2Name, Marble.Black);
         marbleMap.put(player3Name, Marble.Green);
         marbleMap.put(player4Name, Marble.Red);
-        moves = board.getTurns();
+        moves = board.getTurns(); 
         maxMoves = board.getMaxTurns();
         gameSize = 4;
         this.srv = srv;

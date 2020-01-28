@@ -168,11 +168,12 @@ public class AbaloneClientTui implements Runnable {
      * prints the helpmenu. 
      */
     public void printHelpMenu() {
-        String helpmenu = "HELP MENU \n" + "To move a marble type <m><direction><marbles>" + "For example, <m r 2 3> \n"
+        String helpmenu = "\n ------ \n " + "HELP MENU \n" + "To move a marble type <m><direction><marbles>" 
+                + "For example, <m r 2 3> \n"
                 + "direction: \n" + "Only include marbles you want to move" + "Type r for right" + "Type l for left \n"
-                + "Type ur for upper right" + "Type ul for upper left \n" + "Type lr for lower right"
-                + "Type ll for lower left" + "Type h for this help menu \n" + "Type q for the queue list \n"
-                + "To get a hint type t";
+                + "Type -> ur for upper right \n" + "Type -> ul for upper left \n" + "Type -> lr for lower right \n"
+                + "Type -> ll for lower left \n" + "Type -> h for this help menu \n" + "Type q for the queue list \n"
+                + "Type -> t to a hint type t \n -----";
         showMessage(helpmenu);
     }
     
@@ -190,19 +191,25 @@ public class AbaloneClientTui implements Runnable {
             try {
                 ip = inputIn.readLine();
             } catch (IOException e) {
-                e.printStackTrace();
+                showMessage(e.getMessage());
             }
-            //should match this REGEX otherwise it is not an ip. 
-            if (ip.matches(
-                    "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|"
-                    + "1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
-                InetAddress addr = null;
-                try {
-                    addr = InetAddress.getByName(ip);
-                } catch (UnknownHostException e) {
-                    showMessage("Invalid try again");
+            if (ip != null) {
+                if (ip.matches(
+                        "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|"
+                        + "1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
+                    //should match this REGEX otherwise it is not an ip. 
+                    InetAddress addr = null;
+                    try {
+                        addr = InetAddress.getByName(ip);
+                    } catch (UnknownHostException e) {
+                        showMessage("Invalid try again");
+                    }
+                    return addr;
+                 
+                } else {
+                    showMessage("empty try again");
                 }
-                return addr;
+           
             }
 
         }
@@ -353,7 +360,7 @@ public class AbaloneClientTui implements Runnable {
     }
 
     /**
-     * prints the message in the console.
+     * prints the message in the console. 
      * @param message the message
      */
     public void showMessage(String message) {

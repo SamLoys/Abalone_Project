@@ -18,8 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -37,7 +36,7 @@ public class AbaloneClient implements ClientProtocol {
     private String name;
     private Marble color; 
     private boolean clientSupportChatting = true;
-    private boolean clientSupportChallenge = false;
+    private boolean clientSupportChallenge = false; 
     private boolean clientSupportLeaderboard = false;
     private boolean serverSupportChatting = false;
     //    private boolean serverSupportChallenge = false;
@@ -92,34 +91,36 @@ public class AbaloneClient implements ClientProtocol {
     public AbaloneClient() {
         this.clientTui = new AbaloneClientTui(this);
         handshakeComplete = false;
-        joiningComplete = false;
+        joiningComplete = false; 
         gameSize = 0;
 
     }
     
     /** 
-     * a constructor of the abaloneclient specificly made for the system test.
+     * a constructor of the AbaloneClient only used by the system test.
      * @param systemTest name of the client
-     * @param ip the ip
+     * @param ip IP to connect to
      * @param port the wanted port
-     * @param isAi is ai
-     * @throws IOException  e
-     * @throws ServerUnavailableException  e
+     * @param isAi to set the AI on and off
+     * @throws IOException  exception if IO is crashing
+     * @throws ServerUnavailableException  exception is the serverconnection fails
      */ 
-    public AbaloneClient(String systemTest, String ip, int port, boolean isAi) throws IOException, 
+    public AbaloneClient(String systemTest, InetAddress ip, int port, boolean isAi, int gamesize) throws IOException, 
               ServerUnavailableException {
+        //set the game size
+        this.gameSize = gamesize;
+        //set the AI
+        this.isAI = isAi;
+        //set the name if the client
         name = systemTest;
+        //make a TUI
         this.clientTui = new AbaloneClientTui(this);
         Thread threadTui = new Thread(clientTui);
         threadTui.start();
+        //print statement
         System.out.println("Attempting to connect to " + ip + ":" + port + "...");
-        InetAddress addr = null; 
-        try {
-            addr = InetAddress.getByName(ip);
-        } catch (UnknownHostException e) {
-            System.out.println("Invalid try again");
-        }
-        sock = new Socket(addr, port); 
+        //create a socket
+        sock = new Socket(ip, port); 
         //open in and output
         networkIN = new BufferedReader(new InputStreamReader(sock.getInputStream()));
         networkOut = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
@@ -397,7 +398,7 @@ public class AbaloneClient implements ClientProtocol {
                                 if (gamePlayers[0].equals(name)) {
                                     //check if it is your turn
                                     clientTui.showMessage("it is your turn (" + color.toString()
-                                            + ") go enter your move, /n  remember typing h will print the help menu");
+                                            + ") go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
                                 }
                                 if (isAI) {
@@ -436,7 +437,7 @@ public class AbaloneClient implements ClientProtocol {
                                 moveChecker = new MoveCheck(color, clientBoard);
                                 if (gamePlayers[0].equals(name)) {
                                     clientTui.showMessage("it is your turn ," + color.toString()
-                                            + " go enter your move, /n  remember typing h will print the help menu");
+                                            + " go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
        
                                 }
@@ -450,8 +451,8 @@ public class AbaloneClient implements ClientProtocol {
                             if (inputSrv.length == 6) {
                                 gamePlayers = new String[4];
                                 gamePlayers[0] = inputSrv[1];
-                                gamePlayers[2] = inputSrv[2];
-                                gamePlayers[1] = inputSrv[3];
+                                gamePlayers[1] = inputSrv[2];
+                                gamePlayers[2] = inputSrv[3];
                                 gamePlayers[3] = inputSrv[4];
                                 //order is changed, protocol will send team 1 team 1 team 2 team 2
                                 //but it was , team 1 team 2 team 1 team 2, protocol changed last minute so 
@@ -472,7 +473,7 @@ public class AbaloneClient implements ClientProtocol {
                                 }
                                 if (gamePlayers[0].equals(name)) {
                                     clientTui.showMessage("it is your turn ," + color.toString()
-                                            + " go enter your move, /n  remember typing h will print the help menu");
+                                            + " go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
        
                                 }
@@ -496,9 +497,7 @@ public class AbaloneClient implements ClientProtocol {
                         ArrayList<Integer> totalMove = new ArrayList<>();
                         ArrayList<Integer> indexes = new ArrayList<>();
                         yourTurn = false;
-                        clientTui.showMessage(
-                                "Player " + inputSrv[2] + "has moved " + "\n it is now the turn "
-                                        + "of player: " + inputSrv[1]);
+                        
                         String direction = inputSrv[3];
                         
                         //put marbles inside arrayList
@@ -520,7 +519,7 @@ public class AbaloneClient implements ClientProtocol {
                         try {
                             totalMove = moveEnemyCheck.moveChecker(newIndexes, direction);
                         } catch (IllegalMoveException e) {
-                            clientTui.showMessage("player " + inputSrv[2] + "Tried a move that is not valid "
+                            clientTui.showMessage("player " + inputSrv[2] + " Tried a move that is not valid "
                                     + "according to us");
                             clientTui.showMessage("the error is: " + e.getMessage());
                             clientTui.showMessage("We did not move the marble, discuss with the party");
@@ -544,6 +543,10 @@ public class AbaloneClient implements ClientProtocol {
                         } catch (BoardException e) {
                             System.out.println(e.getMessage());
                         }
+                        
+                        clientTui.showMessage(
+                                "\n" + "Player " + inputSrv[2] + "has moved " + "\n" + "it is now the turn "
+                                        + "of player: " + inputSrv[1]);
                         //check if it now your turn
                         if (inputSrv[1].equals(name)) {
                             clientTui.showMessage("it is now your turn, enter your move");
@@ -622,8 +625,9 @@ public class AbaloneClient implements ClientProtocol {
                 case ProtocolMessages.QUEUE_SIZE:
                     //print the queue
                     clientTui.showMessage(
-                            "the queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
-                                    + inputSrv[2] + "\n" + "the queue for 4 players is : " + inputSrv[3]);
+                            "--------- \n"
+                            + "The queue for 2 players is : " + inputSrv[1] + "\n" + "The queue for 3 players is : "
+                            + inputSrv[2] + " \n" + "The queue for 4 players is : " + inputSrv[3] + "\n" + "-------- ");
                     break;
                 case ProtocolMessages.EXIT:
                     //server send the exit command
@@ -756,7 +760,7 @@ public class AbaloneClient implements ClientProtocol {
      * @ensures to print the up to date board
      * @throws BoardException if the board has an error
      */
-    public void showBoard() throws BoardException {
+    public void showBoard() throws BoardException { 
         clientTui.showMessage(clientBoard.toString());
         //print scores
         switch (gameSize) {
@@ -770,7 +774,7 @@ public class AbaloneClient implements ClientProtocol {
                         + getPlayerMarble(gamePlayers[1]).toString()
                         + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
                 //print moves made
-                clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+                clientTui.showMessage("\n Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
                 break;
             case 3:
                 //print score player1 
@@ -786,7 +790,7 @@ public class AbaloneClient implements ClientProtocol {
                         + getPlayerMarble(gamePlayers[2]).toString()
                         + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
                 //print moves made
-                clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+                clientTui.showMessage("\n Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
                 break;
             case 4:
                 //calculate score
@@ -797,20 +801,20 @@ public class AbaloneClient implements ClientProtocol {
                 //print induvidual scores
                 clientTui.showMessage("The score for: " + gamePlayers[0] + "(" 
                         + getPlayerMarble(gamePlayers[0]).toString()
-                        + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
+                        + ")(team1)" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[0])));
                 clientTui.showMessage("The score for: " + gamePlayers[1] + "(" 
                         + getPlayerMarble(gamePlayers[1]).toString()
-                        + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
+                        + ")(team1)" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[1])));
                 clientTui.showMessage("The score for: " + gamePlayers[2] + "(" 
                         + getPlayerMarble(gamePlayers[2]).toString()
-                        + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
+                        + ")(team2)" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[2])));
                 clientTui.showMessage("The score for: " + gamePlayers[3] + "(" 
                         + getPlayerMarble(gamePlayers[3]).toString()
-                        + ")" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
+                        + ")(team2)" + "is " + clientBoard.getScore(getPlayerMarble(gamePlayers[3])));
                 //print team scores
-                clientTui.showMessage("score team 1:" + scoreteam1);
-                clientTui.showMessage("score team 2 is: " + scoreteam2); 
-                clientTui.showMessage("Turn: " + clientBoard.getTurns() + "out of: " + clientBoard.getMaxTurns());
+                clientTui.showMessage("total score team 1: " + scoreteam1);
+                clientTui.showMessage("total score team 2: " + scoreteam2); 
+                clientTui.showMessage("\n Turn: " + clientBoard.getTurns() + " out of: " + clientBoard.getMaxTurns());
                 break;
             default:
                 break;

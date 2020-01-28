@@ -2,7 +2,6 @@ package abalone.server;
 
 
 import abalone.Game;
-
 import abalone.Marble;
 import abalone.exceptions.BoardException;
 import abalone.exceptions.ClientUnavailableException;
@@ -22,7 +21,7 @@ public class AbaloneClientHandler implements Runnable {
     private BufferedWriter out;
     private Socket sock;
 
-    private Game currentGame;
+    private Game currentGame; 
 
     //    private int clientSupportChatting = 0;
     //    private int clientSupportChallenge = 0;
@@ -137,7 +136,9 @@ public class AbaloneClientHandler implements Runnable {
                 currentGame = null;
                 int wantedGame = Integer.parseInt(inputSrv[1]);
                 response = srv.handleJoin(clientName, wantedGame);
-                srv.echo(response);
+                sendMessage(response);
+                //srv.echo(response); 
+                srv.echo(srv.handleQueueSizeQuery());
 
                 if (srv.queueFull(wantedGame)) {
                     srv.setupGame(wantedGame);

@@ -30,7 +30,7 @@ public class Audio implements Runnable {
         clip = AudioSystem.getClip();
         clip.open(audioInputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
-    }
+    } 
 
     /** The run method starts the clip in a while loop.
      * @throws exception if the clip cannot start
@@ -38,9 +38,9 @@ public class Audio implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
-                clip.start();
-            }
+           
+            clip.start();
+            
             
         } catch (Exception e) {
             System.out.println("Error with playing sound.");

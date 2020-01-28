@@ -61,11 +61,14 @@ public class AbaloneClient implements ClientProtocol {
         Audio muziek = null;
         try {
             muziek = new Audio();
-        } catch (UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioFileException e) { 
+            
             //if music can't play no need to print
         } catch (IOException e) {
+            
             //if music can't play no need to print
         } catch (LineUnavailableException e) {
+           
             //if music can't play no need to print
         }
         Thread t1 = new Thread(muziek);
@@ -380,10 +383,7 @@ public class AbaloneClient implements ClientProtocol {
                                 gamePlayers[1] = inputSrv[2];
                                 //sets the color of the players
                                 setPropperColor();
-                                clientTui.showMessage("The game has started with the following players: " 
-                                        + gamePlayers[0]
-                                        + " and " + gamePlayers[1]);
-                                clientTui.showMessage("The game will be played in this order");
+                                
                                 //create a board
                                 clientBoard = new Board(2);
                                 //create a movechecker for this player
@@ -395,12 +395,18 @@ public class AbaloneClient implements ClientProtocol {
                                 } catch (BoardException e) {
                                     System.out.println(e.getMessage());
                                 }
+                                clientTui.showMessage("The game has started with the following players: " 
+                                        + gamePlayers[0]
+                                        + " and " + gamePlayers[1]);
+                                clientTui.showMessage("The game will be played in this order");
                                 if (gamePlayers[0].equals(name)) {
                                     //check if it is your turn
                                     clientTui.showMessage("it is your turn (" + color.toString()
                                             + ") go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
-                                }
+                                } else {
+                                    clientTui.showMessage("It is now the turn of " + gamePlayers[0]);
+                                } 
                                 if (isAI) {
                                     //create a new AI with the board, color name and moveChecker
                                     aiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
@@ -421,10 +427,7 @@ public class AbaloneClient implements ClientProtocol {
                                 gamePlayers[0] = inputSrv[1];
                                 gamePlayers[1] = inputSrv[2];
                                 gamePlayers[2] = inputSrv[3];
-                                clientTui.showMessage("The game has started with the following players: " 
-                                        + gamePlayers[0]
-                                        + " and " + gamePlayers[1] + " and " + gamePlayers[2]);
-                                clientTui.showMessage("The game will be played in this order");
+                                
        
                                 setPropperColor();
                                 clientBoard = new Board(3);
@@ -435,11 +438,17 @@ public class AbaloneClient implements ClientProtocol {
                                     System.out.println(e.getMessage());
                                 }
                                 moveChecker = new MoveCheck(color, clientBoard);
+                                clientTui.showMessage("The game has started with the following players: " 
+                                        + gamePlayers[0]
+                                        + " and " + gamePlayers[1] + " and " + gamePlayers[2]);
+                                clientTui.showMessage("The game will be played in this order");
                                 if (gamePlayers[0].equals(name)) {
                                     clientTui.showMessage("it is your turn ," + color.toString()
                                             + " go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
        
+                                } else {
+                                    clientTui.showMessage("It is now the turn of " + gamePlayers[0]);
                                 }
                                 if (isAI) {
                                     aiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
@@ -457,11 +466,7 @@ public class AbaloneClient implements ClientProtocol {
                                 //order is changed, protocol will send team 1 team 1 team 2 team 2
                                 //but it was , team 1 team 2 team 1 team 2, protocol changed last minute so 
                                 //we decided to keep the implementation the same. 
-                                clientTui.showMessage("The game has started with the following players: " 
-                                        + gamePlayers[0]
-                                        + " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " 
-                                        + gamePlayers[3]);
-                                clientTui.showMessage("The game will be played in this order");
+                                
        
                                 setPropperColor();
                                 clientBoard = new Board(4);
@@ -471,18 +476,25 @@ public class AbaloneClient implements ClientProtocol {
                                 } catch (BoardException e) {
                                     System.out.println(e.getMessage());
                                 }
+                                clientTui.showMessage("The game has started with the following players: " 
+                                        + gamePlayers[0]
+                                        + " and " + gamePlayers[1] + " and " + gamePlayers[2] + " and " 
+                                        + gamePlayers[3]);
+                                clientTui.showMessage("The game will be played in this order");
                                 if (gamePlayers[0].equals(name)) {
                                     clientTui.showMessage("it is your turn ," + color.toString()
                                             + " go enter your move, \n  remember typing h will print the help menu");
                                     yourTurn = true;
        
+                                } else {
+                                    clientTui.showMessage("It is now the turn of " + gamePlayers[0]);
                                 }
                                 moveChecker = new MoveCheck(color, clientBoard);
                                 if (isAI) {
                                     aiPlayer = new SmartyAI(clientBoard, color, this, moveChecker, name);
                                     if (yourTurn) {
                                         aiPlayer.makeMove(true);
-                                    }
+                                    } 
                                 }
        
                             }
@@ -575,6 +587,7 @@ public class AbaloneClient implements ClientProtocol {
                             gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
                             joinQueue(gameSize);
                         }
+                        //there is a winner
                         if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
                             clientTui.showMessage("There is a winner");
                             if (gameSize == 2 || gameSize == 3) {
@@ -585,7 +598,7 @@ public class AbaloneClient implements ClientProtocol {
                                 gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
                                 joinQueue(gameSize);
                             }
-           
+                            //winner for 4 players
                             if (gameSize == 4) {
                                 if (Integer.parseInt(inputSrv[2]) == 1) {
                                     clientTui

@@ -2,7 +2,6 @@ package abalone;
 
 import abalone.client.AbaloneClient;
 import abalone.exceptions.ServerUnavailableException;
-
 import java.util.ArrayList;
 
 

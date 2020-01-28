@@ -8,7 +8,6 @@ import abalone.Marble;
 import abalone.MoveCheck;
 import abalone.exceptions.IllegalMoveException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Test;
  * @author Ayla en Sam
  * @version 1.0
  */
-class MoveCheckTest { 
+class MoveCheckTest {
     MoveCheck movecheck;
     Board copy;
     ArrayList<Integer> test;

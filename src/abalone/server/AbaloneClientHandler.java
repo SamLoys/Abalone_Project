@@ -4,6 +4,7 @@ import abalone.Game;
 import abalone.Marble;
 import abalone.exceptions.BoardException;
 import abalone.exceptions.ClientUnavailableException;
+import abalone.exceptions.IllegalMoveException;
 import abalone.protocol.ProtocolMessages;
 import abalone.protocol.ProtocolMessages.Directions;
 import java.io.BufferedReader;
@@ -23,7 +24,7 @@ public class AbaloneClientHandler implements Runnable {
     private Game currentGame; 
 
     //    private int clientSupportChatting = 0;
-    //    private int clientSupportChallenge = 0;
+    //    private int clientSupportChalleng  = 0;
     //    private int clientSupportLeaderboard = 0;
     private Marble color;
 
@@ -45,8 +46,8 @@ public class AbaloneClientHandler implements Runnable {
             out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             this.sock = sock;
             this.srv = srv;
-            this.clientName = name;
-            currentGame = null;
+            this.clientName = name; 
+            currentGame = null; 
         } catch (IOException e) {
             shutdown();
         }
@@ -94,12 +95,10 @@ public class AbaloneClientHandler implements Runnable {
                 try {
                     handleCommand(msg);
                 } catch (ClientUnavailableException e) {
-                
-                    e.printStackTrace();
+                    shutdown(); 
                 }
                 msg = in.readLine();
             }
-            shutdown();
         } catch (IOException e) {
             shutdown();
         }
@@ -160,20 +159,19 @@ public class AbaloneClientHandler implements Runnable {
                     }
                     String error = null;
                     try {
-                        error = currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+                        currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
                     } catch (BoardException e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                    if (!error.equals("move accepted")) {
+                        System.out.println("> [" + clientName + "] Exception: " + error);
+                        sendIllegalMoveException(error);
+                    } catch (IllegalMoveException e) {
                         System.out.println("> [" + clientName + "] Exception: " + error);
                         sendIllegalMoveException(error);
                     }
+
                 } else {
                     System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
                     sendIllegalMoveException("ERROR: There is no given direction");
                 }
-
                 break;
 
             case ProtocolMessages.QUEUE_SIZE: {
@@ -181,10 +179,7 @@ public class AbaloneClientHandler implements Runnable {
             }
                 break;
             case ProtocolMessages.EXIT:
-                if (currentGame != null) {
-          
-                    srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
-                }
+                
                 shutdown();
                 break;
           
@@ -208,13 +203,13 @@ public class AbaloneClientHandler implements Runnable {
      * @throws ClientUnavailableException exception if the client is not available
      */
     
-    public void sendMessage(String msg) throws IOException, ClientUnavailableException {
+    public void sendMessage(String msg) throws ClientUnavailableException {
         if (out != null) {
             try {
                 out.write(msg);
                 out.newLine();
                 out.flush();
-                System.out.println("Wrote to: " + clientName + msg);
+                System.out.println("Wrote to: " + clientName + ": " + msg);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 throw new ClientUnavailableException("Could not write to client");
@@ -240,17 +235,37 @@ public class AbaloneClientHandler implements Runnable {
      * shuts down the connection.
      * @ensures to close the socket and the in and output of the readers. 
      */
-    private void shutdown() {
+    public void shutdown() {
+        if (currentGame != null) {
+            try {
+                srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
+            } catch (ClientUnavailableException e) {
+                // client at least one client will not be available, namely the one connected to this
+            }
+        }
         System.out.println("> [" + clientName + "] Shutting down.");
         srv.removeClient(clientName);
         try {
+            sock.close();
             in.close();
             out.close();
-            sock.close();
         } catch (IOException e) {
             System.out.println("Error during closing socket");
         }
 
+    }
+    
+    /**
+     * Closing the sockets of the client to the client handler.
+     */
+    public void closing() {
+        try {
+            sock.close();
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Error during closing socket");
+        }
     }
 
 }

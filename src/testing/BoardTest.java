@@ -25,7 +25,7 @@ class BoardTest {
     
     @BeforeEach  
     public void setup() {
-        board2 = new Board(2); 
+        board2 = new Board(2);  
         board3 = new Board(3);
         board4 = new Board(4);
     }
@@ -148,7 +148,7 @@ class BoardTest {
         } catch (BoardException e) {
             assertEquals("The index is out of range", e.getMessage());
         }
-    } 
+    }  
     
     
     

@@ -22,7 +22,7 @@ class MoveCheckTest {
     Board copy;
     ArrayList<Integer> test;
     ArrayList<Integer> list;
-    ArrayList<Integer> index;
+    ArrayList<Integer> index; 
     
     
     @BeforeEach

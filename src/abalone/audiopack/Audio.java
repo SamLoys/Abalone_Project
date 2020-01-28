@@ -26,11 +26,11 @@ public class Audio implements Runnable {
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException { 
         
         URL path = Audio.class.getResource("AbaloneMusic.aifc");
-        audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile());
+        audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile()); 
         clip = AudioSystem.getClip();
         clip.open(audioInputStream);
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
-    } 
+        clip.loop(Clip.LOOP_CONTINUOUSLY); 
+    }  
 
     /** The run method starts the clip in a while loop.
      * @throws exception if the clip cannot start

@@ -13,7 +13,7 @@ import java.util.Collections;
  * @author Sam Freriks and Ayla van der Wal.
  * @version 1.0
  */
-public class SmartyAI {
+public class SmartyAI extends AI {
 
     static final int[] ringFive = { 16, 17, 18, 19, 20, 31, 42, 53, 64, 74, 84, 94, 104, 103, 102, 101, 100, 89, 78, 67,
         56, 46, 36, 26 };
@@ -21,17 +21,7 @@ public class SmartyAI {
     static final int[] ringThree = { 38, 39, 40, 51, 62, 72, 82, 81, 80, 69, 58, 48 };
     static final int[] ringTwo = { 49, 50, 61, 71, 70, 59 };
     static final int[] ringOne = { 60 };
-    ArrayList<Integer> totalMarbles = new ArrayList<Integer>();
-    ArrayList<Integer> convertToProtocol = new ArrayList<Integer>();
-    ArrayList<Integer> ownMarbles = new ArrayList<>();
-    String direction = null;
-    boolean movefound = false;
 
-    Board board;
-    Marble color;
-    AbaloneClient client;
-    MoveCheck checker;
-    String name;
 
     /**
      * the constructor of the ai.
@@ -43,11 +33,8 @@ public class SmartyAI {
      * @param name the name of the ai
      */
     public SmartyAI(Board board, Marble color, AbaloneClient client, MoveCheck checker, String name) {
-        this.board = board;
-        this.color = color;
-        this.client = client;
-        this.checker = checker;
-        this.name = name;
+        super(board,color,client,checker,name);
+       
     }
 
     /**
@@ -59,12 +46,36 @@ public class SmartyAI {
      */
     public String getHint(Board board, Marble color, MoveCheck checker) {
         try {
+            this.board = board;
+            this.color = color;
+            this.checker = checker;
             makeMove(false);
         } catch (ServerUnavailableException e) {
             // send is false so it cant happen
         }
         return "you can select marble number " + convertToProtocol.get(0) + "and move it in direction: "
                 + direction.toString();
+    }
+    
+    /**
+     * sends a marble that will have a valid move.
+     * @return a marble which can make a valid move 
+     */
+    public int getHintForAiMarbles() { 
+        try {
+            makeMove(false);
+        } catch (ServerUnavailableException e) {
+            // send is false so it cant happen
+        }
+        return convertToProtocol.get(0);
+    }
+    
+    /**
+     * returns the direction the previous hint was ment to go to.
+     * @return the direction of the previous hint
+     */
+    public String getHintForAiDirection() {
+        return direction.toString();
     }
 
     /**

@@ -4,9 +4,6 @@ import abalone.Directions;
 import abalone.exceptions.ExitProgram;
 import abalone.exceptions.ServerUnavailableException;
 import abalone.protocol.ProtocolMessages;
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +23,8 @@ public class AbaloneClientTui implements Runnable {
     AbaloneClient client;
     private PrintWriter consoleOut;
     private BufferedReader consoleIN;
-    boolean looping = true;
+    boolean looping = true; 
+    boolean questionFirst = false;
     
     /**
      * constructor of the Tui, will set the client and create and input and output stream.
@@ -35,27 +33,21 @@ public class AbaloneClientTui implements Runnable {
     public AbaloneClientTui(AbaloneClient client) {
         this.client = client;
         consoleOut = new PrintWriter(System.out, true);
-        consoleIN = new BufferedReader(new InputStreamReader(System.in));
+        consoleIN = new BufferedReader(new InputStreamReader(System.in)); 
     }
 
     /**
      * Stop the Tui thread, needs to be called when the client will stop.
      */
     public void stopThread() {
-        looping = false;
+        
         try {
             consoleIN.close();
             consoleOut.close();
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_ENTER);
-            robot.keyRelease(KeyEvent.VK_ENTER);
-            //the robot will press enter to get the 
             System.out.println("The TUI has teminated");
         } catch (IOException e) {
             System.out.println("Error closing in or out");
-        } catch (AWTException e) {
-            System.out.println(e.getMessage());
-        } 
+        }
 
     }
     
@@ -63,29 +55,30 @@ public class AbaloneClientTui implements Runnable {
      * keeps reading the client Tui. 
      */
     public void run() {
-        boolean looping = true;
-        while (looping) {
-            String input;
-            try {
-                input = consoleIN.readLine();
+        String input;
+        try {
+            
+            while ((input = consoleIN.readLine()) != null) {
                 handleUserInput(input);
-            } catch (ServerUnavailableException e) {
-                System.out.println(e.getMessage());
-                looping = false;
-                stopThread();
-                
-            } catch (IOException e) {
-                System.out.println("IO exception, stopping TUI");
-                System.out.println(e.getMessage());
-                looping = false;
-                stopThread();
-                
-            } catch (ExitProgram e) {
-                System.out.println("Exit program, stopping TUI");
-                looping = false;
-                stopThread();
             }
+            
+        } catch (ServerUnavailableException e) {
+            System.out.println(e.getMessage());
+            looping = false;
+            stopThread();
+            
+        } catch (IOException e) {
+            System.out.println("IO exception, stopping TUI");
+            System.out.println(e.getMessage());
+            looping = false;
+            stopThread();
+            
+        } catch (ExitProgram e) {
+            System.out.println("Exit program, stopping TUI");
+            looping = false;
+            stopThread();
         }
+        
     }
     
     /**
@@ -95,74 +88,82 @@ public class AbaloneClientTui implements Runnable {
      * @throws ServerUnavailableException if the server cannot be reached
      */
     public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
-        if (!input.equals("")) {
-            String command = input.substring(0, 1);
-            String[] userInput = input.split(" ");
-
-            ArrayList<Integer> marbles = new ArrayList<>();
-            switch (command) {
-                //move 
-                case ProtocolMessages.MOVE:
-                    if (userInput.length < 3) {
-                        //check if the move is valid
-                        showMessage("Invalid command please try again");
-                        printHelpMenu();
-                        break;
-                    }
-                    if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
-                            || userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
-                            || userInput[1].equals(Directions.southEast) || userInput[1].equals(Directions.southWest)) {
-     
-                        for (int i = 0; i < userInput.length; i++) {
-                            if (userInput[i].matches("([0-9]*)")) {
-                                marbles.add(Integer.parseInt(userInput[i]));
+        //questionFirst is a variable which will become true at the moment a question is asked to the user given
+        //one of the methods below, because they use the same console input, you dont want to 
+        //execute one of these commands
+        //so it wil skip this and go to the question
+        if (!questionFirst) {
+            if (!input.equals("")) {
+                String command = input.substring(0, 1);
+                String[] userInput = input.split(" ");
+            
+                ArrayList<Integer> marbles = new ArrayList<>();
+                switch (command) {
+                    //move 
+                    case ProtocolMessages.MOVE:
+                        if (userInput.length < 3) {
+                            //check if the move is valid
+                            showMessage("please try again");
+                            printHelpMenu();
+                            break;
+                        }
+                        if (userInput[1].equals(Directions.northEast) || userInput[1].equals(Directions.northWest)
+                                || userInput[1].equals(Directions.west) || userInput[1].equals(Directions.east)
+                                || userInput[1].equals(Directions.southEast) 
+                                || userInput[1].equals(Directions.southWest)) {
+             
+                            for (int i = 0; i < userInput.length; i++) {
+                                if (userInput[i].matches("([0-9]*)")) {
+                                    marbles.add(Integer.parseInt(userInput[i]));
+                                }
+            
                             }
-     
+                            //send the move to the server
+                            client.sendMove(client.getName(), userInput[1], marbles);
+                            break;
+                        } else {
+                            showMessage("Invalid command please try again");
+                            printHelpMenu();
+                            break;
                         }
-                        //send the move to the server
-                        client.sendMove(client.getName(), userInput[1], marbles);
+            
+                    case ProtocolMessages.QUEUE_SIZE:
+                        client.getCurrentQueueSizes();
                         break;
-                    } else {
-                        showMessage("Invalid command please try again");
+            
+                    case ProtocolMessages.CHAT:
+                        //send chat
+                        if (userInput.length > 1) {
+                            String fullmessage = "";
+                            for (int i = 1; i < userInput.length; i++) {
+                                fullmessage = fullmessage + userInput[i];
+                                fullmessage = fullmessage + " ";
+                            }
+                            client.sendChat(fullmessage);
+                        }
+            
+                        break;
+                    case ProtocolMessages.EXIT:
+                        client.sendExit();
+                        client.closeConnection();
+                        stopThread();
+                        break;
+                    case ProtocolMessages.HELP:
                         printHelpMenu();
                         break;
-                    }
-     
-                case ProtocolMessages.QUEUE_SIZE:
-                    client.getCurrentQueueSizes();
-                    break;
-     
-                case ProtocolMessages.CHAT:
-                    //send chat
-                    if (userInput.length > 1) {
-                        String fullmessage = "";
-                        for (int i = 1; i < userInput.length; i++) {
-                            fullmessage = fullmessage + userInput[i];
-                            fullmessage = fullmessage + " ";
-                        }
-                        client.sendChat(fullmessage);
-                    }
-     
-                    break;
-                case ProtocolMessages.EXIT:
-                    client.sendExit();
-                    client.closeConnection();
-                    stopThread();
-                    break;
-                case ProtocolMessages.HELP:
-                    printHelpMenu();
-                    break;
-                case ProtocolMessages.TIP:
-                    String hint = client.getHint();
-                    showMessage(hint);
-                    break;
-                default:
-                    showMessage("Invalid command please try again");
-     
-                    break;
+                    case ProtocolMessages.TIP:
+                        String hint = client.getHint();
+                        showMessage(hint);
+                        break;
+                    default:
+                        showMessage("Invalid command please try again");
+                        break;
+                }
             }
+        } else {
+            showMessage("QuestionFirst");
         }
-    }
+    } 
     
     /**
      * prints the helpmenu. 
@@ -172,7 +173,7 @@ public class AbaloneClientTui implements Runnable {
                 + "For example, <m r 2 3> \n"
                 + "direction: \n" + "Only include marbles you want to move" + "Type r for right" + "Type l for left \n"
                 + "Type -> ur for upper right \n" + "Type -> ul for upper left \n" + "Type -> lr for lower right \n"
-                + "Type -> ll for lower left \n" + "Type -> h for this help menu \n" + "Type q for the queue list \n"
+                + "Type -> ll for lower left \n" + "Type -> h for this help menu \n" + "Type -> q for the queue list \n"
                 + "Type -> t to a hint type t \n -----";
         showMessage(helpmenu);
     }
@@ -184,12 +185,12 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to keep asking until a valid ip is filled in
      */
     public InetAddress getIp() {
-        BufferedReader inputIn = new BufferedReader(new InputStreamReader(System.in));
+        questionFirst = true;
         String ip = null;
         while (true) {
             System.out.println("please enter a valid IP adress:");
-            try {
-                ip = inputIn.readLine();
+            try { 
+                ip = consoleIN.readLine();
             } catch (IOException e) {
                 showMessage(e.getMessage());
             }
@@ -204,6 +205,7 @@ public class AbaloneClientTui implements Runnable {
                     } catch (UnknownHostException e) {
                         showMessage("Invalid try again");
                     }
+                    questionFirst = false;
                     return addr;
                  
                 } else {
@@ -223,24 +225,29 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to return a valid integer, otherwise asks again
      */
     public int getInt(String question) {
-        showMessage(question);
-        showMessage("use an integer to reply");
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String answer = "";
-        try {
-            answer = br.readLine();
-        } catch (IOException e) {
-
-            e.printStackTrace();
+        questionFirst = true;
+        while (true) {
+            showMessage(question);
+            showMessage("use an integer to reply");
+            
+            String answer = "";
+            try {
+                answer = consoleIN.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int answerInt = 0;
+            try {
+                answerInt = Integer.parseInt(answer);
+                questionFirst = false;
+                return answerInt;
+            } catch (NumberFormatException e) {
+                showMessage("The given entry is not an integer, please try again");
+                
+            }
+           
         }
-        int answerInt = 0;
-        try {
-            answerInt = Integer.parseInt(answer);
-        } catch (NumberFormatException e) {
-            showMessage("The given entry is not an integer, please try again");
-            return getInt(question);
-        }
-        return answerInt;
+        
     }
     
     /**
@@ -252,28 +259,33 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to return a valid integer, otherwise asks again
      */
     public int getInt(String question, int lowend, int highend) {
-        showMessage(question);
-        showMessage("use an integer to reply");
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String answer = "";
-        try {
-            answer = br.readLine();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-        int answerInt = 0;
-        try {
-            answerInt = Integer.parseInt(answer);
-        } catch (NumberFormatException e) {
-            showMessage("The given entry is not an integer, please try again");
-            return getInt(question);
-        }
-        if (lowend <= answerInt && answerInt <= highend) {
-            return answerInt;
-        } else {
-            showMessage("not in range");
-            return getInt(question);
+        questionFirst = true;
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        while (true) {
+            showMessage(question);
+            showMessage("use an integer to reply");
+            
+            String answer = "";
+            try {
+                answer = in.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int answerInt = 0;
+            try {
+                answerInt = Integer.parseInt(answer);
+                if (lowend <= answerInt && answerInt <= highend) {
+                    questionFirst = false;
+                    return answerInt;
+                } else {
+                    showMessage("not in range");
+                   
+                }     
+               
+            } catch (NumberFormatException e) {
+                showMessage("The given entry is not an integer, please try again");
+            }
+            
         }
 
     }
@@ -285,6 +297,7 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to return a string as answer
      */
     public String getString(String question) {
+        questionFirst = true;
         while (true) {
             showMessage(question);
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -298,6 +311,7 @@ public class AbaloneClientTui implements Runnable {
             if (answer.trim().equals("")) {
                 showMessage("The name is empty");
             } else {
+                questionFirst = false;
                 return answer;
             }
         }
@@ -311,18 +325,20 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to keep asking 
      */
     public String getUserName(String question) {
+        questionFirst = true;
         while (true) {
             showMessage(question);
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+         
             String answer = "";
             try {
-                answer = br.readLine();
+                answer = consoleIN.readLine();
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
             answer = answer.trim();
             if (answer.matches("(\\w|[ ])+")) {
+                questionFirst = false;
                 return answer;
             } else {
                 showMessage("This is not a valid username");
@@ -338,24 +354,25 @@ public class AbaloneClientTui implements Runnable {
      * @ensures to keep asking until a valid boolean is typed in.
      */
     public boolean getBool(String question) {
+        questionFirst = true;
         showMessage(question);
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String answer = "";
         while (true) {
             try {
-                answer = br.readLine();
+                answer = consoleIN.readLine(); 
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
             if (answer.equals("yes")) {
+                questionFirst = false;
                 return true;
             }
             if (answer.equals("no")) {
+                questionFirst = false;
                 return false;
             }
             showMessage("invalid try again, use yes or no");
-
         }
     }
 

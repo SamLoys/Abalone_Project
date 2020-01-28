@@ -50,7 +50,7 @@ public class Game {
         moves = board.getTurns();
         maxMoves = board.getMaxTurns();
         gameSize = 2;
-        this.srv = srv;
+        this.srv = srv; 
         
     }
 
@@ -400,76 +400,69 @@ public class Game {
      * @param name of the players
      * @param direction direction of the wanted move
      * @param indexes of all the marbles moving
-     * @return returns "move accepted" if the move is valid otherwise return exception
      * @throws IOException exception if the IO gets an error.
      * @throws ClientUnavailableException exception if the client is not available
      * @throws BoardException exception is there is an error on the board
+     * @throws IllegalMoveException throws exception if the move is not legal
      */
-    public synchronized String addMove(String name, String direction, ArrayList<Integer> indexes)
-            throws IOException, ClientUnavailableException, BoardException {
+    public synchronized void addMove(String name, String direction, ArrayList<Integer> indexes)
+            throws IOException, ClientUnavailableException, BoardException, IllegalMoveException {
         // first check if the player has the right to move
         ArrayList<Integer> newIndexes = new ArrayList<>();
         ArrayList<Integer> totalMove = new ArrayList<>();
         ArrayList<Integer> totalMoveToProtocol = new ArrayList<Integer>();
         //check if it is the turn of the player and the game is not yet finished
-        if (name.equals(getNextPlayer()) && finished == false) {
-            //convert the protocol indexes to the board model indexes
-            newIndexes = board.protocolToIndex(indexes);
-            try {
+        if (!finished) {
+            if (name.equals(getNextPlayer())) {
+                //convert the protocol indexes to the board model indexes
+                newIndexes = board.protocolToIndex(indexes);
+            
                 //check if the indexes pass the moveCheck, it will return all the marble with the move if valid
                 totalMove = checkmap.get(name).moveChecker(newIndexes, direction);
-                //get a return if the move is invalid
-            } catch (IllegalMoveException e) {
-                return e.getMessage();
-                //return the exception of the move check, this will be send back to the client. 
-                
-            }
-            boolean scores = false;
-            try {
+                //throw IllegalMoveException if not correct, needs to be send to client
+
+                boolean scores = false;
+               
                 //actually move the marbles on the board, move is checked above
                 scores = board.move(totalMove, direction);
                 //scores will become true if the move pushed a marble off. 
-        
-            } catch (BoardException e) {
-                //because the move is already check this should not happen but just in case this will be send 
-                //back to the client
-                return e.getMessage();
+                //throws boardException if out of range, needs to be send to client
+                 
+                if (scores) {
+                    //increase the score in the board if a player has pushed a marble off. 
+                    board.addScore(marbleMap.get(name));
+                    
+                }
+                //update the amount of moves by getting the amount of turn from the board.
+                moves = board.getTurns();
+                //convert the board index model back to protocol indexes
+                totalMoveToProtocol = board.indexToProtocol(totalMove);
+                //get the next player
+                String nextplayer = getNextPlayer();
+                //construct a message with the next player
+                String message = srv.handlePlayerMove(nextplayer);
+                String indexesString = "";
+                //convert the ArrayList of indexes to a string in the proper way
+                for (int i : totalMoveToProtocol) {
+                    indexesString = indexesString + ProtocolMessages.DELIMITER;
+                    indexesString = indexesString + i;
+                    
+                }
+                //append the indexes to the constructed message
+                message = message + name + ProtocolMessages.DELIMITER + direction 
+                        + indexesString + ProtocolMessages.EOC;
+                //send the message to all the players inside this game
+                srv.multipleSend(message, playerNames);
+                //check if the game should end
+                checkScore();
+                //return that the move is accepted and moved, in this game the clientHandler knows the move
+                //did not had an exception
+             
+            } else {
+                throw new IllegalMoveException("Not your turn");
                 
-            }
-            if (scores) {
-                //increase the score in the board if a player has pushed a marble off. 
-                board.addScore(marbleMap.get(name));
-                
-            }
-            //update the amount of moves by getting the amount of turn from the board.
-            moves = board.getTurns();
-            //convert the board index model back to protocol indexes
-            totalMoveToProtocol = board.indexToProtocol(totalMove);
-            //get the next player
-            String nextplayer = getNextPlayer();
-            //construct a message with the next player
-            String message = srv.handlePlayerMove(nextplayer);
-            String indexesString = "";
-            //convert the ArrayList of indexes to a string in the proper way
-            for (int i : totalMoveToProtocol) {
-                indexesString = indexesString + ProtocolMessages.DELIMITER;
-                indexesString = indexesString + i;
-                
-            }
-            //append the indexes to the constructed message
-            message = message + name + ProtocolMessages.DELIMITER + direction + indexesString + ProtocolMessages.EOC;
-            //send the message to all the players inside this game
-            srv.multipleSend(message, playerNames);
-            //check if the game should end
-            checkScore();
-            //return that the move is accepted and moved, in this game the clientHandler knows the move
-            //did not had an exception
-            return "move accepted"; 
-        } else {
-            return "not your turn";
-            
-        }
-        
+            } // game finished, no need for exception   
+        }  
     }
 
     /**

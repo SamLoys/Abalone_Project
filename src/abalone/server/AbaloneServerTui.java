@@ -5,12 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-public class AbaloneServerTui {
+
+public class AbaloneServerTui implements Runnable {
 
     private PrintWriter console;
+    private BufferedReader consoleIn;
+    private AbaloneServer srv; 
 
-    AbaloneServerTui() {
-        console = new PrintWriter(System.out, true);
+    AbaloneServerTui(AbaloneServer srv) {
+        console = new PrintWriter(System.out, true); 
+        consoleIn = new BufferedReader(new InputStreamReader(System.in));
+        this.srv = srv;
     }
 
     /**
@@ -94,5 +99,23 @@ public class AbaloneServerTui {
      */
     public void showMessage(String message) {
         console.println(message);
+    }
+
+    @Override
+    public void run() {
+        boolean looping = true; 
+        while (looping) {
+            try {
+                String message = consoleIn.readLine();
+                if (message.equals("x")) {
+                    showMessage("Shutting down");
+                    srv.shutDown();
+                    
+                }
+            } catch (IOException e) {
+                showMessage(e.getMessage());
+            }
+        }
+        
     }
 }

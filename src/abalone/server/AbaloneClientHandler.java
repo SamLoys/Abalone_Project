@@ -166,15 +166,15 @@ public class AbaloneClientHandler implements Runnable {
                                 indexes.add(Integer.parseInt(inputSrv[i]));
                             }
                         }
-                        String error = null;
+                        
                         try {
                             currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
                         } catch (BoardException e) {
-                            System.out.println("> [" + clientName + "] Exception: " + error);
-                            sendIllegalMoveException(error);
+                            System.out.println("> [" + clientName + "] Exception: " + e.getMessage());
+                            sendIllegalMoveException(e.getMessage());
                         } catch (IllegalMoveException e) {
-                            System.out.println("> [" + clientName + "] Exception: " + error);
-                            sendIllegalMoveException(error);
+                            System.out.println("> [" + clientName + "] Exception: " + e.getMessage());
+                            sendIllegalMoveException(e.getMessage());
                         }
 
                     } else {

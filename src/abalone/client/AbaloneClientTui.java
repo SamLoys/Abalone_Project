@@ -161,7 +161,7 @@ public class AbaloneClientTui implements Runnable {
                 }
             }
         } else {
-            showMessage("Sorry try again");
+            showMessage("Sorry try again"); 
         }
     } 
     

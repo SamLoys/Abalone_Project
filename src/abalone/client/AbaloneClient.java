@@ -58,6 +58,7 @@ public class AbaloneClient implements ClientProtocol {
 
     /**
     * main method for the client.
+    * Starts the AbaloneClient
     */
     public static void main(String[] args) {
         //the audio is disabled because on some laptops it does not work, you can decide to enable it
@@ -84,6 +85,7 @@ public class AbaloneClient implements ClientProtocol {
 
     /**
      * get the name of the client.
+     * @ensures to return the name of the client
      * @return the name of the client
      */
     public String getName() {
@@ -93,6 +95,8 @@ public class AbaloneClient implements ClientProtocol {
     /**
      * Construct a AbaloneClient.
      * create a new Tui and set the proper parameters. 
+     * @ensures that the gamesize will be set to 0
+     * @ensures that a new Tui will be created
      */
     public AbaloneClient() {
         this.clientTui = new AbaloneClientTui(this);
@@ -110,6 +114,7 @@ public class AbaloneClient implements ClientProtocol {
      * @param isAi to set the AI on and off
      * @throws IOException  exception if IO is crashing
      * @throws ServerUnavailableException  exception is the serverconnection fails
+     * @ensures to set all the variables so the System test can run properly
      */ 
     public AbaloneClient(String systemTest, InetAddress ip, int port, boolean isAi, int gamesize) throws IOException, 
               ServerUnavailableException {
@@ -135,7 +140,9 @@ public class AbaloneClient implements ClientProtocol {
     
     /**
      * start method of the Abalone client.
-     * follows startup sequence
+     * follows startup sequence to create a connection, asking the proper questions
+     * @ensures the correct variables are asked to the user
+     * @ensures to create a connection if possible
      */
     public void start() {
         clientTui.showMessage("\r\n" + "\r\n"
@@ -201,7 +208,8 @@ public class AbaloneClient implements ClientProtocol {
     
     /**
      * create a connection with the server.
-     * @throws ExitProgram if the connection was failed and the user dont want to try again
+     * @ensures to try again if not succeeds. 
+     * @throws ExitProgram if the connection was failed and the user don't want to try again
      */
     public void createConnection() throws ExitProgram {
         //empty old connection
@@ -235,8 +243,10 @@ public class AbaloneClient implements ClientProtocol {
     
     /**
      * send a message to the server.
+     * @requires the networkOut to be set-up
      * @param message message to send to the server
      * @throws ServerUnavailableException if the server is not available 
+     * @ensures to send the message to the server, otherwise throw exception
      */
     public synchronized void sendMessage(String message) throws ServerUnavailableException {
         if (networkOut != null) {
@@ -257,7 +267,9 @@ public class AbaloneClient implements ClientProtocol {
 
     /**
      * read a line from the server.
+     * @requires the networkIn to be setup
      * @return the line from the server
+     * @ensures to read the server, otherwise throws an exception
      * @throws ServerUnavailableException Exception if the server is not available
      */
     public String readLineFromServer() throws ServerUnavailableException {
@@ -279,6 +291,7 @@ public class AbaloneClient implements ClientProtocol {
 
     /**
      * close the connection and stop the Tui.
+     * @ensures to close the connection to the server and stop the Tui
      */
     public void closeConnection() {
         System.out.println("Closing the connection...");
@@ -309,6 +322,7 @@ public class AbaloneClient implements ClientProtocol {
 
     /**
      * set the socket and in and output to null.
+     * @ensures that the Socket, networkIn and networkOut are put to null
      */
     public void clearConnection() {
         sock = null;
@@ -317,10 +331,12 @@ public class AbaloneClient implements ClientProtocol {
     }
     
     /**
-     * Given the command will do the appropriate method. 
+     * Given the command will do the appropriate method.
+     * @requires that the message is a command specified in the protocol 
      * @param msg the server message
      * @throws ServerUnavailableException Exception if the server is not available
      * @throws ExitProgram IO if the Io stoped
+     * @ensures to handle server command and perform the proper method
      */
     public void handleServerCommands(String msg) throws ServerUnavailableException, ExitProgram {
         if (!msg.equals("")) {
@@ -584,7 +600,9 @@ public class AbaloneClient implements ClientProtocol {
     }
     
     /**
-     * Initialised the game for the client.
+     * Initializes the game for the client.
+     * @ensures that the color will be set according the protocol, and the game will be setup
+     * @ensures to enable the Ai if wanted
      * @param names all the names that will join the game
      */
     public void initGame(ArrayList<String> names) {
@@ -648,13 +666,12 @@ public class AbaloneClient implements ClientProtocol {
             clientTui.showMessage("this was send: " + names.toString());
         }
         
-        
-        
     }
     
     /**
      * sets the proper color according to the place of the users name.
      * Use of predefined colors in the protocol
+     * @ensures to set the color to the color specified in the protocol according the players turn position
      */
     public void setPropperColor() {
         switch (gamePlayers.length) {
@@ -697,6 +714,7 @@ public class AbaloneClient implements ClientProtocol {
      * @requires the name of the player must be inside the game
      * @param name of the wanted player
      * @return the color of the player
+     * @ensures to return the color specified in the protocol according the players turn position
      */
     public Marble getPlayerMarble(String name) {
         switch (gameSize) {
@@ -734,8 +752,10 @@ public class AbaloneClient implements ClientProtocol {
     
     /**
      * reads the server while running is true.
+     * @requires running to be true
      * @throws ServerUnavailableException if the server is not available
      * @throws ExitProgram if IO Stops
+     * @ensures to keep reading the server until an exception is thrown
      */
     
     public void readServer() throws ServerUnavailableException, ExitProgram {

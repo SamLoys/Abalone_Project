@@ -8,6 +8,10 @@ import java.util.Collections;
  * A class that checks whether the given indexes are a valid move on the board, based on 
  * the current marble and board status. Returns an ArrayList with all indexes that should be moved if valid,
  * if not valid the class returns specific IllegalMoveExceptions.
+ * @invariant index != null
+ * @invariant 0 < index && index <= 6
+ * @invariant color != null
+ * @invariant direction != null
  * @author Ayla en Sam
  * @version 1.0
  */
@@ -44,6 +48,7 @@ public class MoveCheck {
      * @return ArrayList with valid moves
      * @requires i1 != null
      * @requires direction is valid direction
+     * @ensures 0 < index && index <= 6
      * @throws IllegalMoveException if index is not on the board
      */
     public ArrayList<Integer> moveChecker(int i1, String direction) throws IllegalMoveException {
@@ -69,6 +74,7 @@ public class MoveCheck {
      * @param direction the direction as an input
      * @requires i1, i2 != null
      * @requires direction is a valid direction
+     * @ensures 0 < index && index <= 6
      * @return ArrayList with valid moves
      * @throws IllegalMoveException if the index is not on the board
      */
@@ -98,6 +104,7 @@ public class MoveCheck {
      * @param direction the direction as input
      * @requires i1, i2, i3 != null
      * @requires valid direction
+     * @ensures 0 < index && index <= 6
      * @return ArrayList with valid moves
      * @throws IllegalMoveException if index is not on board
      */
@@ -128,6 +135,7 @@ public class MoveCheck {
      * @param i4 the fourth index as input
      * @requires i1, i2, i3, i4 != null
      * @requires direction is valid direction
+     * @ensures 0 < index && index <= 6
      * @param direction the direction as input
      * @return an ArrayList with valid moves
      * @throws IllegalMoveException if index is not on board
@@ -162,6 +170,7 @@ public class MoveCheck {
      * @param i5 the fifth index as input
      * @requires i1, i2, i3, i4, i5 != null
      * @requires direction is a valid direction
+     * @ensures 0 < index && index <= 6
      * @param direction the direction as input
      * @return an ArrayList with valid moves
      * @throws IllegalMoveException if the index is not on board

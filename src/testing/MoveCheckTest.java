@@ -232,6 +232,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         index.clear();
+        copy.reset();
         
         //Checks for invalid four own marbles one opponent summito, returns exception
         copy.setMarble(70, Marble.White);
@@ -245,6 +246,7 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         index.clear();
+        copy.reset();
         
         //Checks for three marbles two opponent summito random order, returns 103, 92, 81, 70, 59
         copy.setMarble(59, Marble.Black);
@@ -268,15 +270,18 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         index.clear();
+        copy.reset();
         
         //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
         test.add(103);
         test.add(92);
         test.add(81);
         test.add(70);
         test.add(59);
         try {
-            list = movecheck.moveChecker(103, Directions.northWest);
+            list = movecheck.moveChecker(103, 92, 81, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
         }
@@ -300,7 +305,6 @@ class MoveCheckTest {
         
         //Checks for wrong move for empty spaces in input, returns exception
         copy.setMarble(81, Marble.Empty);
-        System.out.println(copy.toString());
         try {
             list = movecheck.moveChecker(103, 92, 81, 70, Directions.northWest);
         } catch (IllegalMoveException e) {

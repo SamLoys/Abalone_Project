@@ -1,6 +1,9 @@
 package abalone;
 
 import abalone.exceptions.IllegalMoveException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -821,8 +824,7 @@ public class MoveCheck {
         for (int i = 0; i < index.size(); i++) {
             if (isOwnTeam(index.get(i))) {
                 ownTeam++;
-            }
-            if (isOpponent(i)) {
+            } else if (isOpponent(index.get(i))) {
                 opponent++;
             } else {
                 break;

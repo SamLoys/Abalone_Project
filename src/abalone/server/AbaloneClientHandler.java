@@ -88,7 +88,7 @@ public class AbaloneClientHandler implements Runnable {
     /**
      * removes the game for the client, this happens when a client disconnects or when the game has ended.
      */
-    public void removeGame() {
+    public void removeGame() { 
         this.currentGame = null;
     }
     

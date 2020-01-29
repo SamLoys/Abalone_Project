@@ -590,28 +590,28 @@ public class Board {
                 s = s + "                        ";
             }
             if (row == 2) {
-                s = s + "                 ";
+                s = s + "                  ";
             }
             if (row == 3) {
-                s = s + "           ";
+                s = s + "            ";
             }
             if (row == 4) {
-                s = s + "     ";
+                s = s + "    ";
             }
             if (row == 5) {
                 s = s + "";
             }
             if (row == 6) {
-                s = s + "     ";
+                s = s + "    ";
             }
             if (row == 7) {
-                s = s + "             ";
+                s = s + "            ";
             }
             if (row == 8) {
-                s = s + "                   ";
+                s = s + "                  ";
             }
             if (row == 9) {
-                s = s + "                         ";
+                s = s + "                        ";
             }
             for (int col = 0; col < 11; col++) {
 
@@ -626,7 +626,7 @@ public class Board {
                 if (getMarble(row, col).toString().equals("Death")) {
                     s = s + "";
                 } else if (getMarble(row, col).toString().equals("Empty")) {
-                    s = s + "   -" + "(" + number + ")" + "-   ";
+                    s = s + "  -" + "(" + number + ")" + "-  ";
 
                 } else if (getMarble(row, col).toString().equals("Red")) {
                     s = s + "  " + getMarble(row, col).toString() + "(" + number + ")" + "  ";

@@ -76,7 +76,6 @@ public class RandomAI extends AI {
         } catch (BoardException e) {
             System.out.println(e.getMessage());
         }
-       
         client.sendMove(name, direction, convertToProtocol);
      
 

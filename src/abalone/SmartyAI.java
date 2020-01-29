@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * The smartyAI , the AI.
+ * The AI is focused on going to the center.
  * Created on 17-01-2019. 
  * @author Sam Freriks and Ayla van der Wal.
  * @version 1.0
  */
 public class SmartyAI extends AI {
-
+    //Arrays with the indices corresponding the the different "rings" on the board
     static final int[] ringFive = { 16, 17, 18, 19, 20, 31, 42, 53, 64, 74, 84, 94, 104, 103, 102, 101, 100, 89, 78, 67,
         56, 46, 36, 26 };
     static final int[] ringFour = { 27, 28, 29, 30, 41, 52, 63, 73, 83, 93, 92, 91, 90, 79, 68, 57, 47, 37 };
@@ -50,10 +50,11 @@ public class SmartyAI extends AI {
             this.color = color;
             this.checker = checker;
             makeMove(false);
+            //call makemove so the direction and the index is updated
         } catch (ServerUnavailableException e) {
-            // send is false so it cant happen
+            // send is false so it can not happen
         }
-        return "you can select marble number " + convertToProtocol.get(0) + "and move it in direction: "
+        return "you can select marble number " + convertToProtocol.get(0) + " and move it in direction: "
                 + direction.toString();
     }
     
@@ -65,13 +66,13 @@ public class SmartyAI extends AI {
         try {
             makeMove(false);
         } catch (ServerUnavailableException e) {
-            // send is false so it cant happen
+            // send is false so it can not happen
         }
         return convertToProtocol.get(0);
     }
     
     /**
-     * returns the direction the previous hint was ment to go to.
+     * returns the direction the previous hint was meant to go to.
      * @return the direction of the previous hint
      */
     public String getHintForAiDirection() {
@@ -97,7 +98,7 @@ public class SmartyAI extends AI {
             }
         }
         Collections.shuffle(ownMarbles);
-
+        //shuffle all marbles
         ArrayList<Integer> list5 = new ArrayList<Integer>();
         for (int index : ringFive) {
             list5.add(index);
@@ -111,11 +112,13 @@ public class SmartyAI extends AI {
         for (int index : ringFour) {
             list4.add(index);
         }
+        //added to a list so you can use the suffle method
         Collections.shuffle(list4);
         for (int i = 0; i < list4.size(); i++) {
             ringFour[i] = list4.get(i);
         }
 
+        //first check if you can make the ideal move on the 5th ring
         for (int index : ringFive) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -127,6 +130,7 @@ public class SmartyAI extends AI {
                 }
             }
         }
+        //check if you can make at least a move 
         for (int index : ringFive) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -198,7 +202,7 @@ public class SmartyAI extends AI {
 
             }
         }
-
+        //check if you can the ideal move for the 4th ring
         for (int index : ringFour) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -210,6 +214,7 @@ public class SmartyAI extends AI {
                 }
             }
         }
+        //check if you can make atleast one move on the fourth ring
         for (int index : ringFour) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -281,7 +286,7 @@ public class SmartyAI extends AI {
 
             }
         }
-
+        //check if you can make the ideal move on the 3th ring
         for (int index : ringThree) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -293,6 +298,7 @@ public class SmartyAI extends AI {
                 }
             }
         }
+        //check if you can make atleast one move on the 3th ring
         for (int index : ringThree) {
             if (ownMarbles.contains(index) && movefound == false) {
                 direction = board.getDirectionToCenter(index);
@@ -532,6 +538,7 @@ public class SmartyAI extends AI {
 
             System.out.println(e.getMessage());
         }
+        //if true send the message
         if (send) {
             client.sendMove(name, direction, convertToProtocol);
         }

@@ -20,18 +20,12 @@ public class AbaloneClientHandler implements Runnable {
     private BufferedReader in;
     private BufferedWriter out;
     private Socket sock;
-
     private Game currentGame; 
-
     //    private int clientSupportChatting = 0;
     //    private int clientSupportChalleng  = 0;
     //    private int clientSupportLeaderboard = 0;
     private Marble color;
-
-    
     private AbaloneServer srv;
-
-  
     private String clientName;
     /**
      * constructor of the AbaloneClientHandler, given the socket, server and name of the client. 
@@ -197,10 +191,12 @@ public class AbaloneClientHandler implements Runnable {
                 break;
           
             case ProtocolMessages.BONUS:
-                if (inputSrv[1].contentEquals(ProtocolMessages.CHAT)) {
-                    if (inputSrv.length > 3) {
-                        String message = "b;c;" + clientName + ProtocolMessages.DELIMITER + inputSrv[3];
-                        srv.multipleSend(message, currentGame.getPlayers());
+                if (inputSrv.length > 1) {
+                    if (inputSrv[1].contentEquals(ProtocolMessages.CHAT)) {
+                        if (inputSrv.length > 3) {
+                            String message = "b;c;" + clientName + ProtocolMessages.DELIMITER + inputSrv[3];
+                            srv.multipleSend(message, currentGame.getPlayers());
+                        }
                     }
                 }
                 break;
@@ -251,10 +247,18 @@ public class AbaloneClientHandler implements Runnable {
     public void shutdown() {
         if (currentGame != null) {
             try {
+                
                 srv.multipleSend(ProtocolMessages.EXIT + ProtocolMessages.EOC, currentGame.getPlayers());
             } catch (ClientUnavailableException e) {
-                // client at least one client will not be available, namely the one connected to this
+                System.out.println(e.getMessage());
             }
+        }
+        try {
+            srv.echo(srv.handleQueueSizeQuery());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (ClientUnavailableException e) {
+            System.out.println(e.getMessage());
         }
         System.out.println("> [" + clientName + "] Shutting down.");
         srv.removeClient(clientName);

@@ -66,7 +66,7 @@ public class MoveCheck {
        
     }
     
-    /** adds the given indexs to an arraylist, sorts them and finalizes the list by adding hidden summito marbles 
+    /** adds the given indices to an ArrayList, sorts them and finalizes the list by adding hidden summito marbles 
      * when a player enters less than the total amount of marbles to be moved. Finally the full list is compared 
      * to valid moves and sends back all the marbles that should be moved. 
      * @param i1 the first index as an input
@@ -95,7 +95,7 @@ public class MoveCheck {
         
     }
     
-    /** adds the given indexs to an arraylist, sorts them and finalizes the list by adding hidden summito marbles 
+    /** adds the given indices to an ArrayList, sorts them and finalizes the list by adding hidden summito marbles 
      * when a player enters less than the total amount of marbles to be moved. Finally the full list is compared 
      * to valid moves and sends back all the marbles that should be moved. 
      * @param i1 the first index as input
@@ -126,7 +126,7 @@ public class MoveCheck {
         
     }
     
-    /** adds the given indexs to an arraylist, sorts them and finalizes the list by adding hidden summito marbles 
+    /** adds the given indices to an ArrayLit, sorts them and finalizes the list by adding hidden summito marbles 
      * when a player enters less than the total amount of marbles to be moved. Finally the full list is compared 
      * to valid moves and sends back all the marbles that should be moved. 
      * @param i1 the first index as input
@@ -595,7 +595,7 @@ public class MoveCheck {
             return true;
             
         } else if (index.size() == 2) {
-            // If index.size() == 2, if second index is a neighbour of first, return true, else false
+            // If index.size() == 2, if second index is a neighbor of first, return true, else false
             int[] neighbours = board.getNeighbours(index.get(0));
             for (int i = 0; i < neighbours.length; i++) {
                 if (index.get(1) == neighbours[i]) {
@@ -609,7 +609,7 @@ public class MoveCheck {
             for (int i = 0; i < (index.size() - 2); i++) {
                 String direction1 = getDirection(index.get(i), index.get(i + 1));
                 String direction2 = getDirection(index.get(i + 1), index.get(i + 2));
-                if (!(direction1 == direction2)) {
+                if (!(direction1 == direction2)) { 
                     return false; 
                 } 
                

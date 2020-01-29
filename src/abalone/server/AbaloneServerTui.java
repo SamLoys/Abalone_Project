@@ -32,8 +32,8 @@ public class AbaloneServerTui implements Runnable {
         try {
             answer = br.readLine();
         } catch (IOException e) {
-
-            e.printStackTrace();
+            showMessage("Error on IO, please restart");
+            srv.shutDown();
         }
         int answerInt = 0;
         try {
@@ -59,8 +59,8 @@ public class AbaloneServerTui implements Runnable {
         try {
             answer = br.readLine();
         } catch (IOException e) {
-
-            e.printStackTrace();
+            showMessage("error on IO, please restart");
+            srv.shutDown();
         }
         return answer;
     }
@@ -79,8 +79,8 @@ public class AbaloneServerTui implements Runnable {
             try {
                 answer = br.readLine();
             } catch (IOException e) {
-
-                e.printStackTrace();
+                showMessage("Error on IO, please restart");
+                srv.shutDown();
             }
             if (answer.equals("yes")) {
                 return true;

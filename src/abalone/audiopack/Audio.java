@@ -24,7 +24,7 @@ public class Audio implements Runnable {
      * @throws LineUnavailableException Javadoc.
      */
     public Audio() throws UnsupportedAudioFileException, IOException, LineUnavailableException { 
-        
+        //get source path
         URL path = Audio.class.getResource("AbaloneMusic.aifc");
         audioInputStream = AudioSystem.getAudioInputStream(new File(path.getFile()).getAbsoluteFile()); 
         clip = AudioSystem.getClip();
@@ -38,13 +38,10 @@ public class Audio implements Runnable {
     @Override
     public void run() {
         try {
-           
             clip.start();
-            
             
         } catch (Exception e) {
             System.out.println("Error with playing sound.");
-            e.printStackTrace();
         }
     }
 }

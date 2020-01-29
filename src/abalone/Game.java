@@ -41,14 +41,19 @@ public class Game {
         playerNames = new String[2];
         playerNames[0] = player1Name;
         playerNames[1] = player2Name;
+        //set the names
         checkmap = new HashMap<String, MoveCheck>();
+        //put the move checkers according the players name
         checkmap.put(player1Name, new MoveCheck(Marble.White, board));
         checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
         marbleMap = new HashMap<String, Marble>();
+        //a map that maps the names to the colors of the players
         marbleMap.put(player1Name, Marble.White);
-        marbleMap.put(player2Name, Marble.Black); 
+        marbleMap.put(player2Name, Marble.Black);
+        //set moves to the same moves as the board
         moves = board.getTurns();
         maxMoves = board.getMaxTurns();
+        //set game size
         gameSize = 2;
         this.srv = srv; 
         
@@ -69,17 +74,22 @@ public class Game {
         playerNames[0] = player1Name;
         playerNames[1] = player2Name;
         playerNames[2] = player3Name;
+        //set the names
         checkmap = new HashMap<String, MoveCheck>();
         checkmap.put(player1Name, new MoveCheck(Marble.White, board));
         checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
         checkmap.put(player3Name, new MoveCheck(Marble.Green, board));
+        //a map that maps the names to the colors of the players
         marbleMap = new HashMap<String, Marble>();
+        //a map that maps the names to the colors of the players
         marbleMap.put(player1Name, Marble.White);
         marbleMap.put(player2Name, Marble.Black);
         marbleMap.put(player3Name, Marble.Green);
+        //set moves to the same moves as the board
         moves = board.getTurns();
         maxMoves = board.getMaxTurns();
         gameSize = 3;
+        //set game size
         this.srv = srv;
         
     }
@@ -102,12 +112,15 @@ public class Game {
         playerNames[2] = player2Name;
         playerNames[1] = player3Name;
         playerNames[3] = player4Name;
+        //set the names
         checkmap = new HashMap<String, MoveCheck>();
         checkmap.put(player1Name, new MoveCheck(Marble.White, board));
         checkmap.put(player2Name, new MoveCheck(Marble.Black, board));
         checkmap.put(player3Name, new MoveCheck(Marble.Green, board));
         checkmap.put(player4Name, new MoveCheck(Marble.Red, board));
+        //a map that maps the names to the colors of the players
         marbleMap = new HashMap<String, Marble>();
+        //a map that maps the names to the colors of the players
         marbleMap.put(player1Name, Marble.White);
         marbleMap.put(player2Name, Marble.Black);
         marbleMap.put(player3Name, Marble.Green);
@@ -121,6 +134,7 @@ public class Game {
     
     /**
      * calls the reset method on the board object.
+     * @ensures that the board will reset
      */
     public void reset() {
         board.reset();

@@ -19,23 +19,17 @@ import java.util.Set;
 public class AbaloneServer implements ServerProtocol, Runnable {
 
     private ServerSocket ssock; 
-
     private List<Game> games = new ArrayList<Game>(); 
-    private List<String> userNames = new ArrayList<String>();
-
+    private ArrayList<String> userNames = new ArrayList<String>();
     HashMap<String, AbaloneClientHandler> clientsMap = new HashMap<>();
-
     private List<String> queueTwo = new ArrayList<String>();
     private List<String> queueThree = new ArrayList<String>();
     private List<String> queueFour = new ArrayList<String>();
-
     private int nextPlayerNo;
     private AbaloneServerTui myTui;
-
     private boolean serverSupportChatting = true;
     private boolean serverSupportChallenge = false;
     private boolean serverSupportLeaderboard = false;  
-
     private String serverName; 
 
     /**
@@ -183,9 +177,11 @@ public class AbaloneServer implements ServerProtocol, Runnable {
      * @throws ClientUnavailableException exception if the client is not available
      */
     public synchronized void echo(String msg) throws IOException, ClientUnavailableException {
-        for (String name : clientsMap.keySet()) {
-            clientsMap.get(name).sendMessage(msg);
+        String[] players = new String[userNames.size()];
+        for (int i = 0; i < userNames.size(); i++) {
+            players[i] = userNames.get(i);
         }
+        multipleSend(msg, players);
     }
 
     /**
@@ -207,7 +203,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
             } catch (ClientUnavailableException e) {
                 //a client did not respond, but dont quit, other clients might respond
                 errorString = e.getMessage();
-                error = true; 
+                error = true;  
             }
         }
         if (error) {
@@ -270,11 +266,13 @@ public class AbaloneServer implements ServerProtocol, Runnable {
 
                 }
             } catch (ExitProgram e) {
-                e.printStackTrace();
+                myTui.showMessage(e.getMessage());
+                shutDown();
                 getMoreConnections = false;
             } catch (IOException e) {
                 System.out.println("socket error: closing");
                 getMoreConnections = false;
+                shutDown();
             } 
         }
     }
@@ -487,7 +485,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
         try {
             multipleSend(message, playerNames);
         } catch (ClientUnavailableException e) {
-            e.printStackTrace();
+            myTui.showMessage(e.getMessage());
         }
         // add games to the
         // echo the game is going to start

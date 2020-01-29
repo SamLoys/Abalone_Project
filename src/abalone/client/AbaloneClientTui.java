@@ -136,6 +136,7 @@ public class AbaloneClientTui implements Runnable {
                         if (userInput.length > 1) {
                             String fullmessage = "";
                             for (int i = 1; i < userInput.length; i++) {
+                                //construct the full message
                                 fullmessage = fullmessage + userInput[i];
                                 fullmessage = fullmessage + " ";
                             }
@@ -199,7 +200,7 @@ public class AbaloneClientTui implements Runnable {
                 if (ip.matches(
                         "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|"
                         + "1[0-9]{2}|2[0-4][0-9]|25[0-5])$")) {
-                    //should match this REGEX otherwise it is not an ip. 
+                    //should match this REGEX otherwise it is not a valid ip. 
                     InetAddress addr = null;
                     try {
                         addr = InetAddress.getByName(ip);
@@ -209,12 +210,10 @@ public class AbaloneClientTui implements Runnable {
                     questionFirst = false;
                     return addr;
                  
-                } else {
-                    showMessage("empty try again");
-                }
-           
+                } 
+            } else {
+                showMessage("empty try again");
             }
-
         }
 
     }
@@ -262,8 +261,11 @@ public class AbaloneClientTui implements Runnable {
      */
     public int getInt(String question, int lowend, int highend) throws ExitProgram {
         questionFirst = true;
+        //this one has its own reader because it is used when a game is finished.
+        //otherwise it will get stuck in the invalid command loop from the commandHandler, 
+        //because this one will never read
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
+        while (true) { 
             showMessage(question);
             showMessage("use an integer to reply");
             
@@ -271,11 +273,11 @@ public class AbaloneClientTui implements Runnable {
             try {
                 answer = in.readLine();
             } catch (IOException e) {
-                //stoped
+                //stopped
                 throw new ExitProgram("IO has stoped working");
             }
             int answerInt = 0; 
-            try {
+            try { 
                 answerInt = Integer.parseInt(answer);
                 if (lowend <= answerInt && answerInt <= highend) {
                     questionFirst = false;
@@ -287,39 +289,11 @@ public class AbaloneClientTui implements Runnable {
                
             } catch (NumberFormatException e) {
                 showMessage("The given entry is not an integer, please try again");
-            }
-            
+            } 
         }
 
     }
     
-    /**
-     * returns a string as answer to the given question. 
-     * @param question the question
-     * @return a string as answer
-     * @ensures to return a string as answer
-     */
-    public String getString(String question) {
-        questionFirst = true;
-        while (true) {
-            showMessage(question);
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String answer = "";
-            try {
-                answer = br.readLine();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-            if (answer.trim().equals("")) {
-                showMessage("The name is empty");
-            } else {
-                questionFirst = false;
-                return answer;
-            }
-        }
-
-    }
     
     /**
      * asks the user name the clients want.
@@ -336,8 +310,7 @@ public class AbaloneClientTui implements Runnable {
             try {
                 answer = consoleIN.readLine();
             } catch (IOException e) {
-
-                e.printStackTrace();
+                showMessage("Input failed, please restart");
             }
             answer = answer.trim();
             if (answer.matches("(\\w|[ ])+")) {
@@ -364,8 +337,7 @@ public class AbaloneClientTui implements Runnable {
             try {
                 answer = consoleIN.readLine(); 
             } catch (IOException e) {
-
-                e.printStackTrace();
+                showMessage("Input failed, please restart");
             }
             if (answer.equals("yes")) {
                 questionFirst = false;

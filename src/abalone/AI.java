@@ -11,10 +11,8 @@ public class AI {
     ArrayList<Integer> totalMarbles = new ArrayList<Integer>();
     ArrayList<Integer> convertToProtocol = new ArrayList<Integer>();
     ArrayList<Integer> ownMarbles = new ArrayList<>();
-    
     String direction = null;
     boolean movefound = false; 
-
     Board board;
     Marble color;
     AbaloneClient client;
@@ -39,7 +37,7 @@ public class AI {
     
     /**
      * move method used in the sub classes.
-     * @param send of the ai should also send the move
+     * @param send make true is the Ai needs to send to the server automatically
      * @throws ServerUnavailableException if server not available
      */
     public void makeMove(boolean send) throws ServerUnavailableException {

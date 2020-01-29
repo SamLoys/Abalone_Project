@@ -153,10 +153,11 @@ public class Board {
      */
     public Board deepCopy() {
         Board copy = new Board(playerCount);
+        //create new board
         for (int i = 0; i < 120; i++) {
+            //copy current board to the new board
             copy.setMarble(i, this.getMarble(i));
         }
-
         return copy;
     }
 
@@ -535,7 +536,7 @@ public class Board {
     public String getDirectionToCenter(int index) {
         int row = getRow(index);
         int col = getCol(index);
-
+        //divide the board in 6 parts each with a different direction to go to. 
         if (row == 5) {
             if (col < 5) {
                 return Directions.east;
@@ -613,6 +614,7 @@ public class Board {
             if (row == 9) {
                 s = s + "                        ";
             }
+            //white spaces for the centering of the board
             for (int col = 0; col < 11; col++) {
 
                 int number = 0;
@@ -625,10 +627,13 @@ public class Board {
 
                 if (getMarble(row, col).toString().equals("Death")) {
                     s = s + "";
+                    //death marbles will be empty
                 } else if (getMarble(row, col).toString().equals("Empty")) {
+                    //if a marble is empty only the number should be printed
                     s = s + "  -" + "(" + number + ")" + "-  ";
 
                 } else if (getMarble(row, col).toString().equals("Red")) {
+                    //red is smaller as a tekst so it needs more spaces
                     s = s + "  " + getMarble(row, col).toString() + "(" + number + ")" + "  ";
                 } else {
                     s = s + " " + getMarble(row, col).toString() + "(" + number + ")" + " ";

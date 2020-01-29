@@ -324,21 +324,22 @@ public class AbaloneClient implements ClientProtocol {
      */
     public void handleServerCommands(String msg) throws ServerUnavailableException, ExitProgram {
         if (!msg.equals("")) {
-
+            clientTui.showMessage("[Server]:" + msg);
             String command = msg.substring(0, 1);
             String[] inputSrv = msg.split(";");
             // getting commands from the server
             switch (command) {
-
                 case ProtocolMessages.GameResult.EXCEPTION:
                     clientTui.showMessage("The server send an exception");
                     if (inputSrv.length > 2) {
                         if (inputSrv[1].equals("i")) {
-                            clientTui.showMessage("IllegalMoveException: " + inputSrv[2]);
+                            if (gameStarted) {
+                                clientTui.showMessage("IllegalMoveException: " + inputSrv[2]);
+                            }
                         }
-                        if (inputSrv[1].equals("i")) {
+                        if (inputSrv[1].equals("j")) {
                             clientTui.showMessage("JoinException: " + inputSrv[2]);
-                        }
+                        } 
        
                     } else {
                         clientTui.showMessage("exception not complete");
@@ -479,36 +480,50 @@ public class AbaloneClient implements ClientProtocol {
                         //there is a winner
                         if (inputSrv[1].equals(ProtocolMessages.GameResult.WIN)) {
                             clientTui.showMessage("There is a winner");
-                            if (gameSize == 2 || gameSize == 3) {
-                                clientTui.showMessage("the winner is: " 
-                                    + gamePlayers[Integer.parseInt(inputSrv[2]) - 1]);
-                                joiningComplete = false; 
-                                gameStarted = false;
-                                gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-                                joinQueue(gameSize);
+                            int winner;
+                            try {
+                                winner = Integer.parseInt(inputSrv[2]);
+                            } catch (NumberFormatException e) {
+                                clientTui.showMessage("Winner not a number");
+                                clientTui.showMessage("message" + inputSrv);
+                                break;
                             }
-                            //winner for 4 players
-                            if (gameSize == 4) {
-                                if (Integer.parseInt(inputSrv[2]) == 1) {
-                                    clientTui
-                                            .showMessage("the winners are: " + gamePlayers[0] + "and player " 
-                                            + gamePlayers[2]);
-                                    joiningComplete = false;
+                            if (Integer.parseInt(inputSrv[2]) > 0) {
+                                if (gameSize == 2 || gameSize == 3) {
+                                    clientTui.showMessage("the winner is: " 
+                                        + gamePlayers[winner - 1]);
+                                    joiningComplete = false; 
                                     gameStarted = false;
                                     gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
                                     joinQueue(gameSize);
                                 }
-                                if (Integer.parseInt(inputSrv[2]) == 2) {
-                                    clientTui
-                                            .showMessage("the winners are: " + gamePlayers[1] 
-                                            + "and player " + gamePlayers[3]);
-                                    joiningComplete = false;
-                                    gameStarted = false;
-                                    gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
-                                    joinQueue(gameSize);
+                                //winner for 4 players
+                                if (gameSize == 4) {
+                                    if (Integer.parseInt(inputSrv[2]) == 1) {
+                                        clientTui
+                                                .showMessage("the winners are: " + gamePlayers[0] + "and player " 
+                                                + gamePlayers[2]);
+                                        joiningComplete = false;
+                                        gameStarted = false;
+                                        gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                                        joinQueue(gameSize);
+                                    }
+                                    if (Integer.parseInt(inputSrv[2]) == 2) {
+                                        clientTui
+                                                .showMessage("the winners are: " + gamePlayers[1] 
+                                                + "and player " + gamePlayers[3]);
+                                        joiningComplete = false;
+                                        gameStarted = false;
+                                        gameSize = clientTui.getInt("what queue do you want to join?", 2, 4);
+                                        joinQueue(gameSize);
+                                    }
+               
                                 }
-           
+                            } else {
+                                clientTui.showMessage("No propper winner send");
+                                clientTui.showMessage("message that was send: " + inputSrv.toString());
                             }
+                            
                         }
                         if (inputSrv[1].equals(ProtocolMessages.GameResult.EXCEPTION)) {
                             clientTui.showMessage("There was an error, the game has now ended");
@@ -799,12 +814,12 @@ public class AbaloneClient implements ClientProtocol {
     }
 
     /**
-     * get a hitn from the AI.
+     * get a hint from the AI.
      * @return a String with a valid move
      * @ensures the move to be valid
      */
     public String getHint() {
-        //create an ai for the hint
+        //will always use the SmartyAi for the hint
         SmartyAI ai = new SmartyAI(clientBoard, color, this, moveChecker, name);
         return ai.getHint(clientBoard, color, moveChecker);
     }
@@ -879,10 +894,13 @@ public class AbaloneClient implements ClientProtocol {
                         toSendMarbles = toSendMarbles + ProtocolMessages.DELIMITER;
                         toSendMarbles = toSendMarbles + protocolAll.get(i);
                     }
+                    clientTui.showMessage("move to send: " + ProtocolMessages.MOVE + ProtocolMessages.DELIMITER 
+                            + playerName + ProtocolMessages.DELIMITER + direction + toSendMarbles 
+                            + ProtocolMessages.EOC);
                     sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + playerName
                             + ProtocolMessages.DELIMITER + direction + toSendMarbles + ProtocolMessages.EOC);
                 } catch (IllegalMoveException e) {
-                    //if movechecker does not accept, print why and ask again
+                    //if move checker does not accept, print why and ask again
                     clientTui.showMessage(e.getMessage() + "please try again");
                 } catch (BoardException e) { 
                     //print the board exception
@@ -898,7 +916,7 @@ public class AbaloneClient implements ClientProtocol {
             }
 
         } else {
-            //if it is not your turn, print, and dont send
+            //if it is not your turn, print, and do not send
             clientTui.showMessage("It is not your turn, please wait");
         }
 

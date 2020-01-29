@@ -7,6 +7,12 @@ import abalone.exceptions.ServerUnavailableException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * The AI that is focused on pushing opponent and defending.
+ * @author Sam Freriks and Ayla van der Wal
+ * @version 1.0
+ *
+ */
 public class AttackAI extends AI {
 
     ArrayList<String> allDirections = new ArrayList<String>();
@@ -14,10 +20,10 @@ public class AttackAI extends AI {
     
     /**
      * constructor of the attacker AI.
-     * @param board board which he will play
+     * @param board board which the AI will play
      * @param color color of the player
-     * @param client client 
-     * @param checker the move checker
+     * @param client client link to the AI
+     * @param checker The move checker the AI should use
      * @param name name of the AI
      */
     public AttackAI(Board board, Marble color, AbaloneClient client, MoveCheck checker, String name) {
@@ -29,7 +35,7 @@ public class AttackAI extends AI {
         allDirections.add(Directions.southEast);
         allDirections.add(Directions.southWest);
         smarty = new SmartyAI(board, color, client, checker, name); 
-        
+        //create new SmartyAI for assistance
     }
     
     /**
@@ -41,12 +47,13 @@ public class AttackAI extends AI {
         ownMarbles = new ArrayList<>();
         direction = null;
         movefound = false;
-        
+        //take all the marbles the AI owns
         for (int i = 16; i < 105; i++) {
             if (board.getMarble(i) == color) {
                 ownMarbles.add(i);
             }
         }
+        //shuffle the Marbles to make the Ai less predictable
         Collections.shuffle(ownMarbles);
         Collections.shuffle(allDirections);
         
@@ -72,6 +79,7 @@ public class AttackAI extends AI {
             for (String direc : allDirections) {
                 if (!movefound) {
                     try {
+                        //the checker always returns all the marbles that are going to move
                         totalMarbles = checker.moveChecker(index, direc);
                         if (totalMarbles.size() == 4) {
                             movefound = true; 
@@ -84,29 +92,27 @@ public class AttackAI extends AI {
             }  
         }
         
-        //iff a move is found send it 
+        
+        //convert the found marbles back to protocol marbles
         try {
             convertToProtocol = board.indexToProtocol(totalMarbles);
         } catch (BoardException e) {
             System.out.println(e.getMessage());
         }
-        
+        //iff a move is found send it 
         if (movefound) {
+            
             client.sendMove(name, direction, convertToProtocol);
         }
         
         //if no move was found with its own strategy, "ask" smartAI for a hint   
         if (!movefound) {
             convertToProtocol = new ArrayList<Integer>();
+            //SmartyAi already sends the protocol ready indices
             convertToProtocol.add(smarty.getHintForAiMarbles());
             direction = smarty.getHintForAiDirection();
             client.sendMove(name, direction, convertToProtocol);
+            //send the move
         }
-       
-        
-
     }
-    
-    
-
 }

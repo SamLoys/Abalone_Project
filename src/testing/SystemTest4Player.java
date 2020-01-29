@@ -68,7 +68,7 @@ public class SystemTest4Player implements Runnable {
                 try {
                     //create client
                     InetAddress ip = InetAddress.getLocalHost();
-                    client = new AbaloneClient("Henk", ip, 8888, false, 4);
+                    client = new AbaloneClient("Henk", ip, 8888, true, 4);
                     client.handleHandshake(false, false, false, "Henk");
                     //join the queue
                     client.joinQueue(4);

@@ -147,7 +147,7 @@ public class Game {
                     scoreteam2 = board.getScore(marbleMap.get(playerNames[1]));
                     System.out.println("score team 1: " + scoreteam1);
                     System.out.println("score team 2: " + scoreteam2);
-                    System.out.print("moves: " + moves);
+                   
                     if (scoreteam1 == scoreLimit) {
                         //limit reached
                         String msg = ProtocolMessages.GAME_FINISHED + ProtocolMessages.DELIMITER

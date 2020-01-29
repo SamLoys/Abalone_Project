@@ -636,6 +636,7 @@ public class Board {
             }
             s = s + "\n\n" + "\n\n";
         }
+        
 
         return s;
     }

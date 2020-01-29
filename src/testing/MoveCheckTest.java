@@ -281,6 +281,40 @@ class MoveCheckTest {
         test.add(70);
         test.add(59);
         try {
+            list = movecheck.moveChecker(103, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //Not needed to print
+        }
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
+        
+        //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        test.add(70);
+        test.add(59);
+        try {
+            list = movecheck.moveChecker(103, 92, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //Not needed to print
+        }
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
+        
+        //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        test.add(70);
+        test.add(59);
+        try {
             list = movecheck.moveChecker(103, 92, 81, Directions.northWest);
         } catch (IllegalMoveException e) {
             //Not needed to print
@@ -289,6 +323,22 @@ class MoveCheckTest {
         test.clear();
         list.clear();
         
+        //Checks for three marbles two hidden opponent summito, returns 103, 92, 81, 70, 59
+        copy.setMarble(59, Marble.Black);
+        copy.setMarble(70, Marble.Black);
+        test.add(103);
+        test.add(92);
+        test.add(81);
+        test.add(70);
+        test.add(59);
+        try {
+            list = movecheck.moveChecker(103, 92, 81, 70, Directions.northWest);
+        } catch (IllegalMoveException e) {
+            //Not needed to print
+        }
+        assertEquals(test, list);
+        test.clear();
+        list.clear();
         
         //Checks for wrong move for invalid summito, returns exception
         copy.setMarble(59, Marble.Black);

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * that have to be moved if valid, if not valid specific exceptions are thrown.
  * @author Ayla en Sam
  * @version 1.0
- */
+ */ 
 class MoveCheckTest {
     MoveCheck movecheck;
     Board copy;

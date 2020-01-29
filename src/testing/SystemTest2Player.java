@@ -57,7 +57,7 @@ public class SystemTest2Player implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                break;
+                break; 
             case "client":
                 try {
                     //set the client

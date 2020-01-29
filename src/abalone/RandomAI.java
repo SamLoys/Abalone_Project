@@ -44,7 +44,7 @@ public class RandomAI extends AI {
     public void makeMove(boolean send) throws ServerUnavailableException {
 
         totalMarbles = new ArrayList<Integer>();
-        convertToProtocol = new ArrayList<Integer>();
+        convertToProtocol = new ArrayList<Integer>(); 
         ownMarbles = new ArrayList<>();
         direction = null;
         movefound = false;

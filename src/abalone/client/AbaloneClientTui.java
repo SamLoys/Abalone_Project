@@ -273,7 +273,7 @@ public class AbaloneClientTui implements Runnable {
                 //stoped
                 throw new ExitProgram("IO has stoped working");
             }
-            int answerInt = 0;
+            int answerInt = 0; 
             try {
                 answerInt = Integer.parseInt(answer);
                 if (lowend <= answerInt && answerInt <= highend) {

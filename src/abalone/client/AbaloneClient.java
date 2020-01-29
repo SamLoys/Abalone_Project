@@ -884,7 +884,7 @@ public class AbaloneClient implements ClientProtocol {
                 } catch (IllegalMoveException e) {
                     //if movechecker does not accept, print why and ask again
                     clientTui.showMessage(e.getMessage() + "please try again");
-                } catch (BoardException e) {
+                } catch (BoardException e) { 
                     //print the board exception
                     clientTui.showMessage(e.getMessage());
                 } catch (ServerUnavailableException e) {

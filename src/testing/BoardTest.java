@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  * @author Ayla en Sam
  * @version 1.0
  */
-class BoardTest {
+class BoardTest { 
     private Board board2; 
     private Board board3;
     private Board board4;

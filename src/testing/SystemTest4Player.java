@@ -63,7 +63,7 @@ public class SystemTest4Player implements Runnable {
                 
                     e.printStackTrace();
                 }
-                break;
+                break; 
             case "client":
                 try {
                     //create client

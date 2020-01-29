@@ -326,7 +326,7 @@ public class Game {
                         //send finished message
                         srv.multipleSend(msg, playerNames);
                         //remove game 
-                        srv.removeGame(this);
+                        srv.removeGame(this); 
                         // player 2 wins
                         
                     } else if (scoreteam3 > scoreteam1 && scoreteam3 > scoreteam2) {

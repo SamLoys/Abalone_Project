@@ -10,7 +10,7 @@ public class AbaloneServerTui implements Runnable {
 
     private PrintWriter console;
     private BufferedReader consoleIn;
-    private AbaloneServer srv; 
+    private AbaloneServer srv;  
 
     AbaloneServerTui(AbaloneServer srv) {
         console = new PrintWriter(System.out, true); 

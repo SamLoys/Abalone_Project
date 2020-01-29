@@ -54,7 +54,7 @@ public class SystemTest3Player implements Runnable {
     public void run() {
         switch (serverorclient) {
             case "server":
-                try {
+                try { 
                     server = new AbaloneServer(8888);
                 } catch (IOException e) {
                     e.printStackTrace();

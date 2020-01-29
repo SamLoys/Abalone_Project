@@ -44,7 +44,7 @@ public class SmartyAI extends AI {
      * @param checker the checker
      * @return a string that contains a marble of the color and a valid direction
      */
-    public String getHint(Board board, Marble color, MoveCheck checker) {
+    public String getHint(Board board, Marble color, MoveCheck checker) { 
         try {
             this.board = board;
             this.color = color;

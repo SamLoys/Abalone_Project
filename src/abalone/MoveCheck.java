@@ -1,9 +1,6 @@
 package abalone;
 
 import abalone.exceptions.IllegalMoveException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Collections;
 

@@ -10,6 +10,10 @@ import java.util.Collections;
 /**
  * The AI is focused on going to the center.
  * Created on 17-01-2019. 
+ * @invariant board != null
+ * @invariant marble != null
+ * @invariant client != null
+ * @invariant name != null
  * @author Sam Freriks and Ayla van der Wal.
  * @version 1.0
  */
@@ -31,6 +35,8 @@ public class SmartyAI extends AI {
      * @param client the client the ai is. 
      * @param checker the checker for the move checks. 
      * @param name the name of the ai
+     * @ensures this.board == board, this.color == color, this.client == client
+     * @ensures this.checker == checker, this.name == name
      */
     public SmartyAI(Board board, Marble color, AbaloneClient client, MoveCheck checker, String name) {
         super(board,color,client,checker,name);
@@ -43,6 +49,7 @@ public class SmartyAI extends AI {
      * @param color the color to use
      * @param checker the checker
      * @return a string that contains a marble of the color and a valid direction
+     * @requires board != null, color != null, checker != null
      */
     public String getHint(Board board, Marble color, MoveCheck checker) { 
         try {
@@ -60,7 +67,8 @@ public class SmartyAI extends AI {
     
     /**
      * sends a marble that will have a valid move.
-     * @return a marble which can make a valid move 
+     * @return a marble which can make a valid move. 
+     * @ensures that a valid move is collected
      */
     public int getHintForAiMarbles() { 
         try {
@@ -74,6 +82,7 @@ public class SmartyAI extends AI {
     /**
      * returns the direction the previous hint was meant to go to.
      * @return the direction of the previous hint
+     * @ensures the direction for the hint is given
      */
     public String getHintForAiDirection() {
         return direction.toString();
@@ -83,6 +92,8 @@ public class SmartyAI extends AI {
      * constructs a move and send a command to the client to send it.
      * @param send if the constructed move should be send.
      * @throws ServerUnavailableException throws this exception is the server could not be reached.
+     * @ensures is send to client as a move to be made if send == true
+     * @requires send == true || send == false
      */
     public void makeMove(boolean send) throws ServerUnavailableException {
 

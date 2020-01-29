@@ -1,6 +1,7 @@
 package testing;
 
 import abalone.client.AbaloneClient;
+import abalone.exceptions.ExitProgram;
 import abalone.exceptions.ServerUnavailableException;
 import abalone.server.AbaloneServer;
 import java.io.IOException;
@@ -70,10 +71,12 @@ public class SystemTest3Player implements Runnable {
                     //read response
                     client.readServer();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 } catch (ServerUnavailableException e) {
-                    e.printStackTrace();
-                }  
+                    System.out.println(e.getMessage());
+                }  catch (ExitProgram e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             default:
                 break;

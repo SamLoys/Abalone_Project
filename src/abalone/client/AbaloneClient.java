@@ -155,8 +155,12 @@ public class AbaloneClient implements ClientProtocol {
         isAI = clientTui.getBool("Are you an AI?");
         if (isAI) {
             clientTui.showMessage("Which AI do you want to be?");
-            whichAI = clientTui.getInt("Types: " + "\n" + "defendedAI(0)" + "\n" + "randomAI(1)" 
-            + "\n" + "AttackAI(2) " + "\n" + "please type the number", 0, 2);
+            try {
+                whichAI = clientTui.getInt("Types: " + "\n" + "defendedAI(0)" + "\n" + "randomAI(1)" 
+                + "\n" + "AttackAI(2) " + "\n" + "please type the number", 0, 2);
+            } catch (ExitProgram e) {
+                closeConnection();
+            }
         }
         clientTui.showMessage("Welcome " + name + " we will now setup the connection..");
         try {
@@ -316,8 +320,9 @@ public class AbaloneClient implements ClientProtocol {
      * Given the command will do the appropriate method. 
      * @param msg the server message
      * @throws ServerUnavailableException Exception if the server is not available
+     * @throws ExitProgram IO if the Io stoped
      */
-    public void handleServerCommands(String msg) throws ServerUnavailableException {
+    public void handleServerCommands(String msg) throws ServerUnavailableException, ExitProgram {
         if (!msg.equals("")) {
 
             String command = msg.substring(0, 1);
@@ -715,11 +720,11 @@ public class AbaloneClient implements ClientProtocol {
     /**
      * reads the server while running is true.
      * @throws ServerUnavailableException if the server is not available
+     * @throws ExitProgram if IO Stops
      */
     
-    public void readServer() throws ServerUnavailableException {
+    public void readServer() throws ServerUnavailableException, ExitProgram {
         while (running) {
-
             String serverMessage = readLineFromServer();
             //handles the command
             handleServerCommands(serverMessage);
@@ -820,7 +825,7 @@ public class AbaloneClient implements ClientProtocol {
 
     @Override
     public void handleHandshake(boolean chat, boolean challenge, boolean leaderboard, String playerName)
-            throws ServerUnavailableException {
+            throws ServerUnavailableException, ExitProgram {
         int chatInt = chat ? 1 : 0;
         int challengeInt = challenge ? 1 : 0;
         int leaderboardInt = leaderboard ? 1 : 0;
@@ -835,7 +840,7 @@ public class AbaloneClient implements ClientProtocol {
     }
 
     @Override
-    public void joinQueue(int gamesize) throws ServerUnavailableException {
+    public void joinQueue(int gamesize) throws ServerUnavailableException, ExitProgram {
         sendMessage(ProtocolMessages.JOIN + ProtocolMessages.DELIMITER + gamesize + ProtocolMessages.EOC);
         while (!joiningComplete) {
             //read server until join is complete

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+
 public class AbaloneServer implements ServerProtocol, Runnable {
 
     private ServerSocket ssock; 
@@ -44,9 +45,7 @@ public class AbaloneServer implements ServerProtocol, Runnable {
      * 
      */
     public AbaloneServer() {
-
         myTui = new AbaloneServerTui(this);
-       
         nextPlayerNo = 1;
         serverName = "Aba_lonely";
     }
@@ -404,7 +403,14 @@ public class AbaloneServer implements ServerProtocol, Runnable {
      * removes a game from the list.
      * @param game the game to be removed.
      */
-    public void removeGame(Game game) {
+    public void removeGame(Game game) { 
+        String[] players = game.getPlayers();
+        for (String name : players) { 
+            AbaloneClientHandler client; 
+            if ((client = clientsMap.get(name)) != null) {
+                client.removeGame();
+            }
+        }
         this.games.remove(game);
     }
     

@@ -325,7 +325,7 @@ public class Game {
                         finished = true;
                         //send finished message
                         srv.multipleSend(msg, playerNames);
-                        //remove game
+                        //remove game 
                         srv.removeGame(this);
                         // player 2 wins
                         

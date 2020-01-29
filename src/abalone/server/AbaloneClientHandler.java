@@ -84,6 +84,14 @@ public class AbaloneClientHandler implements Runnable {
     public void addGame(Game game) {
         this.currentGame = game;
     }
+    
+    /**
+     * removes the game for the client, this happens when a client disconnects or when the game has ended.
+     */
+    public void removeGame() {
+        this.currentGame = null;
+    }
+    
 
     @Override
     public void run() {
@@ -143,35 +151,41 @@ public class AbaloneClientHandler implements Runnable {
                 }
                 break;
             case ProtocolMessages.MOVE:
-                ArrayList<Integer> indexes = new ArrayList<>();
-                if (inputSrv.length < 3) {
-                    sendIllegalMoveException("not enough information");
-                    break;
-                }
-                if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
-                    || inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
-                    || inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
+                if (currentGame != null) {
+                    ArrayList<Integer> indexes = new ArrayList<>();
+                    if (inputSrv.length < 3) {
+                        sendIllegalMoveException("not enough information");
+                        break;
+                    }
+                    if (inputSrv[2].equals(Directions.east) || inputSrv[2].equals(Directions.west)
+                        || inputSrv[2].equals(Directions.northEast) || inputSrv[2].equals(Directions.northWest)
+                        || inputSrv[2].equals(Directions.southEast) || inputSrv[2].equals(Directions.southWest)) {
 
-                    for (int i = 0; i < inputSrv.length; i++) {
-                        if (inputSrv[i].matches("([0-9]*)")) {
-                            indexes.add(Integer.parseInt(inputSrv[i]));
+                        for (int i = 0; i < inputSrv.length; i++) {
+                            if (inputSrv[i].matches("([0-9]*)")) {
+                                indexes.add(Integer.parseInt(inputSrv[i]));
+                            }
                         }
-                    }
-                    String error = null;
-                    try {
-                        currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
-                    } catch (BoardException e) {
-                        System.out.println("> [" + clientName + "] Exception: " + error);
-                        sendIllegalMoveException(error);
-                    } catch (IllegalMoveException e) {
-                        System.out.println("> [" + clientName + "] Exception: " + error);
-                        sendIllegalMoveException(error);
-                    }
+                        String error = null;
+                        try {
+                            currentGame.addMove(inputSrv[1], inputSrv[2], indexes);
+                        } catch (BoardException e) {
+                            System.out.println("> [" + clientName + "] Exception: " + error);
+                            sendIllegalMoveException(error);
+                        } catch (IllegalMoveException e) {
+                            System.out.println("> [" + clientName + "] Exception: " + error);
+                            sendIllegalMoveException(error);
+                        }
 
+                    } else {
+                        System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
+                        sendIllegalMoveException("ERROR: There is no given direction");
+                    }
                 } else {
-                    System.out.println("> [" + clientName + "] Exception: " + "ERROR: There is no given direction");
-                    sendIllegalMoveException("ERROR: There is no given direction");
+                    System.out.println("> [" + clientName + "] Exception: " + "game has ended");
+                    sendIllegalMoveException("game has ended");
                 }
+                
                 break;
 
             case ProtocolMessages.QUEUE_SIZE: {
@@ -179,7 +193,6 @@ public class AbaloneClientHandler implements Runnable {
             }
                 break;
             case ProtocolMessages.EXIT:
-                
                 shutdown();
                 break;
           

@@ -256,9 +256,10 @@ public class AbaloneClientTui implements Runnable {
      * @param lowend the low end of the range
      * @param highend the high end of the range
      * @return a integer for the answer
+     * @throws ExitProgram  exception is the IO stoped working
      * @ensures to return a valid integer, otherwise asks again
      */
-    public int getInt(String question, int lowend, int highend) {
+    public int getInt(String question, int lowend, int highend) throws ExitProgram {
         questionFirst = true;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
@@ -269,7 +270,8 @@ public class AbaloneClientTui implements Runnable {
             try {
                 answer = in.readLine();
             } catch (IOException e) {
-                e.printStackTrace();
+                //stoped
+                throw new ExitProgram("IO has stoped working");
             }
             int answerInt = 0;
             try {

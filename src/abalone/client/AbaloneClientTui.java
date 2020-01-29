@@ -174,7 +174,8 @@ public class AbaloneClientTui implements Runnable {
                 + "direction: \n" + "Only include marbles you want to move" + "Type r for right" + "Type l for left \n"
                 + "Type -> ur for upper right \n" + "Type -> ul for upper left \n" + "Type -> lr for lower right \n"
                 + "Type -> ll for lower left \n" + "Type -> h for this help menu \n" + "Type -> q for the queue list \n"
-                + "Type -> t to a hint type t \n -----";
+                + "Type -> t to a hint type t \n"
+                + "Type -> c <space> <message> to send a chat \n ----";
         showMessage(helpmenu);
     }
     
